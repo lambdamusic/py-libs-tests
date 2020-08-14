@@ -1,0 +1,37 @@
+div.body {
+  max-width: 100%;
+}
+
+
+/* set page width adopting 100%*/ 
+.wy-nav-content{
+max-width:100% !important;
+}
+
+.logo{
+width: 160px !important;
+}
+
+/* background logo area*/ 
+.wy-side-nav-search{
+background-color: #40BBEE;
+}
+
+
+/* logo area remove hover bg change*/ 
+.wy-side-nav-search>a:hover{
+background: rgba(255,255,255,0.0);
+}
+
+/* remove search field border */ 
+.wy-side-nav-search input{
+border-color: #40BBEE !important;
+}
+
+/* icon home */ 
+.icon-home{
+color: #40BBEE !important;
+}
+
+
+

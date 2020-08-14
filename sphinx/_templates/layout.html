@@ -1,0 +1,61 @@
+{% extends "!layout.html" %}
+
+<!-- EG https://github.com/readthedocs/sphinx_rtd_theme/blob/master/sphinx_rtd_theme/layout.html -->
+
+{%- block extrahead %}
+   {{ super() }}
+
+   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149959808-1"></script>
+   <!-- <script src="_static/js/custom.js"></script> -->
+
+{% endblock %}
+
+
+
+{% block menu %}
+
+   <p class="">
+      <h3 id="cookbooks_title">API COOKBOOKS</h3>
+   </p>
+
+
+   {{ super() }}
+
+
+   <div id="sidebar_github" style="margin-top: 12px;">
+   <h3>Github Source</h3>
+
+      <div style="margin: 10px 20px;">
+      
+         <iframe src="https://ghbtns.com/github-btn.html?user=digital-science&repo=dimensions-api-lab&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe>
+
+         <iframe src="https://ghbtns.com/github-btn.html?user=digital-science&repo=dimensions-api-lab&type=fork&count=true" frameborder="0" scrolling="0" width="170px" height="20px"></iframe> 
+      
+      </div>
+
+   </div>
+
+{% endblock %}
+
+
+
+
+
+
+{%- block footer %}
+   {{ super() }}
+
+    <!-- Adds target=_blank to external links -->
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
+    });
+  </script>
+  
+{% endblock %}
+
+
+
+
+

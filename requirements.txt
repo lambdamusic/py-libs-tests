@@ -1,0 +1,9 @@
+ipython
+jupyter
+jupyterlab
+dimcli
+matplotlib
+pandas
+plotly
+nbsphinx
+sphinx_rtd_theme

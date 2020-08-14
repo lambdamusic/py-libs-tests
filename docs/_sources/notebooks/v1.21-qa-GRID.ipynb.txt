@@ -1,0 +1,3928 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "AuCkj0Qwywjy"
+   },
+   "source": [
+    "# QA of DSL Release v1.21 - GRID Tickets only\n",
+    "The purpose of this notebook is to review and test the new GRID search features in 1.21\n",
+    "\n",
+    "Docs: https://docs.dimensions.ai/dsl/1.21.0-preview/\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "## Prerequisites\n",
+    "\n",
+    "Please install the latest versions of these libraries to run this notebook. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 84,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 201
+    },
+    "colab_type": "code",
+    "id": "d_QovOzaywj0",
+    "outputId": "1f57c560-d772-4a70-ccd4-1a816c674b19"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "DimCli v0.6.1 - Succesfully connected to <https://integration.ds-metrics.com> (method: dsl.ini file)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import dimcli\n",
+    "from dimcli.shortcuts import dslquery, dslqueryall\n",
+    "from tqdm import tqdm\n",
+    "import pandas as pd\n",
+    "import json\n",
+    "dimcli.login(instance=\"test\")\n",
+    "# OR EXPLICITLY: dimcli.login(user=\"\", password=\"\", endpoint='https://integration.ds-metrics.com')\n",
+    "dsl = dimcli.Dsl() "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "JcnVEdOAywj3"
+   },
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "YBSdHL4Tywj4",
+    "toc-hr-collapsed": false
+   },
+   "source": [
+    "## DSL-247 GRID API Function `extract_affiliations`\n",
+    "https://uberresearch.atlassian.net/browse/DSL-247"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "Let's pull out some real world affiliations \n",
+    "\n",
+    "Note that sometimes empty values come through as 'None', sometimes as an empty string. So we normalize to empty string.."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "res = dslquery(\"\"\"search publications for \"malaria\" where authors is not empty return publications[authors]\"\"\")\n",
+    "testdata = []\n",
+    "for x in res.publications:\n",
+    "    for a in x['authors']:\n",
+    "        affiliations = a.get('affiliations')\n",
+    "        if affiliations:\n",
+    "            l = [affiliations[0].get('name', \"\"), affiliations[0].get('city', \"\"), affiliations[0].get('state', \"\"), affiliations[0].get('country', \"\")]\n",
+    "            l = [x if x != None else \"\" for x in l]\n",
+    "            if l not in testdata:\n",
+    "                testdata.append(l)\n",
+    "for x in enumerate(testdata[:15]): print(x)            "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "toc-hr-collapsed": true,
+    "toc-nb-collapsed": true
+   },
+   "source": [
+    "### Structured data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "#### 1.1 single query "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "# implicit results \n",
+    "for d in tqdm(testdata[:15]):\n",
+    "    res = dsl.query(f\"\"\"extract_affiliations(name=\"{d[0]}\", city=\"{d[1]}\", state=\"{d[2]}\", country=\"{d[3]}\")\"\"\")\n",
+    "    print(res.json)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "Test also when passing results opts"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "\n",
+    "results_opts = ['basic', 'full', 'publisher']\n",
+    "for d in tqdm(testdata[:10], desc=\"affiliations outer loop\"):\n",
+    "    for r in tqdm(results_opts):\n",
+    "        res = dsl.query(f\"\"\"extract_affiliations(name=\"{d[0]}\", city=\"{d[1]}\", state=\"{d[2]}\", country=\"{d[3]}\", results=\"{r}\")\"\"\")\n",
+    "        print(res.json)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "#### 1.2 batch matching"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "Build a JSON object from the affiliations test data above"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "jsondata = []\n",
+    "for el in testdata:\n",
+    "    jsondata.append({\"name\":el[0],\"city\":el[1],\"state\":el[2],\"country\":el[3]})\n",
+    "# json.dumps(jsondata)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "res = dsl.query(f\"\"\"extract_affiliations(json={json.dumps(jsondata)})\"\"\")\n",
+    "print(res.json)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "toc-hr-collapsed": true,
+    "toc-nb-collapsed": true
+   },
+   "source": [
+    "### Unstructured data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "#### 2.1 Single query"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "# implicit results \n",
+    "for d in tqdm(testdata[:15]):\n",
+    "    res = dsl.query(f\"\"\"extract_affiliations(affiliation=\"{d[0]} {d[1]} {d[2]} {d[3]}\")\"\"\")\n",
+    "    print(res.json)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "Test also when passing results opts"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "results_opts = ['basic', 'full', 'publisher']\n",
+    "for d in tqdm(testdata[:10], desc=\"affiliations outer loop\"):\n",
+    "    for r in tqdm(results_opts):\n",
+    "        res = dsl.query(f\"\"\"extract_affiliations(affiliation=\"{d[0]} {d[1]} {d[2]} {d[3]}\", results=\"{r}\")\"\"\")\n",
+    "        print(res.json)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "#### 2.2 Batch matching"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "Build a JSON object from the affiliations test data above"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "jsondata = []\n",
+    "for d in testdata:\n",
+    "    jsondata.append({\"affiliation\": f\"{d[0]} {d[1]} {d[2]} {d[3]}\"})\n",
+    "# json.dumps(jsondata)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "res = dsl.query(f\"\"\"extract_affiliations(json={json.dumps(jsondata)})\"\"\")\n",
+    "print(res.json)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "## DSL-207 GRID API phase 2 basic keyword and ID search \n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-207"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 1 (total = 1)\n"
+     ]
+    },
+    {
+     "data": {
+      "application/json": {
+       "_stats": {
+        "total_count": 1
+       },
+       "organizations": [
+        {
+         "acronym": null,
+         "city_name": "Kingston",
+         "country_name": "Canada",
+         "id": "grid.410356.5",
+         "latitude": 44.225502,
+         "linkout": [
+          "http://www.queensu.ca/"
+         ],
+         "longitude": -76.49516,
+         "name": "Queen's University",
+         "state_name": "Ontario",
+         "types": [
+          "Education"
+         ]
+        }
+       ]
+      },
+      "text/plain": [
+       "<dimcli.Result object #4761677968. Records: 1/1>"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {
+      "application/json": {
+       "expanded": false,
+       "root": "root"
+      }
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsl search organizations where id=\"grid.410356.5\" return organizations[basics]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 20 (total = 18775)\n"
+     ]
+    },
+    {
+     "data": {
+      "application/json": {
+       "_stats": {
+        "total_count": 18775
+       },
+       "organizations": [
+        {
+         "acronym": "Lister Institute of Preventive Medicine",
+         "city_name": "Bushey",
+         "country_name": "United Kingdom",
+         "id": "grid.453664.6",
+         "latitude": 51.547523,
+         "linkout": [
+          "http://www.lister-institute.org.uk/"
+         ],
+         "longitude": -0.468921,
+         "name": "Lister Institute of Preventive Medicine",
+         "state_name": null,
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "RCoA",
+         "city_name": "London",
+         "country_name": "United Kingdom",
+         "id": "grid.464666.0",
+         "latitude": 51.519344,
+         "linkout": [
+          "http://www.rcoa.ac.uk/"
+         ],
+         "longitude": -0.119609,
+         "name": "Royal College of Anaesthetists",
+         "state_name": null,
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "BSRF",
+         "city_name": "London",
+         "country_name": "United Kingdom",
+         "id": "grid.478483.4",
+         "latitude": 51.516388,
+         "linkout": [
+          "http://www.bsrf.co.uk/"
+         ],
+         "longitude": -0.223172,
+         "name": "British Scoliosis Research Foundation",
+         "state_name": null,
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "CCC",
+         "city_name": "London",
+         "country_name": "United Kingdom",
+         "id": "grid.487344.8",
+         "latitude": 51.486546,
+         "linkout": [
+          "https://www.bowelcanceruk.org.uk/"
+         ],
+         "longitude": -0.196169,
+         "name": "Bowel Cancer UK",
+         "state_name": null,
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "AFIT",
+         "city_name": "Dayton",
+         "country_name": "United States",
+         "id": "grid.427848.5",
+         "latitude": 39.783,
+         "linkout": [
+          "http://www.afit.edu/"
+         ],
+         "longitude": -84.083,
+         "name": "Air Force Institute of Technology",
+         "state_name": "Ohio",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "IES",
+         "city_name": "Washington D.C.",
+         "country_name": "United States",
+         "id": "grid.421530.1",
+         "latitude": 38.897247,
+         "linkout": [
+          "http://ies.ed.gov/"
+         ],
+         "longitude": -77.01126,
+         "name": "Institute of Education Sciences",
+         "state_name": "District of Columbia",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "USUHS",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.265436.0",
+         "latitude": 39.002056,
+         "linkout": [
+          "https://www.usuhs.edu/"
+         ],
+         "longitude": -77.08514,
+         "name": "Uniformed Services University of the Health Sciences",
+         "state_name": "Maryland",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "UDL",
+         "city_name": "Lille",
+         "country_name": "France",
+         "id": "grid.503422.2",
+         "latitude": 50.6317,
+         "linkout": [
+          "https://www.univ-lille.fr/home/"
+         ],
+         "longitude": 3.075126,
+         "name": "University of Lille",
+         "state_name": null,
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "UM",
+         "city_name": "Kuala Lumpur",
+         "country_name": "Malaysia",
+         "id": "grid.10347.31",
+         "latitude": 3.120833,
+         "linkout": [
+          "https://www.um.edu.my/"
+         ],
+         "longitude": 101.65639,
+         "name": "University of Malaya",
+         "state_name": null,
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "ANU",
+         "city_name": "Canberra",
+         "country_name": "Australia",
+         "id": "grid.1001.0",
+         "latitude": -35.2778,
+         "linkout": [
+          "http://www.anu.edu.au/"
+         ],
+         "longitude": 149.1205,
+         "name": "Australian National University",
+         "state_name": "Australian Capital Territory",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": null,
+         "city_name": "Melbourne",
+         "country_name": "Australia",
+         "id": "grid.1002.3",
+         "latitude": -37.9083,
+         "linkout": [
+          "http://www.monash.edu/"
+         ],
+         "longitude": 145.138,
+         "name": "Monash University",
+         "state_name": "Victoria",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "UQ",
+         "city_name": "Brisbane",
+         "country_name": "Australia",
+         "id": "grid.1003.2",
+         "latitude": -27.495964,
+         "linkout": [
+          "http://www.uq.edu.au/"
+         ],
+         "longitude": 153.00963,
+         "name": "University of Queensland",
+         "state_name": "Queensland",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": null,
+         "city_name": "Sydney",
+         "country_name": "Australia",
+         "id": "grid.1004.5",
+         "latitude": -33.775257,
+         "linkout": [
+          "http://mq.edu.au/"
+         ],
+         "longitude": 151.11292,
+         "name": "Macquarie University",
+         "state_name": "New South Wales",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "UNSW",
+         "city_name": "Sydney",
+         "country_name": "Australia",
+         "id": "grid.1005.4",
+         "latitude": -33.917732,
+         "linkout": [
+          "https://www.unsw.edu.au/"
+         ],
+         "longitude": 151.23096,
+         "name": "UNSW Sydney",
+         "state_name": "New South Wales",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": null,
+         "city_name": "Newcastle upon Tyne",
+         "country_name": "United Kingdom",
+         "id": "grid.1006.7",
+         "latitude": 54.978,
+         "linkout": [
+          "http://www.ncl.ac.uk/"
+         ],
+         "longitude": -1.615,
+         "name": "Newcastle University",
+         "state_name": null,
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "UOW",
+         "city_name": "Wollongong",
+         "country_name": "Australia",
+         "id": "grid.1007.6",
+         "latitude": -34.405148,
+         "linkout": [
+          "https://www.uow.edu.au/index.html"
+         ],
+         "longitude": 150.87839,
+         "name": "University of Wollongong",
+         "state_name": "New South Wales",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": null,
+         "city_name": "Melbourne",
+         "country_name": "Australia",
+         "id": "grid.1008.9",
+         "latitude": -37.797115,
+         "linkout": [
+          "http://www.unimelb.edu.au/"
+         ],
+         "longitude": 144.95998,
+         "name": "University of Melbourne",
+         "state_name": "Victoria",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "UTAS",
+         "city_name": "Hobart",
+         "country_name": "Australia",
+         "id": "grid.1009.8",
+         "latitude": -42.902092,
+         "linkout": [
+          "http://www.utas.edu.au/"
+         ],
+         "longitude": 147.3325,
+         "name": "University of Tasmania",
+         "state_name": "Tasmania",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": null,
+         "city_name": "Adelaide",
+         "country_name": "Australia",
+         "id": "grid.1010.0",
+         "latitude": -34.920654,
+         "linkout": [
+          "http://www.adelaide.edu.au/"
+         ],
+         "longitude": 138.60576,
+         "name": "University of Adelaide",
+         "state_name": "South Australia",
+         "types": [
+          "Education"
+         ]
+        },
+        {
+         "acronym": "JCU",
+         "city_name": "Townsville",
+         "country_name": "Australia",
+         "id": "grid.1011.1",
+         "latitude": -19.327778,
+         "linkout": [
+          "http://www.jcu.edu.au/"
+         ],
+         "longitude": 146.75833,
+         "name": "James Cook University",
+         "state_name": "Queensland",
+         "types": [
+          "Education"
+         ]
+        }
+       ]
+      },
+      "text/plain": [
+       "<dimcli.Result object #4495583056. Records: 20/18775>"
+      ]
+     },
+     "execution_count": 39,
+     "metadata": {
+      "application/json": {
+       "expanded": false,
+       "root": "root"
+      }
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsl search organizations where types = \"Education\" return organizations"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 10 (total = 10)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>types</th>\n",
+       "      <th>latitude</th>\n",
+       "      <th>state_name</th>\n",
+       "      <th>city_name</th>\n",
+       "      <th>country_name</th>\n",
+       "      <th>name</th>\n",
+       "      <th>longitude</th>\n",
+       "      <th>linkout</th>\n",
+       "      <th>acronym</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>None</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Florida</td>\n",
+       "      <td>Naples</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>Cancer Alliance of Naples</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.427620.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[Other]</td>\n",
+       "      <td>26.213648</td>\n",
+       "      <td>Florida</td>\n",
+       "      <td>Naples</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>Naples Anesthesia &amp; Physician Associates</td>\n",
+       "      <td>-81.733070</td>\n",
+       "      <td>[http://painfreenaples.com/]</td>\n",
+       "      <td>NAPA</td>\n",
+       "      <td>grid.477562.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>40.837260</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Naples</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Parthenope University of Naples</td>\n",
+       "      <td>14.253195</td>\n",
+       "      <td>[http://www.uniparthenope.it/]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.17682.3a</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         types   latitude state_name city_name   country_name  \\\n",
+       "0         None        NaN    Florida    Naples  United States   \n",
+       "1      [Other]  26.213648    Florida    Naples  United States   \n",
+       "2  [Education]  40.837260       None    Naples          Italy   \n",
+       "\n",
+       "                                       name  longitude  \\\n",
+       "0                 Cancer Alliance of Naples        NaN   \n",
+       "1  Naples Anesthesia & Physician Associates -81.733070   \n",
+       "2           Parthenope University of Naples  14.253195   \n",
+       "\n",
+       "                          linkout acronym             id  \n",
+       "0                            None    None  grid.427620.5  \n",
+       "1    [http://painfreenaples.com/]    NAPA  grid.477562.5  \n",
+       "2  [http://www.uniparthenope.it/]    None  grid.17682.3a  "
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "res = dsl.query(\"\"\"search organizations for \"naples\" return organizations limit 10\"\"\")\n",
+    "res.as_dataframe().head(3)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 4 (total = 4)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>types</th>\n",
+       "      <th>latitude</th>\n",
+       "      <th>state_name</th>\n",
+       "      <th>city_name</th>\n",
+       "      <th>country_name</th>\n",
+       "      <th>name</th>\n",
+       "      <th>longitude</th>\n",
+       "      <th>linkout</th>\n",
+       "      <th>acronym</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>None</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Florida</td>\n",
+       "      <td>Naples</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>Cancer Alliance of Naples</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>None</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.427620.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[Other]</td>\n",
+       "      <td>26.213648</td>\n",
+       "      <td>Florida</td>\n",
+       "      <td>Naples</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>Naples Anesthesia &amp; Physician Associates</td>\n",
+       "      <td>-81.733070</td>\n",
+       "      <td>[http://painfreenaples.com/]</td>\n",
+       "      <td>NAPA</td>\n",
+       "      <td>grid.477562.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[Nonprofit]</td>\n",
+       "      <td>26.150770</td>\n",
+       "      <td>Florida</td>\n",
+       "      <td>Naples</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>Naples Community Hospital Healthcare System</td>\n",
+       "      <td>-81.798485</td>\n",
+       "      <td>[http://www.nchmd.org/]</td>\n",
+       "      <td>NCH</td>\n",
+       "      <td>grid.489100.4</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         types   latitude state_name city_name   country_name  \\\n",
+       "0         None        NaN    Florida    Naples  United States   \n",
+       "1      [Other]  26.213648    Florida    Naples  United States   \n",
+       "2  [Nonprofit]  26.150770    Florida    Naples  United States   \n",
+       "\n",
+       "                                          name  longitude  \\\n",
+       "0                    Cancer Alliance of Naples        NaN   \n",
+       "1     Naples Anesthesia & Physician Associates -81.733070   \n",
+       "2  Naples Community Hospital Healthcare System -81.798485   \n",
+       "\n",
+       "                        linkout acronym             id  \n",
+       "0                          None    None  grid.427620.5  \n",
+       "1  [http://painfreenaples.com/]    NAPA  grid.477562.5  \n",
+       "2       [http://www.nchmd.org/]     NCH  grid.489100.4  "
+      ]
+     },
+     "execution_count": 42,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "res = dsl.query(\"\"\"search organizations for \"naples\" where state_name is not empty return organizations limit 10\"\"\")\n",
+    "res.as_dataframe().head(3)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Errors: 1\n",
+      "Semantic Error\n",
+      "Semantic errors found:\n",
+      "\tField 'latitude' can not be used in filters. It can only be returned in the result.\n"
+     ]
+    }
+   ],
+   "source": [
+    "%dsldf search organizations where latitude > 5 return organizations limit 10"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Errors: 1\n",
+      "Semantic Error\n",
+      "Semantic errors found:\n",
+      "\tField 'longitude' can not be used in filters. It can only be returned in the result.\n"
+     ]
+    }
+   ],
+   "source": [
+    "%dsldf search organizations where longitude > 5 return organizations limit 10"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "#### more interesting queries \n",
+    "\n",
+    "faceting works ok"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 70,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned City_name: 20\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>count</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>London</td>\n",
+       "      <td>38</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Birmingham</td>\n",
+       "      <td>7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Liverpool</td>\n",
+       "      <td>7</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Leeds</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Manchester</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>Cambridge</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>Cardiff</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>Edinburgh</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>Exeter</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>Norwich</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>Nottingham</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>Sheffield</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>Southampton</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>Stoke-on-Trent</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>Wakefield</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>Ashford</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>Bolton</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>Bradford</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>Brighton</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>Bristol</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                id  count\n",
+       "0           London     38\n",
+       "1       Birmingham      7\n",
+       "2        Liverpool      7\n",
+       "3            Leeds      5\n",
+       "4       Manchester      5\n",
+       "5        Cambridge      3\n",
+       "6          Cardiff      3\n",
+       "7        Edinburgh      3\n",
+       "8           Exeter      3\n",
+       "9          Norwich      3\n",
+       "10      Nottingham      3\n",
+       "11       Sheffield      3\n",
+       "12     Southampton      3\n",
+       "13  Stoke-on-Trent      3\n",
+       "14       Wakefield      3\n",
+       "15         Ashford      2\n",
+       "16          Bolton      2\n",
+       "17        Bradford      2\n",
+       "18        Brighton      2\n",
+       "19         Bristol      2"
+      ]
+     },
+     "execution_count": 70,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsldf search organizations for \"nhs\" return city_name"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "searching using types"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 10 (total = 627)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>types</th>\n",
+       "      <th>latitude</th>\n",
+       "      <th>state_name</th>\n",
+       "      <th>city_name</th>\n",
+       "      <th>country_name</th>\n",
+       "      <th>name</th>\n",
+       "      <th>longitude</th>\n",
+       "      <th>linkout</th>\n",
+       "      <th>acronym</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>44.428673</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Genoa</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Ansaldo (Italy)</td>\n",
+       "      <td>8.886877</td>\n",
+       "      <td>[http://www.ansaldoenergia.com/]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.12513.34</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>41.961998</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Rome</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Telecom Italia (Italy)</td>\n",
+       "      <td>12.461547</td>\n",
+       "      <td>[http://www.telecomitalia.com/tit/en.html]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.14587.3f</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>43.780216</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Florence</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Menarini (Italy)</td>\n",
+       "      <td>11.276119</td>\n",
+       "      <td>[http://www.menarini.com/]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.417562.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>43.471596</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Ancona</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Loccioni (Italy)</td>\n",
+       "      <td>13.074696</td>\n",
+       "      <td>[http://www.loccioni.com/?lang=en]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.423688.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>41.827152</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Rome</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Eni (Italy)</td>\n",
+       "      <td>12.471406</td>\n",
+       "      <td>[http://www.eni.com/en_IT/home.html]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.423791.a</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>41.920510</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Rome</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Finmeccanica (Italy)</td>\n",
+       "      <td>12.469245</td>\n",
+       "      <td>[http://www.finmeccanica.com/en/home]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.423952.b</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>45.612920</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Trieste</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Eurospital (Italy)</td>\n",
+       "      <td>13.819512</td>\n",
+       "      <td>[http://www.eurospital.com/]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.433771.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>44.719740</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Milan</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>UniCredit (Italy)</td>\n",
+       "      <td>8.579898</td>\n",
+       "      <td>[https://www.unicreditgroup.eu/en.html#]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.436156.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>45.467724</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Milan</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Edison (Italy)</td>\n",
+       "      <td>9.178100</td>\n",
+       "      <td>[http://www.edison.it/]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.436460.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>43.621750</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Sansepolcro</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Aboca (Italy)</td>\n",
+       "      <td>12.120622</td>\n",
+       "      <td>[http://www.aboca.com/it]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.467166.4</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       types   latitude state_name    city_name country_name  \\\n",
+       "0  [Company]  44.428673       None        Genoa        Italy   \n",
+       "1  [Company]  41.961998       None         Rome        Italy   \n",
+       "2  [Company]  43.780216       None     Florence        Italy   \n",
+       "3  [Company]  43.471596       None       Ancona        Italy   \n",
+       "4  [Company]  41.827152       None         Rome        Italy   \n",
+       "5  [Company]  41.920510       None         Rome        Italy   \n",
+       "6  [Company]  45.612920       None      Trieste        Italy   \n",
+       "7  [Company]  44.719740       None        Milan        Italy   \n",
+       "8  [Company]  45.467724       None        Milan        Italy   \n",
+       "9  [Company]  43.621750       None  Sansepolcro        Italy   \n",
+       "\n",
+       "                     name  longitude  \\\n",
+       "0         Ansaldo (Italy)   8.886877   \n",
+       "1  Telecom Italia (Italy)  12.461547   \n",
+       "2        Menarini (Italy)  11.276119   \n",
+       "3        Loccioni (Italy)  13.074696   \n",
+       "4             Eni (Italy)  12.471406   \n",
+       "5    Finmeccanica (Italy)  12.469245   \n",
+       "6      Eurospital (Italy)  13.819512   \n",
+       "7       UniCredit (Italy)   8.579898   \n",
+       "8          Edison (Italy)   9.178100   \n",
+       "9           Aboca (Italy)  12.120622   \n",
+       "\n",
+       "                                      linkout acronym             id  \n",
+       "0            [http://www.ansaldoenergia.com/]    None  grid.12513.34  \n",
+       "1  [http://www.telecomitalia.com/tit/en.html]    None  grid.14587.3f  \n",
+       "2                  [http://www.menarini.com/]    None  grid.417562.3  \n",
+       "3          [http://www.loccioni.com/?lang=en]    None  grid.423688.3  \n",
+       "4        [http://www.eni.com/en_IT/home.html]    None  grid.423791.a  \n",
+       "5       [http://www.finmeccanica.com/en/home]    None  grid.423952.b  \n",
+       "6                [http://www.eurospital.com/]    None  grid.433771.5  \n",
+       "7    [https://www.unicreditgroup.eu/en.html#]    None  grid.436156.3  \n",
+       "8                     [http://www.edison.it/]    None  grid.436460.3  \n",
+       "9                   [http://www.aboca.com/it]    None  grid.467166.4  "
+      ]
+     },
+     "execution_count": 44,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsldf search organizations where country_name=\"Italy\" and types=\"Company\" return organizations[basics+acronym] limit 10"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 45,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 10 (total = 854)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>types</th>\n",
+       "      <th>latitude</th>\n",
+       "      <th>state_name</th>\n",
+       "      <th>city_name</th>\n",
+       "      <th>country_name</th>\n",
+       "      <th>name</th>\n",
+       "      <th>longitude</th>\n",
+       "      <th>linkout</th>\n",
+       "      <th>acronym</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>45.478863</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Milan</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Polytechnic University of Milan</td>\n",
+       "      <td>9.228206</td>\n",
+       "      <td>[http://www.polimi.it/en/]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.4643.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>40.847220</td>\n",
+       "      <td>Campania</td>\n",
+       "      <td>Naples</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>University of Naples Federico II</td>\n",
+       "      <td>14.256944</td>\n",
+       "      <td>[http://www.unina.it/index.jsp]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.4691.a</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>46.080833</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Udine</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>University of Udine</td>\n",
+       "      <td>13.211667</td>\n",
+       "      <td>[http://www.uniud.it/en/uniud-international?se...</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.5390.f</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>43.716430</td>\n",
+       "      <td>Toscana</td>\n",
+       "      <td>Pisa</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>University of Pisa</td>\n",
+       "      <td>10.398687</td>\n",
+       "      <td>[http://www.unipi.it/]</td>\n",
+       "      <td>UniPi</td>\n",
+       "      <td>grid.5395.a</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>44.402920</td>\n",
+       "      <td>Liguria</td>\n",
+       "      <td>Genoa</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>University of Genoa</td>\n",
+       "      <td>8.958889</td>\n",
+       "      <td>[http://www.unige.it/]</td>\n",
+       "      <td>UniGe</td>\n",
+       "      <td>grid.5606.5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>45.406387</td>\n",
+       "      <td>Veneto</td>\n",
+       "      <td>Padua</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>University of Padua</td>\n",
+       "      <td>11.877446</td>\n",
+       "      <td>[http://www.unipd.it/en/home-page]</td>\n",
+       "      <td>UNIPD</td>\n",
+       "      <td>grid.5608.b</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>45.436670</td>\n",
+       "      <td>Veneto</td>\n",
+       "      <td>Verona</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>University of Verona</td>\n",
+       "      <td>11.003611</td>\n",
+       "      <td>[http://www.univr.it/jsp/index.jsp]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.5611.3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>44.493890</td>\n",
+       "      <td>Emilia-Romagna</td>\n",
+       "      <td>Bologna</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>University of Bologna</td>\n",
+       "      <td>11.342778</td>\n",
+       "      <td>[http://www.unibo.it/en/homepage]</td>\n",
+       "      <td>UNIBO</td>\n",
+       "      <td>grid.6292.f</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>41.850150</td>\n",
+       "      <td>Lazio</td>\n",
+       "      <td>Rome</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>University of Rome Tor Vergata</td>\n",
+       "      <td>12.597991</td>\n",
+       "      <td>[http://web.uniroma2.it/home.php?newlang=italian]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.6530.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>43.617065</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Ancona</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Marche Polytechnic University</td>\n",
+       "      <td>13.512690</td>\n",
+       "      <td>[http://www.univpm.it/Entra/]</td>\n",
+       "      <td>None</td>\n",
+       "      <td>grid.7010.6</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "         types   latitude      state_name city_name country_name  \\\n",
+       "0  [Education]  45.478863            None     Milan        Italy   \n",
+       "1  [Education]  40.847220        Campania    Naples        Italy   \n",
+       "2  [Education]  46.080833            None     Udine        Italy   \n",
+       "3  [Education]  43.716430         Toscana      Pisa        Italy   \n",
+       "4  [Education]  44.402920         Liguria     Genoa        Italy   \n",
+       "5  [Education]  45.406387          Veneto     Padua        Italy   \n",
+       "6  [Education]  45.436670          Veneto    Verona        Italy   \n",
+       "7  [Education]  44.493890  Emilia-Romagna   Bologna        Italy   \n",
+       "8  [Education]  41.850150           Lazio      Rome        Italy   \n",
+       "9  [Education]  43.617065            None    Ancona        Italy   \n",
+       "\n",
+       "                               name  longitude  \\\n",
+       "0   Polytechnic University of Milan   9.228206   \n",
+       "1  University of Naples Federico II  14.256944   \n",
+       "2               University of Udine  13.211667   \n",
+       "3                University of Pisa  10.398687   \n",
+       "4               University of Genoa   8.958889   \n",
+       "5               University of Padua  11.877446   \n",
+       "6              University of Verona  11.003611   \n",
+       "7             University of Bologna  11.342778   \n",
+       "8    University of Rome Tor Vergata  12.597991   \n",
+       "9     Marche Polytechnic University  13.512690   \n",
+       "\n",
+       "                                             linkout acronym           id  \n",
+       "0                         [http://www.polimi.it/en/]    None  grid.4643.5  \n",
+       "1                    [http://www.unina.it/index.jsp]    None  grid.4691.a  \n",
+       "2  [http://www.uniud.it/en/uniud-international?se...    None  grid.5390.f  \n",
+       "3                             [http://www.unipi.it/]   UniPi  grid.5395.a  \n",
+       "4                             [http://www.unige.it/]   UniGe  grid.5606.5  \n",
+       "5                 [http://www.unipd.it/en/home-page]   UNIPD  grid.5608.b  \n",
+       "6                [http://www.univr.it/jsp/index.jsp]    None  grid.5611.3  \n",
+       "7                  [http://www.unibo.it/en/homepage]   UNIBO  grid.6292.f  \n",
+       "8  [http://web.uniroma2.it/home.php?newlang=italian]    None  grid.6530.0  \n",
+       "9                      [http://www.univpm.it/Entra/]    None  grid.7010.6  "
+      ]
+     },
+     "execution_count": 45,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsldf search organizations where country_name=\"Italy\" and types in [\"Education\", \"Company\"] return organizations[basics+acronym] limit 10"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 1 (total = 1)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>types</th>\n",
+       "      <th>latitude</th>\n",
+       "      <th>state_name</th>\n",
+       "      <th>city_name</th>\n",
+       "      <th>country_name</th>\n",
+       "      <th>name</th>\n",
+       "      <th>longitude</th>\n",
+       "      <th>linkout</th>\n",
+       "      <th>acronym</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[Other]</td>\n",
+       "      <td>26.213648</td>\n",
+       "      <td>Florida</td>\n",
+       "      <td>Naples</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>Naples Anesthesia &amp; Physician Associates</td>\n",
+       "      <td>-81.73307</td>\n",
+       "      <td>[http://painfreenaples.com/]</td>\n",
+       "      <td>NAPA</td>\n",
+       "      <td>grid.477562.5</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     types   latitude state_name city_name   country_name  \\\n",
+       "0  [Other]  26.213648    Florida    Naples  United States   \n",
+       "\n",
+       "                                       name  longitude  \\\n",
+       "0  Naples Anesthesia & Physician Associates  -81.73307   \n",
+       "\n",
+       "                        linkout acronym             id  \n",
+       "0  [http://painfreenaples.com/]    NAPA  grid.477562.5  "
+      ]
+     },
+     "execution_count": 46,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsldf search organizations where id=\"grid.477562.5\" return organizations[basics+acronym]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "searching pubs using the new organization fields **NEAT** \n",
+    "\n",
+    "**NOTE** the following two queries are syntactically valid but won't work due to sub-querying limitations... do we have a workaround? Otherwise we should just tell people not to do that!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 73,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Publications: 20 (total = 9866)\n",
+      "WARNINGS [1]\n",
+      "Query is too long or complex. Please see https://docs.dimensions.ai/dsl/faq.html for more information. [code: 4]\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>year</th>\n",
+       "      <th>volume</th>\n",
+       "      <th>type</th>\n",
+       "      <th>author_affiliations</th>\n",
+       "      <th>pages</th>\n",
+       "      <th>title</th>\n",
+       "      <th>issue</th>\n",
+       "      <th>journal.id</th>\n",
+       "      <th>journal.title</th>\n",
+       "      <th>journal</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>pub.1121864022</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>12</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Takafumi', 'last_name': 'Tan...</td>\n",
+       "      <td>1-1</td>\n",
+       "      <td>Autonomous network diagnosis from the carrier ...</td>\n",
+       "      <td>3</td>\n",
+       "      <td>jour.1138977</td>\n",
+       "      <td>Journal of Optical Communications and Networking</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>pub.1120848982</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>26</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Matteo', 'last_name': 'Buffo...</td>\n",
+       "      <td>1-8</td>\n",
+       "      <td>Investigation of Current-Driven Degradation of...</td>\n",
+       "      <td>2</td>\n",
+       "      <td>jour.1033570</td>\n",
+       "      <td>IEEE Journal of Selected Topics in Quantum Ele...</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>pub.1121564312</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>26</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Lorenzo', 'last_name': 'Colu...</td>\n",
+       "      <td>1-10</td>\n",
+       "      <td>Efficient and Optical Feedback Tolerant Hybrid...</td>\n",
+       "      <td>2</td>\n",
+       "      <td>jour.1033570</td>\n",
+       "      <td>IEEE Journal of Selected Topics in Quantum Ele...</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>pub.1121066317</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>12</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Takafumi', 'last_name': 'Tan...</td>\n",
+       "      <td>a9-a17</td>\n",
+       "      <td>Autonomous network diagnosis from the carrier ...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1138977</td>\n",
+       "      <td>Journal of Optical Communications and Networking</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>pub.1122449006</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>185</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'F.I.', 'last_name': 'Mulder'...</td>\n",
+       "      <td>13-19</td>\n",
+       "      <td>Edoxaban for treatment of venous thromboemboli...</td>\n",
+       "      <td>None</td>\n",
+       "      <td>jour.1015410</td>\n",
+       "      <td>Thrombosis Research</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>pub.1113506834</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>35</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Roberto', 'last_name': 'Rizz...</td>\n",
+       "      <td>430-442</td>\n",
+       "      <td>An Isolated Multilevel Quasi-Resonant Multipha...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1033560</td>\n",
+       "      <td>IEEE Transactions on Power Electronics</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>pub.1121964341</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>330</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Todd J.', 'last_name': 'Levy...</td>\n",
+       "      <td>108467</td>\n",
+       "      <td>An impedance matching algorithm for common-mod...</td>\n",
+       "      <td>None</td>\n",
+       "      <td>jour.1089656</td>\n",
+       "      <td>Journal of Neuroscience Methods</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>pub.1121577855</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>1726</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Giordano', 'last_name': 'de ...</td>\n",
+       "      <td>146502</td>\n",
+       "      <td>Increases in compulsivity, inflammation, and n...</td>\n",
+       "      <td>None</td>\n",
+       "      <td>jour.1117575</td>\n",
+       "      <td>Brain Research</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>pub.1121884391</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>None</td>\n",
+       "      <td>chapter</td>\n",
+       "      <td>[[{'first_name': 'Andrew', 'last_name': 'Livin...</td>\n",
+       "      <td>1-18</td>\n",
+       "      <td>Chapter 1 Challenges and Directions for Green ...</td>\n",
+       "      <td>None</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>pub.1117495008</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>9</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Octavio E.', 'last_name': 'S...</td>\n",
+       "      <td>9220</td>\n",
+       "      <td>How typhoons trigger turbidity currents in sub...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1045337</td>\n",
+       "      <td>Scientific Reports</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>pub.1120973117</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>5</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Andrea', 'last_name': 'Alber...</td>\n",
+       "      <td>41</td>\n",
+       "      <td>The Role of Technology in Adherence to Physica...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1052131</td>\n",
+       "      <td>Sports Medicine - Open</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>pub.1112739118</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>20</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Ulrich', 'last_name': 'Costa...</td>\n",
+       "      <td>55</td>\n",
+       "      <td>Effect of pirfenidone in patients with more ad...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1028525</td>\n",
+       "      <td>Respiratory Research</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>pub.1121484020</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>78</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Gloria', 'last_name': 'Lliso...</td>\n",
+       "      <td>1642</td>\n",
+       "      <td>Synovial tissue signatures enhance clinical cl...</td>\n",
+       "      <td>12</td>\n",
+       "      <td>jour.1017226</td>\n",
+       "      <td>Annals of the Rheumatic Diseases</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>pub.1111369028</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>12</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Domenico', 'last_name': 'Otr...</td>\n",
+       "      <td>25</td>\n",
+       "      <td>Effectiveness of the spot-on combination of mo...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1039458</td>\n",
+       "      <td>Filaria Journal</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>pub.1113355583</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>20</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Michael', 'last_name': 'Kreu...</td>\n",
+       "      <td>71</td>\n",
+       "      <td>Differing severities of acute exacerbations of...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1028525</td>\n",
+       "      <td>Respiratory Research</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>pub.1115227562</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>21</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Ivan', 'last_name': 'Foeldva...</td>\n",
+       "      <td>125</td>\n",
+       "      <td>Etanercept treatment for extended oligoarticul...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1297499</td>\n",
+       "      <td>Arthritis Research &amp; Therapy</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>pub.1116486530</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>10</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Pratiti', 'last_name': 'Band...</td>\n",
+       "      <td>2400</td>\n",
+       "      <td>Neuronal differentiation and cell-cycle progra...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1043282</td>\n",
+       "      <td>Nature Communications</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>pub.1120396653</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>21</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Francesco', 'last_name': 'Gi...</td>\n",
+       "      <td>2712-2717</td>\n",
+       "      <td>Achievement of glycaemic control is associated...</td>\n",
+       "      <td>12</td>\n",
+       "      <td>jour.1020801</td>\n",
+       "      <td>Diabetes Obesity and Metabolism</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>pub.1121477211</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>10</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Luisa', 'last_name': 'Capalb...</td>\n",
+       "      <td>4513</td>\n",
+       "      <td>The midbody interactome reveals unexpected rol...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1043282</td>\n",
+       "      <td>Nature Communications</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>pub.1113179458</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>19</td>\n",
+       "      <td>article</td>\n",
+       "      <td>[[{'first_name': 'Alfonso', 'last_name': 'Fasa...</td>\n",
+       "      <td>50</td>\n",
+       "      <td>Characterizing advanced Parkinson’s disease: O...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>jour.1024950</td>\n",
+       "      <td>BMC Neurology</td>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                id  year volume     type  \\\n",
+       "0   pub.1121864022  2020     12  article   \n",
+       "1   pub.1120848982  2020     26  article   \n",
+       "2   pub.1121564312  2020     26  article   \n",
+       "3   pub.1121066317  2020     12  article   \n",
+       "4   pub.1122449006  2020    185  article   \n",
+       "5   pub.1113506834  2020     35  article   \n",
+       "6   pub.1121964341  2020    330  article   \n",
+       "7   pub.1121577855  2020   1726  article   \n",
+       "8   pub.1121884391  2020   None  chapter   \n",
+       "9   pub.1117495008  2019      9  article   \n",
+       "10  pub.1120973117  2019      5  article   \n",
+       "11  pub.1112739118  2019     20  article   \n",
+       "12  pub.1121484020  2019     78  article   \n",
+       "13  pub.1111369028  2019     12  article   \n",
+       "14  pub.1113355583  2019     20  article   \n",
+       "15  pub.1115227562  2019     21  article   \n",
+       "16  pub.1116486530  2019     10  article   \n",
+       "17  pub.1120396653  2019     21  article   \n",
+       "18  pub.1121477211  2019     10  article   \n",
+       "19  pub.1113179458  2019     19  article   \n",
+       "\n",
+       "                                  author_affiliations      pages  \\\n",
+       "0   [[{'first_name': 'Takafumi', 'last_name': 'Tan...        1-1   \n",
+       "1   [[{'first_name': 'Matteo', 'last_name': 'Buffo...        1-8   \n",
+       "2   [[{'first_name': 'Lorenzo', 'last_name': 'Colu...       1-10   \n",
+       "3   [[{'first_name': 'Takafumi', 'last_name': 'Tan...     a9-a17   \n",
+       "4   [[{'first_name': 'F.I.', 'last_name': 'Mulder'...      13-19   \n",
+       "5   [[{'first_name': 'Roberto', 'last_name': 'Rizz...    430-442   \n",
+       "6   [[{'first_name': 'Todd J.', 'last_name': 'Levy...     108467   \n",
+       "7   [[{'first_name': 'Giordano', 'last_name': 'de ...     146502   \n",
+       "8   [[{'first_name': 'Andrew', 'last_name': 'Livin...       1-18   \n",
+       "9   [[{'first_name': 'Octavio E.', 'last_name': 'S...       9220   \n",
+       "10  [[{'first_name': 'Andrea', 'last_name': 'Alber...         41   \n",
+       "11  [[{'first_name': 'Ulrich', 'last_name': 'Costa...         55   \n",
+       "12  [[{'first_name': 'Gloria', 'last_name': 'Lliso...       1642   \n",
+       "13  [[{'first_name': 'Domenico', 'last_name': 'Otr...         25   \n",
+       "14  [[{'first_name': 'Michael', 'last_name': 'Kreu...         71   \n",
+       "15  [[{'first_name': 'Ivan', 'last_name': 'Foeldva...        125   \n",
+       "16  [[{'first_name': 'Pratiti', 'last_name': 'Band...       2400   \n",
+       "17  [[{'first_name': 'Francesco', 'last_name': 'Gi...  2712-2717   \n",
+       "18  [[{'first_name': 'Luisa', 'last_name': 'Capalb...       4513   \n",
+       "19  [[{'first_name': 'Alfonso', 'last_name': 'Fasa...         50   \n",
+       "\n",
+       "                                                title issue    journal.id  \\\n",
+       "0   Autonomous network diagnosis from the carrier ...     3  jour.1138977   \n",
+       "1   Investigation of Current-Driven Degradation of...     2  jour.1033570   \n",
+       "2   Efficient and Optical Feedback Tolerant Hybrid...     2  jour.1033570   \n",
+       "3   Autonomous network diagnosis from the carrier ...     1  jour.1138977   \n",
+       "4   Edoxaban for treatment of venous thromboemboli...  None  jour.1015410   \n",
+       "5   An Isolated Multilevel Quasi-Resonant Multipha...     1  jour.1033560   \n",
+       "6   An impedance matching algorithm for common-mod...  None  jour.1089656   \n",
+       "7   Increases in compulsivity, inflammation, and n...  None  jour.1117575   \n",
+       "8   Chapter 1 Challenges and Directions for Green ...  None           NaN   \n",
+       "9   How typhoons trigger turbidity currents in sub...     1  jour.1045337   \n",
+       "10  The Role of Technology in Adherence to Physica...     1  jour.1052131   \n",
+       "11  Effect of pirfenidone in patients with more ad...     1  jour.1028525   \n",
+       "12  Synovial tissue signatures enhance clinical cl...    12  jour.1017226   \n",
+       "13  Effectiveness of the spot-on combination of mo...     1  jour.1039458   \n",
+       "14  Differing severities of acute exacerbations of...     1  jour.1028525   \n",
+       "15  Etanercept treatment for extended oligoarticul...     1  jour.1297499   \n",
+       "16  Neuronal differentiation and cell-cycle progra...     1  jour.1043282   \n",
+       "17  Achievement of glycaemic control is associated...    12  jour.1020801   \n",
+       "18  The midbody interactome reveals unexpected rol...     1  jour.1043282   \n",
+       "19  Characterizing advanced Parkinson’s disease: O...     1  jour.1024950   \n",
+       "\n",
+       "                                        journal.title  journal  \n",
+       "0    Journal of Optical Communications and Networking      NaN  \n",
+       "1   IEEE Journal of Selected Topics in Quantum Ele...      NaN  \n",
+       "2   IEEE Journal of Selected Topics in Quantum Ele...      NaN  \n",
+       "3    Journal of Optical Communications and Networking      NaN  \n",
+       "4                                 Thrombosis Research      NaN  \n",
+       "5              IEEE Transactions on Power Electronics      NaN  \n",
+       "6                     Journal of Neuroscience Methods      NaN  \n",
+       "7                                      Brain Research      NaN  \n",
+       "8                                                 NaN      NaN  \n",
+       "9                                  Scientific Reports      NaN  \n",
+       "10                             Sports Medicine - Open      NaN  \n",
+       "11                               Respiratory Research      NaN  \n",
+       "12                   Annals of the Rheumatic Diseases      NaN  \n",
+       "13                                    Filaria Journal      NaN  \n",
+       "14                               Respiratory Research      NaN  \n",
+       "15                       Arthritis Research & Therapy      NaN  \n",
+       "16                              Nature Communications      NaN  \n",
+       "17                    Diabetes Obesity and Metabolism      NaN  \n",
+       "18                              Nature Communications      NaN  \n",
+       "19                                      BMC Neurology      NaN  "
+      ]
+     },
+     "execution_count": 73,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsldf search publications where research_orgs.country_name=\"Italy\" and research_orgs.types=\"Company\" "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 74,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Research_orgs: 20\n",
+      "WARNINGS [1]\n",
+      "Query is too long or complex. Please see https://docs.dimensions.ai/dsl/faq.html for more information. [code: 4]\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>count</th>\n",
+       "      <th>acronym</th>\n",
+       "      <th>city_name</th>\n",
+       "      <th>state_name</th>\n",
+       "      <th>name</th>\n",
+       "      <th>longitude</th>\n",
+       "      <th>types</th>\n",
+       "      <th>country_name</th>\n",
+       "      <th>latitude</th>\n",
+       "      <th>linkout</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>grid.410513.2</td>\n",
+       "      <td>15164</td>\n",
+       "      <td>Pfizer</td>\n",
+       "      <td>New York</td>\n",
+       "      <td>New York</td>\n",
+       "      <td>Pfizer (United States)</td>\n",
+       "      <td>-73.972540</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>40.750362</td>\n",
+       "      <td>[http://www.pfizer.com/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>grid.417993.1</td>\n",
+       "      <td>12410</td>\n",
+       "      <td>MSD</td>\n",
+       "      <td>Kenilworth</td>\n",
+       "      <td>New Jersey</td>\n",
+       "      <td>MSD (United States)</td>\n",
+       "      <td>-74.272575</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>40.678677</td>\n",
+       "      <td>[http://www.merck.com/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>grid.419666.a</td>\n",
+       "      <td>10993</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Seoul</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Samsung (South Korea)</td>\n",
+       "      <td>127.026900</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>South Korea</td>\n",
+       "      <td>37.496610</td>\n",
+       "      <td>[http://www.samsung.com/sec/home/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>grid.418158.1</td>\n",
+       "      <td>10870</td>\n",
+       "      <td>Roche</td>\n",
+       "      <td>Nutley</td>\n",
+       "      <td>New Jersey</td>\n",
+       "      <td>Roche (United States)</td>\n",
+       "      <td>-74.156910</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>40.833480</td>\n",
+       "      <td>[http://www.roche.com/careers/usa.htm]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>grid.419481.1</td>\n",
+       "      <td>9462</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Basel</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Novartis (Switzerland)</td>\n",
+       "      <td>7.579728</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>Switzerland</td>\n",
+       "      <td>47.574320</td>\n",
+       "      <td>[https://www.novartis.com/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>grid.418236.a</td>\n",
+       "      <td>8962</td>\n",
+       "      <td>GSK</td>\n",
+       "      <td>London</td>\n",
+       "      <td>None</td>\n",
+       "      <td>GlaxoSmithKline (United Kingdom)</td>\n",
+       "      <td>-0.316690</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United Kingdom</td>\n",
+       "      <td>51.488200</td>\n",
+       "      <td>[http://uk.gsk.com/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>grid.418424.f</td>\n",
+       "      <td>8950</td>\n",
+       "      <td>NPC</td>\n",
+       "      <td>New York</td>\n",
+       "      <td>New York</td>\n",
+       "      <td>Novartis (United States)</td>\n",
+       "      <td>-74.502250</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>40.844296</td>\n",
+       "      <td>[http://www.pharma.us.novartis.com/index.jsp]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>grid.417540.3</td>\n",
+       "      <td>8837</td>\n",
+       "      <td>Eli Lilly &amp; Company</td>\n",
+       "      <td>Indianapolis</td>\n",
+       "      <td>Indiana</td>\n",
+       "      <td>Eli Lilly (United States)</td>\n",
+       "      <td>-86.153070</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>39.756270</td>\n",
+       "      <td>[http://www.lilly.com/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>grid.419815.0</td>\n",
+       "      <td>7843</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Redmond</td>\n",
+       "      <td>Washington</td>\n",
+       "      <td>Microsoft (United States)</td>\n",
+       "      <td>-122.128334</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>47.639720</td>\n",
+       "      <td>[https://www.microsoft.com/en-us]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>grid.5406.7</td>\n",
+       "      <td>7321</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Munich</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Siemens (Germany)</td>\n",
+       "      <td>11.524718</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>Germany</td>\n",
+       "      <td>48.134320</td>\n",
+       "      <td>[http://www.siemens.com/entry/cc/en/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>grid.418019.5</td>\n",
+       "      <td>7069</td>\n",
+       "      <td>GSK</td>\n",
+       "      <td>Philadelphia</td>\n",
+       "      <td>Pennsylvania</td>\n",
+       "      <td>GlaxoSmithKline (United States)</td>\n",
+       "      <td>-75.169690</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>40.487778</td>\n",
+       "      <td>[http://us.gsk.com/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>grid.417547.4</td>\n",
+       "      <td>6622</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Tokyo</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Hitachi (Japan)</td>\n",
+       "      <td>139.766080</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>Japan</td>\n",
+       "      <td>35.682976</td>\n",
+       "      <td>[http://www.hitachi.com/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>grid.420044.6</td>\n",
+       "      <td>6392</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Leverkusen</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Bayer (Germany)</td>\n",
+       "      <td>6.983162</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>Germany</td>\n",
+       "      <td>51.013424</td>\n",
+       "      <td>[http://www.gesundheit.bayer.de/de/index.php]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>grid.419318.6</td>\n",
+       "      <td>6275</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Santa Clara</td>\n",
+       "      <td>California</td>\n",
+       "      <td>Intel (United States)</td>\n",
+       "      <td>-121.963806</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>37.387604</td>\n",
+       "      <td>[http://www.intel.com/content/www/us/en/homepa...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>grid.417886.4</td>\n",
+       "      <td>6236</td>\n",
+       "      <td>Amgen, Inc.</td>\n",
+       "      <td>Thousand Oaks</td>\n",
+       "      <td>California</td>\n",
+       "      <td>Amgen (United States)</td>\n",
+       "      <td>-118.838420</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>34.173620</td>\n",
+       "      <td>[http://www.amgen.com/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>grid.419819.c</td>\n",
+       "      <td>6052</td>\n",
+       "      <td>NTT</td>\n",
+       "      <td>Tokyo</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Nippon Telegraph and Telephone (Japan)</td>\n",
+       "      <td>139.753450</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>Japan</td>\n",
+       "      <td>35.689526</td>\n",
+       "      <td>[http://www.ntt.co.jp/index_e.html]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>grid.419971.3</td>\n",
+       "      <td>5762</td>\n",
+       "      <td>BMS</td>\n",
+       "      <td>New York</td>\n",
+       "      <td>New York</td>\n",
+       "      <td>Bristol-Myers Squibb (United States)</td>\n",
+       "      <td>-73.972870</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>40.758110</td>\n",
+       "      <td>[http://www.bms.com/pages/default.aspx]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>grid.417284.c</td>\n",
+       "      <td>5681</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Amsterdam</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Philips (Netherlands)</td>\n",
+       "      <td>4.916566</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>Netherlands</td>\n",
+       "      <td>52.344418</td>\n",
+       "      <td>[http://www.philips.nl/?locale_org=global]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>grid.168010.e</td>\n",
+       "      <td>5618</td>\n",
+       "      <td>SU</td>\n",
+       "      <td>Stanford</td>\n",
+       "      <td>California</td>\n",
+       "      <td>Stanford University</td>\n",
+       "      <td>-122.170000</td>\n",
+       "      <td>[Education]</td>\n",
+       "      <td>United States</td>\n",
+       "      <td>37.430000</td>\n",
+       "      <td>[http://www.stanford.edu/]</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>grid.417815.e</td>\n",
+       "      <td>5442</td>\n",
+       "      <td>None</td>\n",
+       "      <td>Cambridge</td>\n",
+       "      <td>None</td>\n",
+       "      <td>AstraZeneca (United Kingdom)</td>\n",
+       "      <td>-0.181646</td>\n",
+       "      <td>[Company]</td>\n",
+       "      <td>United Kingdom</td>\n",
+       "      <td>51.519590</td>\n",
+       "      <td>[http://www.astrazeneca.co.uk/home]</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "               id  count              acronym      city_name    state_name  \\\n",
+       "0   grid.410513.2  15164               Pfizer       New York      New York   \n",
+       "1   grid.417993.1  12410                  MSD     Kenilworth    New Jersey   \n",
+       "2   grid.419666.a  10993                 None          Seoul          None   \n",
+       "3   grid.418158.1  10870                Roche         Nutley    New Jersey   \n",
+       "4   grid.419481.1   9462                 None          Basel          None   \n",
+       "5   grid.418236.a   8962                  GSK         London          None   \n",
+       "6   grid.418424.f   8950                  NPC       New York      New York   \n",
+       "7   grid.417540.3   8837  Eli Lilly & Company   Indianapolis       Indiana   \n",
+       "8   grid.419815.0   7843                 None        Redmond    Washington   \n",
+       "9     grid.5406.7   7321                 None         Munich          None   \n",
+       "10  grid.418019.5   7069                  GSK   Philadelphia  Pennsylvania   \n",
+       "11  grid.417547.4   6622                 None          Tokyo          None   \n",
+       "12  grid.420044.6   6392                 None     Leverkusen          None   \n",
+       "13  grid.419318.6   6275                 None    Santa Clara    California   \n",
+       "14  grid.417886.4   6236          Amgen, Inc.  Thousand Oaks    California   \n",
+       "15  grid.419819.c   6052                  NTT          Tokyo          None   \n",
+       "16  grid.419971.3   5762                  BMS       New York      New York   \n",
+       "17  grid.417284.c   5681                 None      Amsterdam          None   \n",
+       "18  grid.168010.e   5618                   SU       Stanford    California   \n",
+       "19  grid.417815.e   5442                 None      Cambridge          None   \n",
+       "\n",
+       "                                      name   longitude        types  \\\n",
+       "0                   Pfizer (United States)  -73.972540    [Company]   \n",
+       "1                      MSD (United States)  -74.272575    [Company]   \n",
+       "2                    Samsung (South Korea)  127.026900    [Company]   \n",
+       "3                    Roche (United States)  -74.156910    [Company]   \n",
+       "4                   Novartis (Switzerland)    7.579728    [Company]   \n",
+       "5         GlaxoSmithKline (United Kingdom)   -0.316690    [Company]   \n",
+       "6                 Novartis (United States)  -74.502250    [Company]   \n",
+       "7                Eli Lilly (United States)  -86.153070    [Company]   \n",
+       "8                Microsoft (United States) -122.128334    [Company]   \n",
+       "9                        Siemens (Germany)   11.524718    [Company]   \n",
+       "10         GlaxoSmithKline (United States)  -75.169690    [Company]   \n",
+       "11                         Hitachi (Japan)  139.766080    [Company]   \n",
+       "12                         Bayer (Germany)    6.983162    [Company]   \n",
+       "13                   Intel (United States) -121.963806    [Company]   \n",
+       "14                   Amgen (United States) -118.838420    [Company]   \n",
+       "15  Nippon Telegraph and Telephone (Japan)  139.753450    [Company]   \n",
+       "16    Bristol-Myers Squibb (United States)  -73.972870    [Company]   \n",
+       "17                   Philips (Netherlands)    4.916566    [Company]   \n",
+       "18                     Stanford University -122.170000  [Education]   \n",
+       "19            AstraZeneca (United Kingdom)   -0.181646    [Company]   \n",
+       "\n",
+       "      country_name   latitude  \\\n",
+       "0    United States  40.750362   \n",
+       "1    United States  40.678677   \n",
+       "2      South Korea  37.496610   \n",
+       "3    United States  40.833480   \n",
+       "4      Switzerland  47.574320   \n",
+       "5   United Kingdom  51.488200   \n",
+       "6    United States  40.844296   \n",
+       "7    United States  39.756270   \n",
+       "8    United States  47.639720   \n",
+       "9          Germany  48.134320   \n",
+       "10   United States  40.487778   \n",
+       "11           Japan  35.682976   \n",
+       "12         Germany  51.013424   \n",
+       "13   United States  37.387604   \n",
+       "14   United States  34.173620   \n",
+       "15           Japan  35.689526   \n",
+       "16   United States  40.758110   \n",
+       "17     Netherlands  52.344418   \n",
+       "18   United States  37.430000   \n",
+       "19  United Kingdom  51.519590   \n",
+       "\n",
+       "                                              linkout  \n",
+       "0                            [http://www.pfizer.com/]  \n",
+       "1                             [http://www.merck.com/]  \n",
+       "2                  [http://www.samsung.com/sec/home/]  \n",
+       "3              [http://www.roche.com/careers/usa.htm]  \n",
+       "4                         [https://www.novartis.com/]  \n",
+       "5                                [http://uk.gsk.com/]  \n",
+       "6       [http://www.pharma.us.novartis.com/index.jsp]  \n",
+       "7                             [http://www.lilly.com/]  \n",
+       "8                   [https://www.microsoft.com/en-us]  \n",
+       "9               [http://www.siemens.com/entry/cc/en/]  \n",
+       "10                               [http://us.gsk.com/]  \n",
+       "11                          [http://www.hitachi.com/]  \n",
+       "12      [http://www.gesundheit.bayer.de/de/index.php]  \n",
+       "13  [http://www.intel.com/content/www/us/en/homepa...  \n",
+       "14                            [http://www.amgen.com/]  \n",
+       "15                [http://www.ntt.co.jp/index_e.html]  \n",
+       "16            [http://www.bms.com/pages/default.aspx]  \n",
+       "17         [http://www.philips.nl/?locale_org=global]  \n",
+       "18                         [http://www.stanford.edu/]  \n",
+       "19                [http://www.astrazeneca.co.uk/home]  "
+      ]
+     },
+     "execution_count": 74,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsldf search publications where count(research_orgs) > 1 and research_orgs.types=\"Company\" return research_orgs"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "## DSL-288 GRID API phase 3 all fields \n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-288"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 1 (total = 1)\n"
+     ]
+    },
+    {
+     "data": {
+      "application/json": {
+       "_stats": {
+        "total_count": 1
+       },
+       "organizations": [
+        {
+         "acronym": null,
+         "city_name": "Kingston",
+         "country_name": "Canada",
+         "id": "grid.410356.5",
+         "latitude": 44.225502,
+         "linkout": [
+          "http://www.queensu.ca/"
+         ],
+         "longitude": -76.49516,
+         "name": "Queen's University",
+         "state_name": "Ontario",
+         "types": [
+          "Education"
+         ]
+        }
+       ]
+      },
+      "text/plain": [
+       "<dimcli.Result object #4779448016. Records: 1/1>"
+      ]
+     },
+     "execution_count": 77,
+     "metadata": {
+      "application/json": {
+       "expanded": false,
+       "root": "root"
+      }
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsl search organizations where id=\"grid.410356.5\" return organizations[basics]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "#### Getting fields dynamically"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 78,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>sources</th>\n",
+       "      <th>field</th>\n",
+       "      <th>type</th>\n",
+       "      <th>description</th>\n",
+       "      <th>is_filter</th>\n",
+       "      <th>is_entity</th>\n",
+       "      <th>is_facet</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>acronym</td>\n",
+       "      <td>string</td>\n",
+       "      <td>GRID acronym of the organization. E.g., \"UT\" f...</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>city_name</td>\n",
+       "      <td>string</td>\n",
+       "      <td>GRID name of the organization country. E.g., \"...</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>True</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>cnrs_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>CNRS IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>country_name</td>\n",
+       "      <td>string</td>\n",
+       "      <td>GRID name of the organization country. E.g., \"...</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>True</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>established</td>\n",
+       "      <td>integer</td>\n",
+       "      <td>Year when the organization was estabilished</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>external_ids_fundref</td>\n",
+       "      <td>string</td>\n",
+       "      <td>Fundref IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>hesa_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>HESA IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>id</td>\n",
+       "      <td>string</td>\n",
+       "      <td>GRID ID of the organization. E.g., \"grid.26999...</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>ificlaims_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>IFI Claims IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>isni_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>ISNI IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>latitude</td>\n",
+       "      <td>float</td>\n",
+       "      <td>None</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>linkout</td>\n",
+       "      <td>string</td>\n",
+       "      <td>None</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>longitude</td>\n",
+       "      <td>float</td>\n",
+       "      <td>None</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>name</td>\n",
+       "      <td>string</td>\n",
+       "      <td>GRID name of the organization. E.g., \"Universi...</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>organization_child_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>Child organization IDs</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>organization_parent_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>Parent organization IDs</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>organization_related_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>Related organization IDs</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>orgref_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>OrgRef IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>state_name</td>\n",
+       "      <td>string</td>\n",
+       "      <td>GRID name of the organization country. E.g., \"...</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>True</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>types</td>\n",
+       "      <td>string</td>\n",
+       "      <td>Type of an organization. Available types inclu...</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>True</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>20</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>ucas_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>UCAS IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>21</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>ukprn_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>UKPRN IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>22</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>wikidata_ids</td>\n",
+       "      <td>string</td>\n",
+       "      <td>WikiData IDs for this organization</td>\n",
+       "      <td>True</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>23</th>\n",
+       "      <td>organizations</td>\n",
+       "      <td>wikipedia_url</td>\n",
+       "      <td>string</td>\n",
+       "      <td>Wikipedia URL</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "      <td>False</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "          sources                     field     type  \\\n",
+       "0   organizations                   acronym   string   \n",
+       "1   organizations                 city_name   string   \n",
+       "2   organizations                  cnrs_ids   string   \n",
+       "3   organizations              country_name   string   \n",
+       "4   organizations               established  integer   \n",
+       "5   organizations      external_ids_fundref   string   \n",
+       "6   organizations                  hesa_ids   string   \n",
+       "7   organizations                        id   string   \n",
+       "8   organizations             ificlaims_ids   string   \n",
+       "9   organizations                  isni_ids   string   \n",
+       "10  organizations                  latitude    float   \n",
+       "11  organizations                   linkout   string   \n",
+       "12  organizations                 longitude    float   \n",
+       "13  organizations                      name   string   \n",
+       "14  organizations    organization_child_ids   string   \n",
+       "15  organizations   organization_parent_ids   string   \n",
+       "16  organizations  organization_related_ids   string   \n",
+       "17  organizations                orgref_ids   string   \n",
+       "18  organizations                state_name   string   \n",
+       "19  organizations                     types   string   \n",
+       "20  organizations                  ucas_ids   string   \n",
+       "21  organizations                 ukprn_ids   string   \n",
+       "22  organizations              wikidata_ids   string   \n",
+       "23  organizations             wikipedia_url   string   \n",
+       "\n",
+       "                                          description  is_filter  is_entity  \\\n",
+       "0   GRID acronym of the organization. E.g., \"UT\" f...       True      False   \n",
+       "1   GRID name of the organization country. E.g., \"...       True      False   \n",
+       "2                      CNRS IDs for this organization       True      False   \n",
+       "3   GRID name of the organization country. E.g., \"...       True      False   \n",
+       "4         Year when the organization was estabilished       True      False   \n",
+       "5                   Fundref IDs for this organization       True      False   \n",
+       "6                      HESA IDs for this organization       True      False   \n",
+       "7   GRID ID of the organization. E.g., \"grid.26999...       True      False   \n",
+       "8                IFI Claims IDs for this organization       True      False   \n",
+       "9                      ISNI IDs for this organization       True      False   \n",
+       "10                                               None      False      False   \n",
+       "11                                               None      False      False   \n",
+       "12                                               None      False      False   \n",
+       "13  GRID name of the organization. E.g., \"Universi...       True      False   \n",
+       "14                             Child organization IDs       True      False   \n",
+       "15                            Parent organization IDs       True      False   \n",
+       "16                           Related organization IDs       True      False   \n",
+       "17                   OrgRef IDs for this organization       True      False   \n",
+       "18  GRID name of the organization country. E.g., \"...       True      False   \n",
+       "19  Type of an organization. Available types inclu...       True      False   \n",
+       "20                     UCAS IDs for this organization       True      False   \n",
+       "21                    UKPRN IDs for this organization       True      False   \n",
+       "22                 WikiData IDs for this organization       True      False   \n",
+       "23                                      Wikipedia URL      False      False   \n",
+       "\n",
+       "    is_facet  \n",
+       "0      False  \n",
+       "1       True  \n",
+       "2      False  \n",
+       "3       True  \n",
+       "4      False  \n",
+       "5      False  \n",
+       "6      False  \n",
+       "7      False  \n",
+       "8      False  \n",
+       "9      False  \n",
+       "10     False  \n",
+       "11     False  \n",
+       "12     False  \n",
+       "13     False  \n",
+       "14     False  \n",
+       "15     False  \n",
+       "16     False  \n",
+       "17     False  \n",
+       "18      True  \n",
+       "19      True  \n",
+       "20     False  \n",
+       "21     False  \n",
+       "22     False  \n",
+       "23     False  "
+      ]
+     },
+     "execution_count": 78,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "res = dsl.query(\"describe schema\")\n",
+    "\n",
+    "df = pd.DataFrame()\n",
+    "\n",
+    "docs_for = ['organizations']\n",
+    "header = \"sources\"\n",
+    "\n",
+    "d = {\"sources\": [], 'field': [], 'type': [], 'description':[], 'is_filter':[], 'is_entity': [],  'is_facet':[],}\n",
+    "for S in docs_for:\n",
+    "    for x in sorted(res.json[header][S]['fields']):\n",
+    "        d[header] += [S]\n",
+    "        d['field'] += [x]\n",
+    "        d['type'] += [res.json[header][S]['fields'][x]['type']]\n",
+    "        d['description'] += [res.json[header][S]['fields'][x]['description']]\n",
+    "        d['is_filter'] += [res.json[header][S]['fields'][x]['is_filter']]\n",
+    "        d['is_facet'] += [res.json[header][S]['fields'][x].get('is_facet', False)]\n",
+    "        d['is_entity'] += [res.json[header][S]['fields'][x].get('is_entity', False)]\n",
+    "\n",
+    "fields = df.from_dict(d)\n",
+    "fields "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "Documentation seems good \n",
+    "(note: the DF needs to be built manually cause dimcli doesn't have `organizations` as a valid source yet..) \n",
+    "\n",
+    "COMMENTS\n",
+    "\n",
+    "* all 'related' IDs could be called `organization_patent_ids`, `organization_child_ids`, `organization_related_ids`\n",
+    "* We can drop the field `other_organization_ids` for now as it's confusing \n",
+    "    * TODO Eg check if 'related' is the same as in https://grid.ac/institutes/grid.410356.5 \n",
+    "* `external` ids: name a bit ugly and also not aligned with other external IDs we have already (eg `pmid`, `pmcid`, `altmetric_id`, `orcid_id`). Is there a chance to rationalize things here?   \n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "#### Automated query builder \n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 59,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 20 (total = 97308)\n"
+     ]
+    },
+    {
+     "data": {
+      "application/json": {
+       "_stats": {
+        "total_count": 97308
+       },
+       "organizations": [
+        {
+         "acronym": "HRSA",
+         "city_name": "Rockville",
+         "country_name": "United States",
+         "id": "grid.454842.b",
+         "latitude": 39.06225,
+         "linkout": [
+          "http://www.hrsa.gov/"
+         ],
+         "longitude": -77.11287,
+         "name": "Health Resources and Services Administration",
+         "state_name": "Maryland",
+         "types": [
+          "Government"
+         ]
+        },
+        {
+         "acronym": "SAMHSA",
+         "city_name": "Rockville",
+         "country_name": "United States",
+         "id": "grid.413730.2",
+         "latitude": 39.113747,
+         "linkout": [
+          "http://www.samhsa.gov/"
+         ],
+         "longitude": -77.21506,
+         "name": "Substance Abuse and Mental Health Services Administration",
+         "state_name": "Maryland",
+         "types": [
+          "Government"
+         ]
+        },
+        {
+         "acronym": "FDA ",
+         "city_name": "Silver Spring",
+         "country_name": "United States",
+         "id": "grid.417587.8",
+         "latitude": 39.03528,
+         "linkout": [
+          "http://www.fda.gov/"
+         ],
+         "longitude": -76.983055,
+         "name": "United States Food and Drug Administration",
+         "state_name": "Maryland",
+         "types": [
+          "Government"
+         ]
+        },
+        {
+         "acronym": "VA ",
+         "city_name": "Washington D.C.",
+         "country_name": "United States",
+         "id": "grid.418356.d",
+         "latitude": 38.9009,
+         "linkout": [
+          "http://www.va.gov/"
+         ],
+         "longitude": -77.03482,
+         "name": "United States Department of Veterans Affairs",
+         "state_name": "District of Columbia",
+         "types": [
+          "Government"
+         ]
+        },
+        {
+         "acronym": "AHRQ",
+         "city_name": "Rockville",
+         "country_name": "United States",
+         "id": "grid.413404.6",
+         "latitude": 39.05062,
+         "linkout": [
+          "http://www.ahrq.gov/"
+         ],
+         "longitude": -77.12736,
+         "name": "Agency for Healthcare Research and Quality",
+         "state_name": "Maryland",
+         "types": [
+          "Other"
+         ]
+        },
+        {
+         "acronym": "CDC",
+         "city_name": "Atlanta",
+         "country_name": "United States",
+         "id": "grid.416738.f",
+         "latitude": 33.798817,
+         "linkout": [
+          "http://www.cdc.gov/"
+         ],
+         "longitude": -84.3256,
+         "name": "Centers for Disease Control and Prevention",
+         "state_name": "Georgia",
+         "types": [
+          "Government"
+         ]
+        },
+        {
+         "acronym": "NIMHD",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.281076.a",
+         "latitude": 39.023106,
+         "linkout": [
+          "http://nimhd.nih.gov/"
+         ],
+         "longitude": -77.137665,
+         "name": "National Institute On Minority Health and Health Disparities",
+         "state_name": "Maryland",
+         "types": [
+          "Government"
+         ]
+        },
+        {
+         "acronym": "FIC",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.453035.4",
+         "latitude": 39.004406,
+         "linkout": [
+          "http://www.fic.nih.gov/Pages/Default.aspx"
+         ],
+         "longitude": -77.099655,
+         "name": "Fogarty International Center",
+         "state_name": "Maryland",
+         "types": [
+          "Healthcare"
+         ]
+        },
+        {
+         "acronym": "NICHD",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.420089.7",
+         "latitude": 39.001095,
+         "linkout": [
+          "http://www.nichd.nih.gov/Pages/index.aspx"
+         ],
+         "longitude": -77.10042,
+         "name": "National Institute of Child Health and Human Development",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NCI",
+         "city_name": "Rockville",
+         "country_name": "United States",
+         "id": "grid.48336.3a",
+         "latitude": 39.004326,
+         "linkout": [
+          "http://www.cancer.gov/"
+         ],
+         "longitude": -77.10119,
+         "name": "National Cancer Institute",
+         "state_name": "Maryland",
+         "types": [
+          "Government"
+         ]
+        },
+        {
+         "acronym": "NCATS",
+         "city_name": "Rockville",
+         "country_name": "United States",
+         "id": "grid.429651.d",
+         "latitude": 39.09584,
+         "linkout": [
+          "https://ncats.nih.gov/"
+         ],
+         "longitude": -77.197174,
+         "name": "National Center for Advancing Translational Sciences",
+         "state_name": "Maryland",
+         "types": [
+          "Government"
+         ]
+        },
+        {
+         "acronym": "NCCIH",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.280655.c",
+         "latitude": 39.003437,
+         "linkout": [
+          "https://nccih.nih.gov/"
+         ],
+         "longitude": -77.097435,
+         "name": "National Center for Complementary and Integrative Health",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NEI",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.280030.9",
+         "latitude": 39.00388,
+         "linkout": [
+          "https://nei.nih.gov/"
+         ],
+         "longitude": -77.10013,
+         "name": "National Eye Institute",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NHLBI",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.279885.9",
+         "latitude": 39.00428,
+         "linkout": [
+          "http://www.nhlbi.nih.gov/"
+         ],
+         "longitude": -77.100945,
+         "name": "National Heart Lung and Blood Institute",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NHGRI",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.280128.1",
+         "latitude": 38.996967,
+         "linkout": [
+          "https://www.genome.gov/"
+         ],
+         "longitude": -77.09693,
+         "name": "National Human Genome Research Institute",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NIAID",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.419681.3",
+         "latitude": 39.066647,
+         "linkout": [
+          "http://www.niaid.nih.gov/Pages/default.aspx"
+         ],
+         "longitude": -77.11183,
+         "name": "National Institute of Allergy and Infectious Diseases",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NIAMS",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.420086.8",
+         "latitude": 39.010887,
+         "linkout": [
+          "http://www.niams.nih.gov/"
+         ],
+         "longitude": -77.09764,
+         "name": "National Institute of Arthritis and Musculoskeletal and Skin Diseases",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NIBIB",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.280347.a",
+         "latitude": 39.001556,
+         "linkout": [
+          "http://www.nibib.nih.gov/"
+         ],
+         "longitude": -77.10059,
+         "name": "National Institute of Biomedical Imaging and Bioengineering",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NIDCR",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.419633.a",
+         "latitude": 38.984863,
+         "linkout": [
+          "http://www.nidcr.nih.gov/"
+         ],
+         "longitude": -77.09506,
+         "name": "National Institute of Dental and Craniofacial Research",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        },
+        {
+         "acronym": "NIDDK",
+         "city_name": "Bethesda",
+         "country_name": "United States",
+         "id": "grid.419635.c",
+         "latitude": 39.003628,
+         "linkout": [
+          "http://www.niddk.nih.gov/"
+         ],
+         "longitude": -77.10107,
+         "name": "National Institute of Diabetes and Digestive and Kidney Diseases",
+         "state_name": "Maryland",
+         "types": [
+          "Facility"
+         ]
+        }
+       ]
+      },
+      "text/plain": [
+       "<dimcli.Result object #4779353552. Records: 20/97308>"
+      ]
+     },
+     "execution_count": 59,
+     "metadata": {
+      "application/json": {
+       "expanded": false,
+       "root": "root"
+      }
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsl search organizations where wikipedia_url is not empty return organizations"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 79,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "===\n",
+      " acronym \n",
+      "===\n",
+      ">>> search organizations where acronym is not empty return organizations[basics+acronym]\n",
+      "Returned Organizations: 20 (total = 33117)\n",
+      "\n",
+      "===\n",
+      " city_name \n",
+      "===\n",
+      ">>> search organizations where city_name is not empty return organizations[basics+city_name]\n",
+      "Returned Organizations: 20 (total = 97240)\n",
+      "\n",
+      ">>> search organizations where city_name is not empty return city_name\n",
+      "Returned City_name: 20\n",
+      "\n",
+      "===\n",
+      " cnrs_ids \n",
+      "===\n",
+      ">>> search organizations where cnrs_ids is not empty return organizations[basics+cnrs_ids]\n",
+      "Returned Organizations: 20 (total = 937)\n",
+      "\n",
+      "===\n",
+      " country_name \n",
+      "===\n",
+      ">>> search organizations where country_name is not empty return organizations[basics+country_name]\n",
+      "Returned Organizations: 20 (total = 97306)\n",
+      "\n",
+      ">>> search organizations where country_name is not empty return country_name\n",
+      "Returned Country_name: 20\n",
+      "\n",
+      "===\n",
+      " established \n",
+      "===\n",
+      ">>> search organizations where established is not empty return organizations[basics+established]\n",
+      "Returned Organizations: 20 (total = 97308)\n",
+      "\n",
+      "===\n",
+      " external_ids_fundref \n",
+      "===\n",
+      ">>> search organizations where external_ids_fundref is not empty return organizations[basics+external_ids_fundref]\n",
+      "Returned Organizations: 20 (total = 10194)\n",
+      "\n",
+      "===\n",
+      " hesa_ids \n",
+      "===\n",
+      ">>> search organizations where hesa_ids is not empty return organizations[basics+hesa_ids]\n",
+      "Returned Organizations: 20 (total = 273)\n",
+      "\n",
+      "===\n",
+      " id \n",
+      "===\n",
+      ">>> search organizations where id is not empty return organizations[basics+id]\n",
+      "Returned Organizations: 20 (total = 97308)\n",
+      "\n",
+      "===\n",
+      " ificlaims_ids \n",
+      "===\n",
+      ">>> search organizations where ificlaims_ids is not empty return organizations[basics+ificlaims_ids]\n",
+      "Returned Organizations: 20 (total = 4859)\n",
+      "\n",
+      "===\n",
+      " isni_ids \n",
+      "===\n",
+      ">>> search organizations where isni_ids is not empty return organizations[basics+isni_ids]\n",
+      "Returned Organizations: 20 (total = 38286)\n",
+      "\n",
+      "===\n",
+      " latitude \n",
+      "===\n",
+      ">>> search organizations where latitude is not empty return organizations[basics+latitude]\n",
+      "Returned Organizations: 20 (total = 80667)\n",
+      "\n",
+      "===\n",
+      " linkout \n",
+      "===\n",
+      ">>> search organizations where linkout is not empty return organizations[basics+linkout]\n",
+      "Returned Organizations: 20 (total = 80289)\n",
+      "\n",
+      "===\n",
+      " longitude \n",
+      "===\n",
+      ">>> search organizations where longitude is not empty return organizations[basics+longitude]\n",
+      "Returned Organizations: 20 (total = 80667)\n",
+      "\n",
+      "===\n",
+      " name \n",
+      "===\n",
+      ">>> search organizations where name is not empty return organizations[basics+name]\n",
+      "Returned Organizations: 20 (total = 97308)\n",
+      "\n",
+      "===\n",
+      " organization_child_ids \n",
+      "===\n",
+      ">>> search organizations where organization_child_ids is not empty return organizations[basics+organization_child_ids]\n",
+      "Returned Organizations: 20 (total = 2690)\n",
+      "\n",
+      "===\n",
+      " organization_parent_ids \n",
+      "===\n",
+      ">>> search organizations where organization_parent_ids is not empty return organizations[basics+organization_parent_ids]\n",
+      "Returned Organizations: 20 (total = 10167)\n",
+      "\n",
+      "===\n",
+      " organization_related_ids \n",
+      "===\n",
+      ">>> search organizations where organization_related_ids is not empty return organizations[basics+organization_related_ids]\n",
+      "Returned Organizations: 20 (total = 4070)\n",
+      "\n",
+      "===\n",
+      " orgref_ids \n",
+      "===\n",
+      ">>> search organizations where orgref_ids is not empty return organizations[basics+orgref_ids]\n",
+      "Returned Organizations: 20 (total = 15047)\n",
+      "\n",
+      "===\n",
+      " state_name \n",
+      "===\n",
+      ">>> search organizations where state_name is not empty return organizations[basics+state_name]\n",
+      "Returned Organizations: 20 (total = 36350)\n",
+      "\n",
+      ">>> search organizations where state_name is not empty return state_name\n",
+      "Returned State_name: 20\n",
+      "\n",
+      "===\n",
+      " types \n",
+      "===\n",
+      ">>> search organizations where types is not empty return organizations[basics+types]\n",
+      "Returned Organizations: 20 (total = 94241)\n",
+      "\n",
+      ">>> search organizations where types is not empty return types\n",
+      "Returned Types: 13\n",
+      "\n",
+      "===\n",
+      " ucas_ids \n",
+      "===\n",
+      ">>> search organizations where ucas_ids is not empty return organizations[basics+ucas_ids]\n",
+      "Returned Organizations: 20 (total = 258)\n",
+      "\n",
+      "===\n",
+      " ukprn_ids \n",
+      "===\n",
+      ">>> search organizations where ukprn_ids is not empty return organizations[basics+ukprn_ids]\n",
+      "Returned Organizations: 20 (total = 275)\n",
+      "\n",
+      "===\n",
+      " wikidata_ids \n",
+      "===\n",
+      ">>> search organizations where wikidata_ids is not empty return organizations[basics+wikidata_ids]\n",
+      "Returned Organizations: 20 (total = 27168)\n",
+      "\n",
+      "===\n",
+      " wikipedia_url \n",
+      "===\n",
+      ">>> search organizations where wikipedia_url is not empty return organizations[basics+wikipedia_url]\n",
+      "Returned Organizations: 20 (total = 97308)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# one with `is not empty` for filters or attributes \n",
+    "q1 = \"\"\"search organizations where {} is not empty return organizations[basics+{}]\"\"\"\n",
+    "# one with facet \n",
+    "q2 = \"\"\"search organizations where {} is not empty return {}\"\"\"\n",
+    "\n",
+    "\n",
+    "for index, row in fields.iterrows():\n",
+    "    print(\"\\n===\\n\", row['field'], \"\\n===\")\n",
+    "    q = q1.format(row['field'], row['field'])\n",
+    "    print(\">>> \" + q)\n",
+    "    dsl.query(q)\n",
+    "    if row['is_facet']: \n",
+    "        q = q2.format(row['field'], row['field'])\n",
+    "        print(\"\\n>>> \" + q)\n",
+    "        dsl.query(q)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "#### Data Checks \n",
+    "\n",
+    "eg against web version of https://grid.ac/institutes/grid.410356.5"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 80,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Organizations: 1 (total = 1)\n"
+     ]
+    },
+    {
+     "data": {
+      "application/json": {
+       "_stats": {
+        "total_count": 1
+       },
+       "organizations": [
+        {
+         "acronym": null,
+         "city_name": "Kingston",
+         "cnrs_ids": null,
+         "country_name": "Canada",
+         "established": 1841,
+         "external_ids_fundref": [
+          "501100003321",
+          "501100003322",
+          "501100006127"
+         ],
+         "hesa_ids": null,
+         "id": "grid.410356.5",
+         "ificlaims_ids": [
+          "069064"
+         ],
+         "isni_ids": [
+          "0000 0004 1936 8331"
+         ],
+         "latitude": 44.225502,
+         "linkout": [
+          "http://www.queensu.ca/"
+         ],
+         "longitude": -76.49516,
+         "name": "Queen's University",
+         "organization_child_ids": null,
+         "organization_parent_ids": null,
+         "organization_related_ids": [
+          "grid.413560.5",
+          "grid.413632.1",
+          "grid.415354.2",
+          "grid.449116.f"
+         ],
+         "orgref_ids": [
+          "7955551"
+         ],
+         "state_name": "Ontario",
+         "types": [
+          "Education"
+         ],
+         "ucas_ids": null,
+         "ukprn_ids": null,
+         "wikidata_ids": [
+          "Q1420038"
+         ],
+         "wikipedia_url": "http://en.wikipedia.org/wiki/Queen's_University"
+        }
+       ]
+      },
+      "text/plain": [
+       "<dimcli.Result object #4774276880. Records: 1/1>"
+      ]
+     },
+     "execution_count": 80,
+     "metadata": {
+      "application/json": {
+       "expanded": false,
+       "root": "root"
+      }
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%dsl search organizations where id=\"grid.410356.5\" return organizations[all]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "Let's have a look at the fields returned"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 81,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dict_keys(['id', 'external_ids_fundref', 'orgref_ids', 'city_name', 'acronym', 'state_name', 'name', 'ukprn_ids', 'organization_parent_ids', 'hesa_ids', 'types', 'ucas_ids', 'country_name', 'latitude', 'ificlaims_ids', 'organization_related_ids', 'longitude', 'organization_child_ids', 'wikipedia_url', 'cnrs_ids', 'established', 'isni_ids', 'linkout', 'wikidata_ids'])"
+      ]
+     },
+     "execution_count": 81,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dsl_last_results.organizations[0].keys()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "`weight` should not be there!!! "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 82,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'id': 'grid.410356.5',\n",
+       " 'external_ids_fundref': ['501100003321', '501100003322', '501100006127'],\n",
+       " 'orgref_ids': ['7955551'],\n",
+       " 'city_name': 'Kingston',\n",
+       " 'acronym': None,\n",
+       " 'state_name': 'Ontario',\n",
+       " 'name': \"Queen's University\",\n",
+       " 'ukprn_ids': None,\n",
+       " 'organization_parent_ids': None,\n",
+       " 'hesa_ids': None,\n",
+       " 'types': ['Education'],\n",
+       " 'ucas_ids': None,\n",
+       " 'country_name': 'Canada',\n",
+       " 'latitude': 44.225502,\n",
+       " 'ificlaims_ids': ['069064'],\n",
+       " 'organization_related_ids': ['grid.413560.5',\n",
+       "  'grid.413632.1',\n",
+       "  'grid.415354.2',\n",
+       "  'grid.449116.f'],\n",
+       " 'longitude': -76.49516,\n",
+       " 'organization_child_ids': None,\n",
+       " 'wikipedia_url': \"http://en.wikipedia.org/wiki/Queen's_University\",\n",
+       " 'cnrs_ids': None,\n",
+       " 'established': 1841,\n",
+       " 'isni_ids': ['0000 0004 1936 8331'],\n",
+       " 'linkout': ['http://www.queensu.ca/'],\n",
+       " 'wikidata_ids': ['Q1420038']}"
+      ]
+     },
+     "execution_count": 82,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dsl_last_results.organizations[0]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "Now let's look at the contents of the data\n",
+    "* external_ids_ror is missing (in the UI it's https://ror.org/02y72wh86) but we'll add that as soon as it becomes available in SOLR\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "include_colab_link": true,
+   "name": "v1.20-qa.ipynb",
+   "provenance": [],
+   "toc_visible": true
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

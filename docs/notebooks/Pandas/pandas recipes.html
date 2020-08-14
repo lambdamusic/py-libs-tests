@@ -1,0 +1,3111 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pandas Recipes &#8212; Python tests [PRIVATE]</title>
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/_custom.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tidy Data in Python" href="pandas-Tidy Data.html" />
+    <link rel="prev" title="Dimcli open in colab badge" href="../1-snippets/DimcliSnippets.html" />
+   
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+
+   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149959808-1"></script>
+   <!-- <script src="_static/js/custom.js"></script> -->
+
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="pandas-Tidy Data.html" title="Tidy Data in Python"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../1-snippets/DimcliSnippets.html" title="Dimcli open in colab badge"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Pandas Recipes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Pandas-Recipes">
+<h1>Pandas Recipes<a class="headerlink" href="#Pandas-Recipes" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/index.html">https://pandas.pydata.org/pandas-docs/stable/index.html</a></p></li>
+<li><p><a class="reference external" href="https://www.shanelynn.ie/using-pandas-dataframe-creating-editing-viewing-data-in-python/">https://www.shanelynn.ie/using-pandas-dataframe-creating-editing-viewing-data-in-python/</a></p></li>
+<li><p><a class="reference external" href="https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/">https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">dimcli</span>
+<span class="kn">from</span> <span class="nn">dimcli.shortcuts</span> <span class="kn">import</span> <span class="n">dslquery</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pandas.io.json</span> <span class="kn">import</span> <span class="n">json_normalize</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Reminder:-about-tidy-data">
+<h2>Reminder: about tidy data<a class="headerlink" href="#Reminder:-about-tidy-data" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.jeannicholashould.com/tidy-data-in-python.html">http://www.jeannicholashould.com/tidy-data-in-python.html</a></p>
+<ul class="simple">
+<li><p>Each variable forms a column and contains values</p></li>
+<li><p>Each observation forms a row</p></li>
+<li><p>Each type of observational unit forms a table</p></li>
+</ul>
+<p>A few definitions:</p>
+<ul class="simple">
+<li><p>Variable: A measurement or an attribute. Height, weight, sex, etc.</p></li>
+<li><p>Value: The actual measurement or attribute. 152 cm, 80 kg, female, etc.</p></li>
+<li><p>Observation: All values measure on the same unit. Each person.</p></li>
+</ul>
+<div class="section" id="Load-some-data">
+<h3>Load some data<a class="headerlink" href="#Load-some-data" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1">### With empty columns</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">,</span><span class="s1">&#39;C&#39;</span><span class="p">,</span><span class="s1">&#39;D&#39;</span><span class="p">,</span><span class="s1">&#39;E&#39;</span><span class="p">,</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="s1">&#39;G&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="by-columns">
+<h2>by columns<a class="headerlink" href="#by-columns" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;name&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;val1&#39;</span><span class="p">,</span> <span class="s1">&#39;val2&#39;</span><span class="p">,</span> <span class="s1">&#39;etc..&#39;</span><span class="p">],</span>
+    <span class="s1">&#39;category&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;val1&#39;</span><span class="p">,</span> <span class="s1">&#39;val2&#39;</span><span class="p">,</span> <span class="s1">&#39;etc..&#39;</span><span class="p">],</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="by-rows-(records)">
+<h2>by rows (records)<a class="headerlink" href="#by-rows-(records)" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">([</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;val1&#39;</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span> <span class="p">:</span> <span class="s1">&#39;val1&#39;</span> <span class="p">},</span>
+    <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;val1&#39;</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span> <span class="p">:</span> <span class="s1">&#39;val1&#39;</span> <span class="p">},</span>
+    <span class="o">...</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="From-JSON">
+<h2>From JSON<a class="headerlink" href="#From-JSON" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="s1">&#39;file.json&#39;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span> <span class="c1"># for rows, use &#39;records&#39;</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="s1">&#39;out.json&#39;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="From-CSV">
+<h2>From CSV<a class="headerlink" href="#From-CSV" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;/tmp/tmp07wuam09/data/cereal.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Add-cell-value">
+<h3>Add cell value<a class="headerlink" href="#Add-cell-value" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ddf</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="s1">&#39;Row Index or Label&#39;</span><span class="p">,</span> <span class="s1">&#39;Col name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Inspect-dataframe-and-Index">
+<h3>Inspect dataframe and Index<a class="headerlink" href="#Inspect-dataframe-and-Index" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(1000, 9)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">ndim</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+author_affiliations    object
+id                     object
+issue                  object
+journal                object
+pages                  object
+title                  object
+type                   object
+volume                 object
+year                    int64
+dtype: object
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># the &#39;describe&#39; method returns basic statistic for all columns of a dataframe</span>
+<span class="n">df</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="Working-with-the-index">
+<h2>Working with the index<a class="headerlink" href="#Working-with-the-index" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">index</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+RangeIndex(start=0, stop=1000, step=1)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;2003&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+author_affiliations    [[{&#39;first_name&#39;: &#39;Karl&#39;, &#39;last_name&#39;: &#39;Derouen...
+id                                                        pub.1011026276
+issue                                                                  4
+journal                {&#39;id&#39;: &#39;jour.1139246&#39;, &#39;title&#39;: &#39;Defence and P...
+pages                                                            251-260
+title                  The Role of the UN in International Crisis Ter...
+type                                                             article
+volume                                                                14
+Name: 2003, dtype: object
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span> <span class="c1"># return index to original integer-based state</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Rows-and-columns">
+<h3>Rows and columns<a class="headerlink" href="#Rows-and-columns" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Index([&#39;year&#39;, &#39;author_affiliations&#39;, &#39;id&#39;, &#39;issue&#39;, &#39;journal&#39;, &#39;pages&#39;,
+       &#39;title&#39;, &#39;type&#39;, &#39;volume&#39;],
+      dtype=&#39;object&#39;)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># select by position</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+year                                                                2015
+author_affiliations    [[{&#39;first_name&#39;: &#39;TIM&#39;, &#39;last_name&#39;: &#39;OLIVER&#39;,...
+id                                                        pub.1013516622
+issue                                                                  1
+journal                {&#39;id&#39;: &#39;jour.1024766&#39;, &#39;title&#39;: &#39;International...
+pages                                                              77-91
+title                  To be or not to be in Europe: is that the ques...
+type                                                             article
+volume                                                                91
+Name: 2, dtype: object
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># equivalent to iloc in this case // label based indexing</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+year                                                                2015
+author_affiliations    [[{&#39;first_name&#39;: &#39;TIM&#39;, &#39;last_name&#39;: &#39;OLIVER&#39;,...
+id                                                        pub.1013516622
+issue                                                                  1
+journal                {&#39;id&#39;: &#39;jour.1024766&#39;, &#39;title&#39;: &#39;International...
+pages                                                              77-91
+title                  To be or not to be in Europe: is that the ques...
+type                                                             article
+volume                                                                91
+Name: 2, dtype: object
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">head</span><span class="p">()</span> <span class="c1"># grab a column by its name with dot notation</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0    2003
+1    2006
+2    2015
+3    2015
+4    2015
+Name: year, dtype: int64
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+pandas.core.series.Series
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+count    1000.000000
+mean     2017.100000
+std         0.954417
+min      2003.000000
+25%      2017.000000
+50%      2017.000000
+75%      2018.000000
+max      2019.000000
+Name: year, dtype: float64
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2017    479
+2018    326
+2016    154
+2019     28
+2015     11
+2006      1
+2003      1
+Name: year, dtype: int64
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Select-rows-based-on-cell-values-and-update">
+<h2>Select rows based on cell values and update<a class="headerlink" href="#Select-rows-based-on-cell-values-and-update" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;journal&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">(),</span> <span class="s2">&quot;journal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;journal&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;unknown&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>author_affiliations</th>
+      <th>id</th>
+      <th>issue</th>
+      <th>journal</th>
+      <th>pages</th>
+      <th>title</th>
+      <th>type</th>
+      <th>volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>10</th>
+      <td>2015</td>
+      <td>[[{'first_name': 'Julie', 'last_name': 'Smith'...</td>
+      <td>pub.1024252028</td>
+      <td>NaN</td>
+      <td>unknown</td>
+      <td>370-396</td>
+      <td>Europe: The coalition's poisoned chalice</td>
+      <td>John</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>2016</td>
+      <td>[[{'first_name': 'Margaret', 'last_name': 'Sto...</td>
+      <td>pub.1037023067</td>
+      <td>NaN</td>
+      <td>unknown</td>
+      <td>NaN</td>
+      <td>A Radically Democratic Response to Global Gove...</td>
+      <td>John</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>75</th>
+      <td>2016</td>
+      <td>[[{'first_name': 'Amr', 'last_name': 'Magdy', ...</td>
+      <td>pub.1083917941</td>
+      <td>NaN</td>
+      <td>unknown</td>
+      <td>7</td>
+      <td>GeoTrend: spatial trending queries on real-tim...</td>
+      <td>John</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>85</th>
+      <td>2016</td>
+      <td>[[{'first_name': 'Tim', 'last_name': 'Jackson'...</td>
+      <td>pub.1052654584</td>
+      <td>NaN</td>
+      <td>unknown</td>
+      <td>NaN</td>
+      <td>Prosperity without Growth, 2nd</td>
+      <td>John</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>86</th>
+      <td>2016</td>
+      <td>[[{'first_name': 'Cas', 'last_name': 'Mudde', ...</td>
+      <td>pub.1052987179</td>
+      <td>NaN</td>
+      <td>unknown</td>
+      <td>NaN</td>
+      <td>The Populist Radical Right</td>
+      <td>John</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Renaming-columns">
+<h2>Renaming columns<a class="headerlink" href="#Renaming-columns" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>from <a class="reference external" href="https://www.shanelynn.ie/using-pandas-dataframe-creating-editing-viewing-data-in-python/">https://www.shanelynn.ie/using-pandas-dataframe-creating-editing-viewing-data-in-python/</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Rename columns using a dictionary to map values</span>
+<span class="c1"># Rename the Area columnn to &#39;place_name&#39;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Area&quot;</span><span class="p">:</span> <span class="s2">&quot;place_name&quot;</span><span class="p">})</span>
+
+<span class="c1"># Again, the inplace parameter will change the dataframe without assignment</span>
+<span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Area&quot;</span><span class="p">:</span> <span class="s2">&quot;place_name&quot;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Rename multiple columns in one go with a larger dictionary</span>
+<span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+    <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;Area&quot;</span><span class="p">:</span> <span class="s2">&quot;place_name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Y2001&quot;</span><span class="p">:</span> <span class="s2">&quot;year_2001&quot;</span>
+    <span class="p">},</span>
+    <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># Rename all columns using a function, e.g. convert all column names to lower case:</span>
+<span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Create-a-new-DF-by-selecting-columns">
+<h2>Create a new DF by selecting columns<a class="headerlink" href="#Create-a-new-DF-by-selecting-columns" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;issue&#39;</span><span class="p">,</span> <span class="s1">&#39;pages&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;volume&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df2</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>issue</th>
+      <th>pages</th>
+      <th>title</th>
+      <th>type</th>
+      <th>volume</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>pub.1059983538</td>
+      <td>4</td>
+      <td>1593-1636</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+      <td>article</td>
+      <td>131</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>pub.1024262334</td>
+      <td>3</td>
+      <td>575-605</td>
+      <td>An Illustrated User Guide to the World Input–O...</td>
+      <td>article</td>
+      <td>23</td>
+      <td>2015</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>pub.1090420622</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Trump, Brexit, and the Rise of Populism: Econo...</td>
+      <td>preprint</td>
+      <td>NaN</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>pub.1038710751</td>
+      <td>9</td>
+      <td>1259-1277</td>
+      <td>The Brexit vote: a divided nation, a divided c...</td>
+      <td>article</td>
+      <td>23</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>pub.1019084958</td>
+      <td>3</td>
+      <td>323-332</td>
+      <td>The 2016 Referendum, Brexit and the Left Behin...</td>
+      <td>article</td>
+      <td>87</td>
+      <td>2016</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Dropping-columns">
+<h2>Dropping columns<a class="headerlink" href="#Dropping-columns" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;author_affiliations&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Drop-columns-with-missing-values">
+<h2>Drop columns with missing values<a class="headerlink" href="#Drop-columns-with-missing-values" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.dropna.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.dropna.html</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Alfred&#39;</span><span class="p">,</span> <span class="s1">&#39;Batman&#39;</span><span class="p">,</span> <span class="s1">&#39;Catwoman&#39;</span><span class="p">],</span>
+<span class="o">...</span>                    <span class="s2">&quot;toy&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="s1">&#39;Batmobile&#39;</span><span class="p">,</span> <span class="s1">&#39;Bullwhip&#39;</span><span class="p">],</span>
+<span class="o">...</span>                    <span class="s2">&quot;born&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">NaT</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">&quot;1940-04-25&quot;</span><span class="p">),</span>
+<span class="o">...</span>                             <span class="n">pd</span><span class="o">.</span><span class="n">NaT</span><span class="p">]})</span>
+
+<span class="c1"># Drop the rows where at least one element is missing.</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="c1">#      name        toy       born</span>
+<span class="c1"># 1  Batman  Batmobile 1940-04-25</span>
+
+<span class="c1"># Drop the columns where at least one element is missing.</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;columns&#39;</span><span class="p">)</span>
+<span class="c1">#        name</span>
+<span class="c1"># 0    Alfred</span>
+<span class="c1"># 1    Batman</span>
+<span class="c1"># 2  Catwoman</span>
+
+<span class="c1">#Drop the rows where all elements are missing.</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="c1">#        name        toy       born</span>
+<span class="c1"># 0    Alfred        NaN        NaT</span>
+<span class="c1"># 1    Batman  Batmobile 1940-04-25</span>
+<span class="c1"># 2  Catwoman   Bullwhip        NaT</span>
+
+<span class="c1">#Keep only the rows with at least 2 non-NA values.</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">thresh</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1">#        name        toy       born</span>
+<span class="c1"># 1    Batman  Batmobile 1940-04-25</span>
+<span class="c1"># 2  Catwoman   Bullwhip        NaT</span>
+
+<span class="c1">#Define in which columns to look for missing values.</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;born&#39;</span><span class="p">])</span>
+<span class="c1">#        name        toy       born</span>
+<span class="c1"># 1    Batman  Batmobile 1940-04-25</span>
+
+<span class="c1">#Keep the DataFrame with valid entries in the same variable.</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># &gt;&gt;&gt; df</span>
+<span class="c1">#      name        toy       born</span>
+<span class="c1"># 1  Batman  Batmobile 1940-04-25</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Drop-empty-values-rows,-after-replacing-empty-strings">
+<h2>Drop empty values rows, after replacing empty strings<a class="headerlink" href="#Drop-empty-values-rows,-after-replacing-empty-strings" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># replace with empty list (can&#39;t be done with &#39;replace&#39;)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">ids</span><span class="o">.</span><span class="n">isnull</span><span class="p">(),</span> <span class="s1">&#39;ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="s1">&#39;ids&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Add-new-column-to-existing-dataframe">
+<h2>Add new column to existing dataframe<a class="headerlink" href="#Add-new-column-to-existing-dataframe" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Use the original df1 indexes to create the series:</span>
+
+<span class="n">df1</span><span class="p">[</span><span class="s1">&#39;e&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">sLength</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">df1</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Declare a list that is to be converted into a column</span>
+<span class="n">address</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Delhi&#39;</span><span class="p">,</span> <span class="s1">&#39;Bangalore&#39;</span><span class="p">,</span> <span class="s1">&#39;Chennai&#39;</span><span class="p">,</span> <span class="s1">&#39;Patna&#39;</span><span class="p">]</span>
+
+<span class="c1"># Using &#39;Address&#39; as the column name</span>
+<span class="c1"># and equating it to the list</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;Address&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">address</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="change-column-order">
+<h2>change column order<a class="headerlink" href="#change-column-order" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">]]</span>
+
+<span class="c1">#You can get the list of columns with:</span>
+
+<span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+<span class="c1">#The output will produce:</span>
+<span class="c1">#[&#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;mean&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Count-Values">
+<h3>Count Values<a class="headerlink" href="#Count-Values" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="Count-unique-values">
+<h2>Count unique values<a class="headerlink" href="#Count-unique-values" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Count distict values, use nunique:</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;hID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
+
+<span class="c1"># Count only non-null values, use count:</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;hID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+<span class="c1"># Count total values including null values, use size attribute:</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;hID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># this will show you the distinct element and their number of occurence.</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;race&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># only top ten</span>
+<span class="n">affiliations</span><span class="p">[</span><span class="s1">&#39;aff_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Count-missing-values">
+<h2>Count missing values<a class="headerlink" href="#Count-missing-values" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://chartio.com/resources/tutorials/how-to-check-if-any-value-is-nan-in-a-pandas-dataframe/">https://chartio.com/resources/tutorials/how-to-check-if-any-value-is-nan-in-a-pandas-dataframe/</a></p></li>
+<li><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/user_guide/missing_data.html">https://pandas.pydata.org/pandas-docs/stable/user_guide/missing_data.html</a></p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+author_affiliations      6
+id                       0
+issue                  162
+journal                 56
+pages                   38
+title                    0
+type                     0
+volume                  77
+year                     0
+dtype: int64
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># THIS CHANGES ALL VALUES IN ROW! SO NOT IDEAL</span>
+<span class="n">ddf</span><span class="p">[</span><span class="n">ddf</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span> <span class="o">=</span> <span class="s2">&quot;ciao&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Get-most-frequent-value-(single)">
+<h2>Get most frequent value (single)<a class="headerlink" href="#Get-most-frequent-value-(single)" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">dataframe</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Frequency-count-based-on-two-columns-(variables)">
+<h2>Frequency count based on two columns (variables)<a class="headerlink" href="#Frequency-count-based-on-two-columns-(variables)" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://stackoverflow.com/questions/33271098/python-get-a-frequency-count-based-on-two-columns-variables-in-pandas-datafra">https://stackoverflow.com/questions/33271098/python-get-a-frequency-count-based-on-two-columns-variables-in-pandas-datafra</a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;Group&quot;</span><span class="p">,</span> <span class="s2">&quot;Size&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="c1"># Out[11]:</span>
+<span class="c1"># Group     Size</span>
+<span class="c1"># Moderate  Medium    1</span>
+<span class="c1">#           Small     1</span>
+<span class="c1"># Short     Small     2</span>
+<span class="c1"># Tall      Large     1</span>
+<span class="c1"># dtype: int64</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;Group&quot;</span><span class="p">,</span> <span class="s2">&quot;Size&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+<span class="c1"># Out[12]:</span>
+<span class="c1">#       Group    Size  Time</span>
+<span class="c1"># 0  Moderate  Medium     1</span>
+<span class="c1"># 1  Moderate   Small     1</span>
+<span class="c1"># 2     Short   Small     2</span>
+<span class="c1"># 3      Tall   Large     1</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># You can also try pd.crosstab()</span>
+
+<span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Group</span><span class="p">,</span><span class="n">df</span><span class="o">.</span><span class="n">Size</span><span class="p">)</span>
+
+<span class="c1"># Size      Large  Medium  Small</span>
+<span class="c1"># Group</span>
+<span class="c1"># Moderate      0       1      1</span>
+<span class="c1"># Short         0       0      2</span>
+<span class="c1"># Tall          1       0      0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Fill-in-empty-values">
+<h2>Fill in empty values<a class="headerlink" href="#Fill-in-empty-values" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.shanelynn.ie/select-pandas-dataframe-rows-and-columns-using-iloc-loc-and-ix/">https://www.shanelynn.ie/select-pandas-dataframe-rows-and-columns-using-iloc-loc-and-ix/</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># fill everywhere, returns a frame</span>
+
+<span class="n">ddf</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># this returns a series, not a frame!</span>
+<span class="n">ddf</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;aaa&quot;</span><span class="p">)</span> <span class="c1"># NOTE doesn&#39;t save anything!</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0    [{&#39;id&#39;: &#39;3292&#39;, &#39;name&#39;: &#39;1402 Applied Economic...
+1        [{&#39;id&#39;: &#39;3313&#39;, &#39;name&#39;: &#39;1403 Econometrics&#39;}]
+2                                                  aaa
+3    [{&#39;id&#39;: &#39;3675&#39;, &#39;name&#39;: &#39;2103 Historical Studi...
+4           [{&#39;id&#39;: &#39;3448&#39;, &#39;name&#39;: &#39;1608 Sociology&#39;}]
+5    [{&#39;id&#39;: &#39;3197&#39;, &#39;name&#39;: &#39;1199 Other Medical an...
+6                                                  aaa
+7    [{&#39;id&#39;: &#39;3432&#39;, &#39;name&#39;: &#39;1606 Political Scienc...
+8    [{&#39;id&#39;: &#39;3432&#39;, &#39;name&#39;: &#39;1606 Political Scienc...
+9    [{&#39;id&#39;: &#39;3432&#39;, &#39;name&#39;: &#39;1606 Political Scienc...
+Name: FOR, dtype: object
+</pre></div></div>
+</div>
+<div class="section" id="Transpose-axis">
+<h3>Transpose axis<a class="headerlink" href="#Transpose-axis" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.transpose.html">http://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.transpose.html</a></p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df3</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="n">df3</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>990</th>
+      <th>991</th>
+      <th>992</th>
+      <th>993</th>
+      <th>994</th>
+      <th>995</th>
+      <th>996</th>
+      <th>997</th>
+      <th>998</th>
+      <th>999</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>author_affiliations</th>
+      <td>[[{'first_name': 'Scott R.', 'last_name': 'Bak...</td>
+      <td>[[{'first_name': 'Marcel P.', 'last_name': 'Ti...</td>
+      <td>[[{'first_name': 'Ronald', 'last_name': 'Ingle...</td>
+      <td>[[{'first_name': 'Sara B.', 'last_name': 'Hobo...</td>
+      <td>[[{'first_name': 'Matthew J.', 'last_name': 'G...</td>
+      <td>[[{'first_name': 'The Global Consortium for H5...</td>
+      <td>[[{'first_name': 'Liesbet', 'last_name': 'Hoog...</td>
+      <td>[[{'first_name': 'Jonathan', 'last_name': 'Pol...</td>
+      <td>[[{'first_name': 'Harold D.', 'last_name': 'Cl...</td>
+      <td>[[{'first_name': 'D.J.', 'last_name': 'Flynn',...</td>
+      <td>...</td>
+      <td>[[{'first_name': 'Yannis', 'last_name': 'Stavr...</td>
+      <td>[[{'first_name': 'Vegard', 'last_name': 'Jarne...</td>
+      <td>[[{'first_name': 'Anastasia', 'last_name': 'Go...</td>
+      <td>[[{'first_name': 'Eva', 'last_name': 'Thomann'...</td>
+      <td>[[{'first_name': 'Terrie', 'last_name': 'Epste...</td>
+      <td>[[{'first_name': 'Kristoffer', 'last_name': 'H...</td>
+      <td>[[{'first_name': 'Charlotte', 'last_name': 'Ga...</td>
+      <td>[[{'first_name': 'Nikolas', 'last_name': 'Rose...</td>
+      <td>[[{'first_name': 'Sophie', 'last_name': 'Meuni...</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>id</th>
+      <td>pub.1059983538</td>
+      <td>pub.1024262334</td>
+      <td>pub.1090420622</td>
+      <td>pub.1038710751</td>
+      <td>pub.1019084958</td>
+      <td>pub.1062667950</td>
+      <td>pub.1085208832</td>
+      <td>pub.1053864137</td>
+      <td>pub.1096906068</td>
+      <td>pub.1074211439</td>
+      <td>...</td>
+      <td>pub.1101047240</td>
+      <td>pub.1100074004</td>
+      <td>pub.1112309901</td>
+      <td>pub.1115075916</td>
+      <td>pub.1091824261</td>
+      <td>pub.1109782631</td>
+      <td>pub.1083872789</td>
+      <td>pub.1092641433</td>
+      <td>pub.1093091454</td>
+      <td>pub.1084761130</td>
+    </tr>
+    <tr>
+      <th>issue</th>
+      <td>4</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>9</td>
+      <td>3</td>
+      <td>6309</td>
+      <td>1</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>S1</td>
+      <td>...</td>
+      <td>1</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>4</td>
+      <td>NaN</td>
+      <td>3-4</td>
+      <td>7</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>journal</th>
+      <td>{'id': 'jour.1123532', 'title': 'The Quarterly...</td>
+      <td>{'id': 'jour.1050256', 'title': 'Review of Int...</td>
+      <td>{'id': 'jour.1276748', 'title': 'SSRN Electron...</td>
+      <td>{'id': 'jour.1052590', 'title': 'Journal of Eu...</td>
+      <td>{'id': 'jour.1026839', 'title': 'The Political...</td>
+      <td>{'id': 'jour.1346339', 'title': 'Science'}</td>
+      <td>{'id': 'jour.1052590', 'title': 'Journal of Eu...</td>
+      <td>{'id': 'jour.1147745', 'title': 'Research &amp; Po...</td>
+      <td>NaN</td>
+      <td>{'id': 'jour.1129081', 'title': 'Political Psy...</td>
+      <td>...</td>
+      <td>{'id': 'jour.1006192', 'title': 'American Beha...</td>
+      <td>{'id': 'jour.1017488', 'title': 'British Journ...</td>
+      <td>{'id': 'jour.1027568', 'title': 'Journal of Et...</td>
+      <td>{'id': 'jour.1153608', 'title': 'European Poli...</td>
+      <td>NaN</td>
+      <td>{'id': 'jour.1149390', 'title': 'Media and Com...</td>
+      <td>NaN</td>
+      <td>{'id': 'jour.1028218', 'title': 'Economy and S...</td>
+      <td>{'id': 'jour.1138887', 'title': 'Journal of Eu...</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>pages</th>
+      <td>1593-1636</td>
+      <td>575-605</td>
+      <td>NaN</td>
+      <td>1259-1277</td>
+      <td>323-332</td>
+      <td>213-217</td>
+      <td>1-27</td>
+      <td>205316801668691</td>
+      <td>NaN</td>
+      <td>127-150</td>
+      <td>...</td>
+      <td>43-58</td>
+      <td>166-189</td>
+      <td>1-19</td>
+      <td>37-57</td>
+      <td>NaN</td>
+      <td>49-57</td>
+      <td>49-72</td>
+      <td>1-21</td>
+      <td>891-907</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 1000 columns</p>
+</div></div>
+</div>
+</div>
+<div class="section" id="Sorting-values">
+<h3>Sorting values<a class="headerlink" href="#Sorting-values" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://thispointer.com/pandas-sort-rows-or-columns-in-dataframe-based-on-values-using-dataframe-sort_values/">https://thispointer.com/pandas-sort-rows-or-columns-in-dataframe-based-on-values-using-dataframe-sort_values/</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;quicksort&#39;</span><span class="p">,</span> <span class="n">na_position</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">)</span>
+<span class="c1"># Arguments :</span>
+
+<span class="c1"># by : A string or list of strings basically either column names or index labels based on which sorting will be done.</span>
+<span class="c1"># axis : If axis is 0, then name or list of names in by argument will be considered as column names. Default is 0</span>
+<span class="c1"># If axis is 1, then name or list of names in by argument will be considered as row index labels</span>
+<span class="c1"># ascending : If True sort in ascending else sort in descending order. Default is True</span>
+<span class="c1"># inplace : If True, perform operation in-place in Dataframe</span>
+<span class="c1"># na_position : Decides the position of NaNs after sorting i.e. irst puts NaNs at the beginning, last puts NaNs at the end</span>
+<span class="c1"># Default value is ‘first’</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># sort in place and update the index as well</span>
+<span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>author_affiliations</th>
+      <th>id</th>
+      <th>issue</th>
+      <th>journal</th>
+      <th>pages</th>
+      <th>title</th>
+      <th>type</th>
+      <th>volume</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>281</th>
+      <td>[[{'first_name': 'Karl', 'last_name': 'Derouen...</td>
+      <td>pub.1011026276</td>
+      <td>4</td>
+      <td>{'id': 'jour.1139246', 'title': 'Defence and P...</td>
+      <td>251-260</td>
+      <td>The Role of the UN in International Crisis Ter...</td>
+      <td>article</td>
+      <td>14</td>
+      <td>2003</td>
+    </tr>
+    <tr>
+      <th>647</th>
+      <td>[[{'first_name': 'Meirav', 'last_name': 'Misha...</td>
+      <td>pub.1053839515</td>
+      <td>5</td>
+      <td>{'id': 'jour.1024683', 'title': 'Journal of Pe...</td>
+      <td>583-600</td>
+      <td>Ethnic Diversity, Issues, and International Cr...</td>
+      <td>article</td>
+      <td>43</td>
+      <td>2006</td>
+    </tr>
+    <tr>
+      <th>351</th>
+      <td>[[{'first_name': 'Oliver', 'last_name': 'Daddo...</td>
+      <td>pub.1033135439</td>
+      <td>1</td>
+      <td>{'id': 'jour.1027780', 'title': 'JCMS Journal ...</td>
+      <td>71-88</td>
+      <td>Interpreting the Outsider Tradition in British...</td>
+      <td>article</td>
+      <td>53</td>
+      <td>2015</td>
+    </tr>
+    <tr>
+      <th>114</th>
+      <td>[[{'first_name': 'Nicholas', 'last_name': 'Sta...</td>
+      <td>pub.1011712909</td>
+      <td>3</td>
+      <td>{'id': 'jour.1138537', 'title': 'International...</td>
+      <td>311-323</td>
+      <td>Have we reached a tipping point? The mainstrea...</td>
+      <td>article</td>
+      <td>36</td>
+      <td>2015</td>
+    </tr>
+    <tr>
+      <th>809</th>
+      <td>[[{'first_name': 'Julie', 'last_name': 'Smith'...</td>
+      <td>pub.1024252028</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>370-396</td>
+      <td>Europe: The coalition's poisoned chalice</td>
+      <td>chapter</td>
+      <td>NaN</td>
+      <td>2015</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Apply">
+<h3>Apply<a class="headerlink" href="#Apply" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># add new column</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;M1_list&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;M1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Groupby">
+<h3>Groupby<a class="headerlink" href="#Groupby" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="Simple-Groupby">
+<h2>Simple Groupby<a class="headerlink" href="#Simple-Groupby" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df2</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">df2</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+dict_keys([2003, 2006, 2015, 2016, 2017, 2018, 2019])
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">group2003</span> <span class="o">=</span> <span class="n">df2</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="mi">2003</span><span class="p">)</span>
+<span class="n">group2003</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>author_affiliations</th>
+      <th>id</th>
+      <th>issue</th>
+      <th>journal</th>
+      <th>pages</th>
+      <th>title</th>
+      <th>type</th>
+      <th>volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2003</td>
+      <td>[[{'first_name': 'Karl', 'last_name': 'Derouen...</td>
+      <td>pub.1011026276</td>
+      <td>4</td>
+      <td>{'id': 'jour.1139246', 'title': 'Defence and P...</td>
+      <td>251-260</td>
+      <td>The Role of the UN in International Crisis Ter...</td>
+      <td>article</td>
+      <td>14</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># The groupby output will have an index or multi-index on rows corresponding to your chosen grouping variables.</span>
+<span class="c1"># To avoid setting this index, pass “as_index=False” to the groupby operation.</span>
+<span class="n">df3</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">df3</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>author_affiliations</th>
+      <th>id</th>
+      <th>issue</th>
+      <th>journal</th>
+      <th>pages</th>
+      <th>title</th>
+      <th>type</th>
+      <th>volume</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2003</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2015</td>
+      <td>11</td>
+      <td>11</td>
+      <td>10</td>
+      <td>11</td>
+      <td>11</td>
+      <td>11</td>
+      <td>11</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2016</td>
+      <td>154</td>
+      <td>154</td>
+      <td>129</td>
+      <td>154</td>
+      <td>143</td>
+      <td>154</td>
+      <td>154</td>
+      <td>139</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2017</td>
+      <td>475</td>
+      <td>479</td>
+      <td>385</td>
+      <td>479</td>
+      <td>462</td>
+      <td>479</td>
+      <td>479</td>
+      <td>448</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018</td>
+      <td>324</td>
+      <td>326</td>
+      <td>290</td>
+      <td>326</td>
+      <td>318</td>
+      <td>326</td>
+      <td>326</td>
+      <td>301</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2019</td>
+      <td>28</td>
+      <td>28</td>
+      <td>22</td>
+      <td>28</td>
+      <td>26</td>
+      <td>28</td>
+      <td>28</td>
+      <td>23</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Counting-results">
+<h2>Counting results<a class="headerlink" href="#Counting-results" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># https://www.shanelynn.ie/summarising-aggregation-and-grouping-data-in-python-pandas/</span>
+<span class="c1"># Produces Pandas Series</span>
+<span class="n">df3</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="c1"># Produces Pandas DataFrame</span>
+<span class="n">df3</span><span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2003</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2015</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2016</td>
+      <td>154</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2017</td>
+      <td>479</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018</td>
+      <td>326</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2019</td>
+      <td>28</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>One liner..</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2003</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2006</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2015</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2016</td>
+      <td>154</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2017</td>
+      <td>479</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018</td>
+      <td>326</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2019</td>
+      <td>28</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Groupby-and-sum-only-one-column">
+<h2>Groupby and sum only one column<a class="headerlink" href="#Groupby-and-sum-only-one-column" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/38985053/pandas-groupby-and-sum-only-one-column">https://stackoverflow.com/questions/38985053/pandas-groupby-and-sum-only-one-column</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df_by_concept</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;concept&#39;</span><span class="p">,</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Using-groupby-to-filter-items-that-occur-more-than-once">
+<h2>Using groupby to filter items that occur more than once<a class="headerlink" href="#Using-groupby-to-filter-items-that-occur-more-than-once" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/32918506/pandas-how-to-filter-for-items-that-occur-more-than-once-in-a-dataframe">https://stackoverflow.com/questions/32918506/pandas-how-to-filter-for-items-that-occur-more-than-once-in-a-dataframe</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df_top_journals</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;journal.title&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Add-a-column-that-counts-a-variable-in-groupby">
+<h2>Add a column that counts a variable in groupby<a class="headerlink" href="#Add-a-column-that-counts-a-variable-in-groupby" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/29791785/python-pandas-add-a-column-to-my-dataframe-that-counts-a-variable">https://stackoverflow.com/questions/29791785/python-pandas-add-a-column-to-my-dataframe-that-counts-a-variable</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;group&#39;</span><span class="p">)[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s1">&#39;count&#39;</span><span class="p">)</span>
+
+<span class="c1"># Out[223]:</span>
+<span class="c1">#     org  group  count</span>
+<span class="c1"># 0  org1      1      2</span>
+<span class="c1"># 1  org2      1      2</span>
+<span class="c1"># 2  org3      2      1</span>
+<span class="c1"># 3  org4      3      3</span>
+<span class="c1"># 4  org5      3      3</span>
+<span class="c1"># 5  org6      3      3</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># add new column by counting unique instances in another column than the grouping one</span>
+<span class="c1">#</span>
+<span class="n">gridaffiliations</span><span class="p">[</span><span class="s2">&quot;tot_pubs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridaffiliations</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;aff_id&#39;</span><span class="p">])[</span><span class="s1">&#39;pub_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s1">&#39;nunique&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Group-by-two-variables">
+<h2>Group by two variables<a class="headerlink" href="#Group-by-two-variables" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">gridaffiliations</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;aff_id&#39;</span><span class="p">,</span> <span class="s1">&#39;pub_id&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Iterate-through-dataframe">
+<h3>Iterate through dataframe<a class="headerlink" href="#Iterate-through-dataframe" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://stackoverflow.com/questions/16476924/how-to-iterate-over-rows-in-a-dataframe-in-pandas">https://stackoverflow.com/questions/16476924/how-to-iterate-over-rows-in-a-dataframe-in-pandas</a></p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;c1&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;c2&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Query-dataframe">
+<h3>Query dataframe<a class="headerlink" href="#Query-dataframe" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;type==&#39;article&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>author_affiliations</th>
+      <th>id</th>
+      <th>issue</th>
+      <th>journal</th>
+      <th>pages</th>
+      <th>title</th>
+      <th>type</th>
+      <th>volume</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[[{'first_name': 'Scott R.', 'last_name': 'Bak...</td>
+      <td>pub.1059983538</td>
+      <td>4</td>
+      <td>{'id': 'jour.1123532', 'title': 'The Quarterly...</td>
+      <td>1593-1636</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+      <td>article</td>
+      <td>131</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[[{'first_name': 'Marcel P.', 'last_name': 'Ti...</td>
+      <td>pub.1024262334</td>
+      <td>3</td>
+      <td>{'id': 'jour.1050256', 'title': 'Review of Int...</td>
+      <td>575-605</td>
+      <td>An Illustrated User Guide to the World Input–O...</td>
+      <td>article</td>
+      <td>23</td>
+      <td>2015</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[[{'first_name': 'Sara B.', 'last_name': 'Hobo...</td>
+      <td>pub.1038710751</td>
+      <td>9</td>
+      <td>{'id': 'jour.1052590', 'title': 'Journal of Eu...</td>
+      <td>1259-1277</td>
+      <td>The Brexit vote: a divided nation, a divided c...</td>
+      <td>article</td>
+      <td>23</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>[[{'first_name': 'Matthew J.', 'last_name': 'G...</td>
+      <td>pub.1019084958</td>
+      <td>3</td>
+      <td>{'id': 'jour.1026839', 'title': 'The Political...</td>
+      <td>323-332</td>
+      <td>The 2016 Referendum, Brexit and the Left Behin...</td>
+      <td>article</td>
+      <td>87</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>[[{'first_name': 'The Global Consortium for H5...</td>
+      <td>pub.1062667950</td>
+      <td>6309</td>
+      <td>{'id': 'jour.1346339', 'title': 'Science'}</td>
+      <td>213-217</td>
+      <td>Role for migratory wild birds in the global sp...</td>
+      <td>article</td>
+      <td>354</td>
+      <td>2016</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">grid_ids</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;country_name==&#39;Netherlands&#39;&quot;</span><span class="p">)[:</span><span class="mi">30</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="Select-based-on-list">
+<h2>Select based on list<a class="headerlink" href="#Select-based-on-list" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># negative version</span>
+ <span class="n">df</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39; column_a == [&quot;val1&quot;, &quot;val2&quot;, ...]&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">my_symbol</span> <span class="o">=</span> <span class="s1">&#39;BUD US&#39;</span>
+<span class="n">df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;Symbol==&#39;</span><span class="si">{0}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">my_symbol</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># select if value is in list (when cell contains a list eg a list of grants)</span>
+<span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;supporting_grant_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;grant.2347731&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Merge-and-aggregrate-dataframes">
+<h3>Merge and aggregrate dataframes<a class="headerlink" href="#Merge-and-aggregrate-dataframes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.dataquest.io/blog/pandas-concatenation-tutorial/">https://www.dataquest.io/blog/pandas-concatenation-tutorial/</a></p></li>
+</ul>
+<p>df2 = pd.merge(dfy, dfyears_nl, how=‘outer’)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># concenate dataframes simply add new rows at the bottom</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">df1</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">df2</span><span class="p">,</span> <span class="n">df3</span><span class="p">])</span>
+<span class="c1"># then usually sort and reset index for visualizations etc...</span>
+<span class="n">res</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span><span class="s1">&#39;years&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">res</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">&quot;years&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">res</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-2-2b3367aad6e7&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-red-fg"># concenate dataframes simply add new rows at the bottom</span>
+<span class="ansi-green-fg">----&gt; 2</span><span class="ansi-red-fg"> </span>res <span class="ansi-blue-fg">=</span> pubyears1<span class="ansi-blue-fg">.</span>append<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">[</span>pubyears2<span class="ansi-blue-fg">,</span> pubyears3<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;pubyears1&#39; is not defined
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Melt-a-dataframe">
+<h3>Melt a dataframe<a class="headerlink" href="#Melt-a-dataframe" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">formatted_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span>
+                       <span class="p">[</span><span class="s2">&quot;religion&quot;</span><span class="p">],</span>  <span class="c1"># the columns to keep as is</span>
+                       <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;income&quot;</span><span class="p">,</span>  <span class="c1"># the columnn grouping all melted columns</span>
+                       <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;freq&quot;</span><span class="p">)</span>  <span class="c1"># the column counting the objects melted</span>
+<span class="n">formatted_df</span> <span class="o">=</span> <span class="n">formatted_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;religion&quot;</span><span class="p">])</span>
+<span class="n">formatted_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Using-json_normalize">
+<h3>Using json_normalize<a class="headerlink" href="#Using-json_normalize" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.io.json.json_normalize.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.io.json.json_normalize.html</a></p></li>
+<li><p><a class="reference external" href="https://www.kaggle.com/jboysen/quick-tutorial-flatten-nested-json-in-pandas">https://www.kaggle.com/jboysen/quick-tutorial-flatten-nested-json-in-pandas</a></p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pandas.io.json</span> <span class="kn">import</span> <span class="n">json_normalize</span> <span class="c1">#package for flattening json in pandas df</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="s1">&#39;Florida&#39;</span><span class="p">,</span>
+<span class="o">...</span>          <span class="s1">&#39;shortname&#39;</span><span class="p">:</span> <span class="s1">&#39;FL&#39;</span><span class="p">,</span>
+<span class="o">...</span>          <span class="s1">&#39;info&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="o">...</span>               <span class="s1">&#39;governor&#39;</span><span class="p">:</span> <span class="s1">&#39;Rick Scott&#39;</span>
+<span class="o">...</span>          <span class="p">},</span>
+<span class="o">...</span>          <span class="s1">&#39;counties&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Dade&#39;</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="mi">12345</span><span class="p">},</span>
+<span class="o">...</span>                      <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Broward&#39;</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="mi">40000</span><span class="p">},</span>
+<span class="o">...</span>                      <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Palm Beach&#39;</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="mi">60000</span><span class="p">}]},</span>
+<span class="o">...</span>         <span class="p">{</span><span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="s1">&#39;Ohio&#39;</span><span class="p">,</span>
+<span class="o">...</span>          <span class="s1">&#39;shortname&#39;</span><span class="p">:</span> <span class="s1">&#39;OH&#39;</span><span class="p">,</span>
+<span class="o">...</span>          <span class="s1">&#39;info&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="o">...</span>               <span class="s1">&#39;governor&#39;</span><span class="p">:</span> <span class="s1">&#39;John Kasich&#39;</span>
+<span class="o">...</span>          <span class="p">},</span>
+<span class="o">...</span>          <span class="s1">&#39;counties&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Summit&#39;</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="mi">1234</span><span class="p">},</span>
+<span class="o">...</span>                       <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Cuyahoga&#39;</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="mi">1337</span><span class="p">}]}]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">json_normalize</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;counties&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;shortname&#39;</span><span class="p">,</span>
+<span class="o">...</span>                                           <span class="p">[</span><span class="s1">&#39;info&#39;</span><span class="p">,</span> <span class="s1">&#39;governor&#39;</span><span class="p">]])</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">result</span>
+         <span class="n">name</span>  <span class="n">population</span> <span class="n">info</span><span class="o">.</span><span class="n">governor</span>    <span class="n">state</span> <span class="n">shortname</span>
+<span class="mi">0</span>        <span class="n">Dade</span>       <span class="mi">12345</span>    <span class="n">Rick</span> <span class="n">Scott</span>  <span class="n">Florida</span>        <span class="n">FL</span>
+<span class="mi">1</span>     <span class="n">Broward</span>       <span class="mi">40000</span>    <span class="n">Rick</span> <span class="n">Scott</span>  <span class="n">Florida</span>        <span class="n">FL</span>
+<span class="mi">2</span>  <span class="n">Palm</span> <span class="n">Beach</span>       <span class="mi">60000</span>    <span class="n">Rick</span> <span class="n">Scott</span>  <span class="n">Florida</span>        <span class="n">FL</span>
+<span class="mi">3</span>      <span class="n">Summit</span>        <span class="mi">1234</span>   <span class="n">John</span> <span class="n">Kasich</span>     <span class="n">Ohio</span>        <span class="n">OH</span>
+<span class="mi">4</span>    <span class="n">Cuyahoga</span>        <span class="mi">1337</span>   <span class="n">John</span> <span class="n">Kasich</span>     <span class="n">Ohio</span>        <span class="n">OH</span>
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">dfjournals</span> <span class="o">=</span> <span class="n">json_normalize</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">publications</span><span class="p">)</span>
+<span class="n">dfjournals</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">dfjournals</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>author_affiliations</th>
+      <th>id</th>
+      <th>issue</th>
+      <th>journal.id</th>
+      <th>journal.title</th>
+      <th>pages</th>
+      <th>title</th>
+      <th>type</th>
+      <th>volume</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[[{'first_name': 'Scott R.', 'last_name': 'Bak...</td>
+      <td>pub.1059983538</td>
+      <td>4</td>
+      <td>jour.1123532</td>
+      <td>The Quarterly Journal of Economics</td>
+      <td>1593-1636</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+      <td>article</td>
+      <td>131</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[[{'first_name': 'Marcel P.', 'last_name': 'Ti...</td>
+      <td>pub.1024262334</td>
+      <td>3</td>
+      <td>jour.1050256</td>
+      <td>Review of International Economics</td>
+      <td>575-605</td>
+      <td>An Illustrated User Guide to the World Input–O...</td>
+      <td>article</td>
+      <td>23</td>
+      <td>2015</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[[{'first_name': 'Ronald', 'last_name': 'Ingle...</td>
+      <td>pub.1090420622</td>
+      <td>NaN</td>
+      <td>jour.1276748</td>
+      <td>SSRN Electronic Journal</td>
+      <td>NaN</td>
+      <td>Trump, Brexit, and the Rise of Populism: Econo...</td>
+      <td>preprint</td>
+      <td>NaN</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[[{'first_name': 'Sara B.', 'last_name': 'Hobo...</td>
+      <td>pub.1038710751</td>
+      <td>9</td>
+      <td>jour.1052590</td>
+      <td>Journal of European Public Policy</td>
+      <td>1259-1277</td>
+      <td>The Brexit vote: a divided nation, a divided c...</td>
+      <td>article</td>
+      <td>23</td>
+      <td>2016</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>[[{'first_name': 'Matthew J.', 'last_name': 'G...</td>
+      <td>pub.1019084958</td>
+      <td>3</td>
+      <td>jour.1026839</td>
+      <td>The Political Quarterly</td>
+      <td>323-332</td>
+      <td>The 2016 Referendum, Brexit and the Left Behin...</td>
+      <td>article</td>
+      <td>87</td>
+      <td>2016</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">dfjournals</span><span class="p">[</span><span class="s1">&#39;journal.title&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Journal of European Public Policy                              30
+The British Journal of Politics and International Relations    17
+Journal of Ethnic and Migration Studies                        16
+Journal of Democracy                                           13
+The Political Quarterly                                        12
+Name: journal.title, dtype: int64
+</pre></div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Json_normalize-on-nested-objects-with-missing-elements">
+<h2>Json_normalize on nested objects with missing elements<a class="headerlink" href="#Json_normalize-on-nested-objects-with-missing-elements" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">dslquery</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;search publications for &quot;brexit&quot; return publications[doi+title+FOR+times_cited] sort by times_cited limit 1000&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>NOTE the following doesn’t work because the nested FOR structure sometimes is missing!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>json_normalize(data.publications[:10], record_path=[&#39;FOR&#39;])
+
+==&gt; &#39;FOR&#39; key Error!
+</pre></div>
+</div>
+<p>In essence, the problem is that the data above have a missing key! The JSON is not regularly structured</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">publications</span><span class="p">[:</span><span class="mi">10</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;FOR&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">json_normalize</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">publications</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">record_path</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">],</span> <span class="n">meta</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;doi&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>name</th>
+      <th>doi</th>
+      <th>title</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>3292</td>
+      <td>1402 Applied Economics</td>
+      <td>10.1093/qje/qjw024</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>3313</td>
+      <td>1403 Econometrics</td>
+      <td>10.1093/qje/qjw024</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3286</td>
+      <td>1401 Economic Theory</td>
+      <td>10.1093/qje/qjw024</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3313</td>
+      <td>1403 Econometrics</td>
+      <td>10.1111/roie.12178</td>
+      <td>An Illustrated User Guide to the World Input–O...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3675</td>
+      <td>2103 Historical Studies</td>
+      <td>10.1080/13501763.2016.1225785</td>
+      <td>The Brexit vote: a divided nation, a divided c...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># another more sophisticated approach</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">dslquery</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;search publications for &quot;brexit&quot; return publications[doi+title+FOR+times_cited] sort by times_cited limit 1000&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="c1"># ensure that all pubs have a valid (empty, even) FOR value</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">publications</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;FOR&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span> <span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">][</span><span class="mi">5</span><span class="p">:]}</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">]]</span> <span class="c1"># also remove the digit prefix to improve legibility</span>
+<span class="c1"># then</span>
+<span class="n">json_normalize</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">publications</span><span class="p">,</span> <span class="n">record_path</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;FOR&#39;</span><span class="p">],</span> <span class="n">meta</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;doi&quot;</span><span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">record_prefix</span><span class="o">=</span><span class="s1">&#39;for_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>for_name</th>
+      <th>doi</th>
+      <th>title</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Applied Economics</td>
+      <td>10.1093/qje/qjw024</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Econometrics</td>
+      <td>10.1093/qje/qjw024</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Economic Theory</td>
+      <td>10.1093/qje/qjw024</td>
+      <td>Measuring Economic Policy Uncertainty</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Econometrics</td>
+      <td>10.1111/roie.12178</td>
+      <td>An Illustrated User Guide to the World Input–O...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Historical Studies</td>
+      <td>10.1080/13501763.2016.1225785</td>
+      <td>The Brexit vote: a divided nation, a divided c...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Normalizing-nested-JSON-objects">
+<h2>Normalizing nested JSON objects<a class="headerlink" href="#Normalizing-nested-JSON-objects" title="Permalink to this headline">¶</a></h2>
+<p>Normalizing author affiliations is more difficult becuase they are <strong>nested within 2 level</strong> so the unpacking doesnt work out of the box…</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span> <span class="o">=</span> <span class="n">dslquery</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;search publications for &quot;brexit&quot; return publications[basics] sort by times_cited limit 1000&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">publications</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;author_affiliations&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[{&#39;first_name&#39;: &#39;Scott R.&#39;,
+  &#39;last_name&#39;: &#39;Baker&#39;,
+  &#39;orcid&#39;: &#39;&#39;,
+  &#39;current_organization_id&#39;: &#39;&#39;,
+  &#39;researcher_id&#39;: &#39;&#39;,
+  &#39;affiliations&#39;: []},
+ {&#39;first_name&#39;: &#39;Nicholas&#39;,
+  &#39;last_name&#39;: &#39;Bloom&#39;,
+  &#39;orcid&#39;: &#39;&#39;,
+  &#39;current_organization_id&#39;: &#39;&#39;,
+  &#39;researcher_id&#39;: &#39;&#39;,
+  &#39;affiliations&#39;: []},
+ {&#39;first_name&#39;: &#39;Steven J.&#39;,
+  &#39;last_name&#39;: &#39;Davis&#39;,
+  &#39;orcid&#39;: &#39;&#39;,
+  &#39;current_organization_id&#39;: &#39;&#39;,
+  &#39;researcher_id&#39;: &#39;&#39;,
+  &#39;affiliations&#39;: []}]
+</pre></div></div>
+</div>
+<p>TIP: we can just simplify the input JSON by removing the empty level in the nesting structure…</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">publications</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;author_affiliations&#39;</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">[</span><span class="s1">&#39;author_affiliations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="s1">&#39;author_affiliations&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">x</span><span class="p">[</span><span class="s1">&#39;author_affiliations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df_aff1</span> <span class="o">=</span> <span class="n">json_normalize</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">publications</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">record_path</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;author_affiliations&#39;</span><span class="p">],</span> <span class="n">meta</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;doi&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="n">df_aff1</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>affiliations</th>
+      <th>current_organization_id</th>
+      <th>first_name</th>
+      <th>last_name</th>
+      <th>orcid</th>
+      <th>researcher_id</th>
+      <th>id</th>
+      <th>doi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[]</td>
+      <td></td>
+      <td>Scott R.</td>
+      <td>Baker</td>
+      <td></td>
+      <td></td>
+      <td>pub.1059983538</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[]</td>
+      <td></td>
+      <td>Nicholas</td>
+      <td>Bloom</td>
+      <td></td>
+      <td></td>
+      <td>pub.1059983538</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[]</td>
+      <td></td>
+      <td>Steven J.</td>
+      <td>Davis</td>
+      <td></td>
+      <td></td>
+      <td>pub.1059983538</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[{'id': 'grid.4830.f', 'name': 'University of ...</td>
+      <td>grid.4830.f</td>
+      <td>Marcel P.</td>
+      <td>Timmer</td>
+      <td></td>
+      <td>ur.0637613047.37</td>
+      <td>pub.1024262334</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>[{'id': 'grid.4830.f', 'name': 'University of ...</td>
+      <td>grid.4830.f</td>
+      <td>Erik</td>
+      <td>Dietzenbacher</td>
+      <td></td>
+      <td>ur.010050177407.14</td>
+      <td>pub.1024262334</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>this allows us to have stats on number of authors per pub, how many have orcids, and current organizations.</p>
+</div>
+<div class="section" id="Recursive-applications-of-json_normalize">
+<h2>Recursive applications of json_normalize<a class="headerlink" href="#Recursive-applications-of-json_normalize" title="Permalink to this headline">¶</a></h2>
+<p>We could simply create do another round of json_normalize !</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">type</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">df_aff1</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+list
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">json_normalize</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">df_aff1</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;records&#39;</span><span class="p">)),</span> <span class="n">record_path</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;affiliations&#39;</span><span class="p">],</span>
+               <span class="n">meta</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;researcher_id&#39;</span><span class="p">,</span> <span class="s1">&#39;first_name&#39;</span><span class="p">,</span> <span class="s1">&#39;last_name&#39;</span><span class="p">],</span> <span class="n">record_prefix</span><span class="o">=</span><span class="s1">&#39;aff_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>aff_city</th>
+      <th>aff_city_id</th>
+      <th>aff_country</th>
+      <th>aff_country_code</th>
+      <th>aff_id</th>
+      <th>aff_name</th>
+      <th>aff_state</th>
+      <th>aff_state_code</th>
+      <th>id</th>
+      <th>researcher_id</th>
+      <th>first_name</th>
+      <th>last_name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Groningen</td>
+      <td>2755251.0</td>
+      <td>Netherlands</td>
+      <td>NL</td>
+      <td>grid.4830.f</td>
+      <td>University of Groningen</td>
+      <td>None</td>
+      <td>None</td>
+      <td>pub.1024262334</td>
+      <td>ur.0637613047.37</td>
+      <td>Marcel P.</td>
+      <td>Timmer</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Groningen</td>
+      <td>2755251.0</td>
+      <td>Netherlands</td>
+      <td>NL</td>
+      <td>grid.4830.f</td>
+      <td>University of Groningen</td>
+      <td>None</td>
+      <td>None</td>
+      <td>pub.1024262334</td>
+      <td>ur.010050177407.14</td>
+      <td>Erik</td>
+      <td>Dietzenbacher</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Groningen</td>
+      <td>2755251.0</td>
+      <td>Netherlands</td>
+      <td>NL</td>
+      <td>grid.4830.f</td>
+      <td>University of Groningen</td>
+      <td>None</td>
+      <td>None</td>
+      <td>pub.1024262334</td>
+      <td>ur.014505206773.12</td>
+      <td>Bart</td>
+      <td>Los</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Vienna</td>
+      <td>2761369.0</td>
+      <td>Austria</td>
+      <td>AT</td>
+      <td>grid.426374.0</td>
+      <td>Vienna Institute for International Economic St...</td>
+      <td>None</td>
+      <td>None</td>
+      <td>pub.1024262334</td>
+      <td>ur.013540400553.29</td>
+      <td>Robert</td>
+      <td>Stehrer</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Groningen</td>
+      <td>2755251.0</td>
+      <td>Netherlands</td>
+      <td>NL</td>
+      <td>grid.4830.f</td>
+      <td>University of Groningen</td>
+      <td>None</td>
+      <td>None</td>
+      <td>pub.1024262334</td>
+      <td>ur.07400737673.66</td>
+      <td>Gaaitzen J.</td>
+      <td>Vries</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Pandas Recipes</a><ul>
+<li><a class="reference internal" href="#Reminder:-about-tidy-data">Reminder: about tidy data</a><ul>
+<li><a class="reference internal" href="#Load-some-data">Load some data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#by-columns">by columns</a></li>
+<li><a class="reference internal" href="#by-rows-(records)">by rows (records)</a></li>
+<li><a class="reference internal" href="#From-JSON">From JSON</a></li>
+<li><a class="reference internal" href="#From-CSV">From CSV</a><ul>
+<li><a class="reference internal" href="#Add-cell-value">Add cell value</a></li>
+<li><a class="reference internal" href="#Inspect-dataframe-and-Index">Inspect dataframe and Index</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Working-with-the-index">Working with the index</a><ul>
+<li><a class="reference internal" href="#Rows-and-columns">Rows and columns</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Select-rows-based-on-cell-values-and-update">Select rows based on cell values and update</a></li>
+<li><a class="reference internal" href="#Renaming-columns">Renaming columns</a></li>
+<li><a class="reference internal" href="#Create-a-new-DF-by-selecting-columns">Create a new DF by selecting columns</a></li>
+<li><a class="reference internal" href="#Dropping-columns">Dropping columns</a></li>
+<li><a class="reference internal" href="#Drop-columns-with-missing-values">Drop columns with missing values</a></li>
+<li><a class="reference internal" href="#Drop-empty-values-rows,-after-replacing-empty-strings">Drop empty values rows, after replacing empty strings</a></li>
+<li><a class="reference internal" href="#Add-new-column-to-existing-dataframe">Add new column to existing dataframe</a></li>
+<li><a class="reference internal" href="#change-column-order">change column order</a><ul>
+<li><a class="reference internal" href="#Count-Values">Count Values</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Count-unique-values">Count unique values</a></li>
+<li><a class="reference internal" href="#Count-missing-values">Count missing values</a></li>
+<li><a class="reference internal" href="#Get-most-frequent-value-(single)">Get most frequent value (single)</a></li>
+<li><a class="reference internal" href="#Frequency-count-based-on-two-columns-(variables)">Frequency count based on two columns (variables)</a></li>
+<li><a class="reference internal" href="#Fill-in-empty-values">Fill in empty values</a><ul>
+<li><a class="reference internal" href="#Transpose-axis">Transpose axis</a></li>
+<li><a class="reference internal" href="#Sorting-values">Sorting values</a></li>
+<li><a class="reference internal" href="#Apply">Apply</a></li>
+<li><a class="reference internal" href="#Groupby">Groupby</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Simple-Groupby">Simple Groupby</a></li>
+<li><a class="reference internal" href="#Counting-results">Counting results</a></li>
+<li><a class="reference internal" href="#Groupby-and-sum-only-one-column">Groupby and sum only one column</a></li>
+<li><a class="reference internal" href="#Using-groupby-to-filter-items-that-occur-more-than-once">Using groupby to filter items that occur more than once</a></li>
+<li><a class="reference internal" href="#Add-a-column-that-counts-a-variable-in-groupby">Add a column that counts a variable in groupby</a></li>
+<li><a class="reference internal" href="#Group-by-two-variables">Group by two variables</a><ul>
+<li><a class="reference internal" href="#Iterate-through-dataframe">Iterate through dataframe</a></li>
+<li><a class="reference internal" href="#Query-dataframe">Query dataframe</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Select-based-on-list">Select based on list</a><ul>
+<li><a class="reference internal" href="#Merge-and-aggregrate-dataframes">Merge and aggregrate dataframes</a></li>
+<li><a class="reference internal" href="#Melt-a-dataframe">Melt a dataframe</a></li>
+<li><a class="reference internal" href="#Using-json_normalize">Using json_normalize</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Json_normalize-on-nested-objects-with-missing-elements">Json_normalize on nested objects with missing elements</a></li>
+<li><a class="reference internal" href="#Normalizing-nested-JSON-objects">Normalizing nested JSON objects</a></li>
+<li><a class="reference internal" href="#Recursive-applications-of-json_normalize">Recursive applications of json_normalize</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../1-snippets/DimcliSnippets.html"
+                        title="previous chapter">Dimcli open in colab badge</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pandas-Tidy Data.html"
+                        title="next chapter">Tidy Data in Python</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/notebooks/Pandas/pandas recipes.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="pandas-Tidy Data.html" title="Tidy Data in Python"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../1-snippets/DimcliSnippets.html" title="Dimcli open in colab badge"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Pandas Recipes</a></li> 
+      </ul>
+    </div>
+   
+    <div class="footer" role="contentinfo">
+    </div>
+
+    <!-- Adds target=_blank to external links -->
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
+    });
+  </script>
+  
+
+  </body>
+</html>

@@ -1,0 +1,1819 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedding HTML and dataviz in jupyter &#8212; Python tests [PRIVATE]</title>
+    <link rel="stylesheet" href="../_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/_custom.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tqdm and jupyter integration" href="tqdm.html" />
+    <link rel="prev" title="Wikidata nobel prize winners" href="Wikidata Nobel Prize Winners.html" />
+   
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+
+   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149959808-1"></script>
+   <!-- <script src="_static/js/custom.js"></script> -->
+
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tqdm.html" title="Tqdm and jupyter integration"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Wikidata Nobel Prize Winners.html" title="Wikidata nobel prize winners"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Embedding HTML and dataviz in jupyter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Embedding-HTML-and-dataviz-in-jupyter">
+<h1>Embedding HTML and dataviz in jupyter<a class="headerlink" href="#Embedding-HTML-and-dataviz-in-jupyter" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%%html</span>
+<span class="p">&lt;</span><span class="nt">b</span><span class="p">&gt;</span>asdadasd<span class="p">&lt;/</span><span class="nt">b</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<b>asdadasd</b></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%%html</span>
+
+
+<span class="cp">&lt;!doctype html&gt;</span>
+<span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- load D3js --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//d3plus.org/js/d3.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- load D3plus after D3js --&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//d3plus.org/js/d3plus.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="c">&lt;!-- create container element for visualization --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;viz&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+
+  <span class="c1">// create sample dataset</span>
+  <span class="kd">var</span> <span class="nx">sample_data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">10</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">12</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">30</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;delta&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">26</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;epsilon&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">12</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;zeta&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">26</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;theta&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">11</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;eta&quot;</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">24</span><span class="p">}</span>
+  <span class="p">]</span>
+
+  <span class="c1">// create list of node positions</span>
+  <span class="kd">var</span> <span class="nx">positions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">15</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">24</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">18</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;delta&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">26</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">21</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;epsilon&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">13</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">4</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;zeta&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">31</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">13</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;theta&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">19</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">8</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;eta&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">11</span><span class="p">}</span>
+  <span class="p">]</span>
+
+  <span class="c1">// create list of node connections</span>
+  <span class="kd">var</span> <span class="nx">connections</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="s2">&quot;beta&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="s2">&quot;delta&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="s2">&quot;epsilon&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="s2">&quot;zeta&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="s2">&quot;theta&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="s2">&quot;eta&quot;</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="s2">&quot;gamma&quot;</span><span class="p">}</span>
+  <span class="p">]</span>
+
+  <span class="c1">// instantiate d3plus</span>
+  <span class="kd">var</span> <span class="nx">visualization</span> <span class="o">=</span> <span class="nx">d3plus</span><span class="p">.</span><span class="nx">viz</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">container</span><span class="p">(</span><span class="s2">&quot;#viz&quot;</span><span class="p">)</span>  <span class="c1">// container DIV to hold the visualization</span>
+    <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="s2">&quot;network&quot;</span><span class="p">)</span>    <span class="c1">// visualization type</span>
+    <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">sample_data</span><span class="p">)</span>  <span class="c1">// sample dataset to attach to nodes</span>
+    <span class="p">.</span><span class="nx">nodes</span><span class="p">(</span><span class="nx">positions</span><span class="p">)</span>   <span class="c1">// x and y position of nodes</span>
+    <span class="p">.</span><span class="nx">edges</span><span class="p">(</span><span class="nx">connections</span><span class="p">)</span> <span class="c1">// list of node connections</span>
+    <span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="s2">&quot;size&quot;</span><span class="p">)</span>       <span class="c1">// key to size the nodes</span>
+    <span class="p">.</span><span class="nx">id</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>         <span class="c1">// key for which our data is unique on</span>
+    <span class="p">.</span><span class="nx">draw</span><span class="p">()</span>             <span class="c1">// finally, draw the visualization!</span>
+
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<!doctype html>
+<meta charset="utf-8">
+
+<!-- load D3js -->
+<script src="//d3plus.org/js/d3.js"></script>
+
+<!-- load D3plus after D3js -->
+<script src="//d3plus.org/js/d3plus.js"></script>
+
+<!-- create container element for visualization -->
+<div id="viz"></div>
+
+<script>
+
+  // create sample dataset
+  var sample_data = [
+    {"name": "alpha", "size": 10},
+    {"name": "beta", "size": 12},
+    {"name": "gamma", "size": 30},
+    {"name": "delta", "size": 26},
+    {"name": "epsilon", "size": 12},
+    {"name": "zeta", "size": 26},
+    {"name": "theta", "size": 11},
+    {"name": "eta", "size": 24}
+  ]
+
+  // create list of node positions
+  var positions = [
+    {"name": "alpha", "x": 10, "y": 15},
+    {"name": "beta", "x": 12, "y": 24},
+    {"name": "gamma", "x": 16, "y": 18},
+    {"name": "delta", "x": 26, "y": 21},
+    {"name": "epsilon", "x": 13, "y": 4},
+    {"name": "zeta", "x": 31, "y": 13},
+    {"name": "theta", "x": 19, "y": 8},
+    {"name": "eta", "x": 24, "y": 11}
+  ]
+
+  // create list of node connections
+  var connections = [
+    {"source": "alpha", "target": "beta"},
+    {"source": "alpha", "target": "gamma"},
+    {"source": "beta", "target": "delta"},
+    {"source": "beta", "target": "epsilon"},
+    {"source": "zeta", "target": "gamma"},
+    {"source": "theta", "target": "gamma"},
+    {"source": "eta", "target": "gamma"}
+  ]
+
+  // instantiate d3plus
+  var visualization = d3plus.viz()
+    .container("#viz")  // container DIV to hold the visualization
+    .type("network")    // visualization type
+    .data(sample_data)  // sample dataset to attach to nodes
+    .nodes(positions)   // x and y position of nodes
+    .edges(connections) // list of node connections
+    .size("size")       // key to size the nodes
+    .id("name")         // key for which our data is unique on
+    .draw()             // finally, draw the visualization!
+
+</script></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="o">%%html</span>
+<span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">http-equiv</span><span class="o">=</span><span class="s">&quot;Content-Type&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;text/html;charset=utf-8&quot;</span><span class="p">/&gt;</span>
+    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text/javascript&quot;</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://d3js.org/d3.v3.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+
+
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;graph_div&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span>
+
+<span class="c1">// based on http://bl.ocks.org/eyaler/10586116</span>
+
+<span class="kd">var</span> <span class="nx">data_local_dynamic</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;graph&quot;</span><span class="o">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;links&quot;</span><span class="o">:</span> <span class="p">[</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60667</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60648</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">62339</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60671</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60721</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61318</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61108</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60653</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61852</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60759</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60667</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60673</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60667</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61108</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60667</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60648</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60667</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61322</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60667</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60671</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60648</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61318</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60648</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60673</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60648</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60650</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60648</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">62013</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60648</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61322</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">62339</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60673</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">62339</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">62372</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">62339</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60671</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">62339</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61108</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">62339</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60648</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60671</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60759</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60671</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60905</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60671</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60673</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60671</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">62339</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60671</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61850</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60721</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60759</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60721</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60905</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60721</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">62013</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60721</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61143</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60721</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60911</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61318</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60648</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61318</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">62013</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61318</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60653</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61318</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60650</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61318</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60721</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61108</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60672</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61108</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61629</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61108</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60667</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61108</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">62339</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61108</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60921</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60653</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61318</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60653</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60648</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60653</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60673</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60653</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60721</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60653</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">62013</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61852</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60673</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61852</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60720</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61852</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60667</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61852</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60721</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">61852</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60759</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60759</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">60905</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60759</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61961</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60759</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61045</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60759</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61260</span> <span class="p">},</span>
+
+          <span class="p">{</span> <span class="s2">&quot;source&quot;</span><span class="o">:</span> <span class="mi">60759</span><span class="p">,</span> <span class="s2">&quot;target&quot;</span><span class="o">:</span> <span class="mi">61143</span> <span class="p">},</span>
+
+    <span class="c1">//{&quot;source&quot;: 0, &quot;target&quot;: 1},</span>
+    <span class="p">],</span>
+  <span class="s2">&quot;nodes&quot;</span><span class="o">:</span> <span class="p">[</span>
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60667</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Body mass index&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60648</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Diabetes mellitus type 2&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">62339</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Hypertension&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60671</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Syndrome&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60721</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Metabolism&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61318</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Insulin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61108</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Logistic regression&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60653</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Insulin resistance&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61852</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Adipose tissue&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60759</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mi">0</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Gene&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60673</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">70</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.5</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Obesity&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61322</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Fasting&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60650</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Blood sugar&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">62013</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Glucose&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">62372</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Diabetes mellitus&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60905</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61850</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Phenotype&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61143</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Acid&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60911</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Lipid&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60672</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Odds ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61629</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Confidence interval&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60921</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Multivariate analysis&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">60720</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Magnetic resonance imaging&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61961</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;DNA&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61045</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Polymerase chain reaction&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+        <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">61260</span><span class="p">,</span> <span class="s2">&quot;size&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="o">:</span> <span class="mf">0.4</span> <span class="p">,</span> <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Messenger RNA&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;circle&quot;</span><span class="p">},</span>
+
+
+
+    <span class="c1">// {&quot;size&quot;: 60, &quot;score&quot;: 0, &quot;id&quot;: &quot;Androsynth&quot;, &quot;type&quot;: &quot;circle&quot;},</span>
+  <span class="p">],</span>
+    <span class="s2">&quot;directed&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+   <span class="s2">&quot;multigraph&quot;</span><span class="o">:</span> <span class="kc">false</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">chartDiv</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s2">&quot;graph_div&quot;</span><span class="p">);</span>
+<span class="c1">// Extract the width and height that was computed by CSS.</span>
+<span class="kd">var</span> <span class="nx">divWidth</span> <span class="o">=</span> <span class="nx">chartDiv</span><span class="p">.</span><span class="nx">clientWidth</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">divHeight</span> <span class="o">=</span> <span class="nx">chartDiv</span><span class="p">.</span><span class="nx">clientHeight</span><span class="p">;</span>
+
+<span class="c1">//var w = window.innerWidth;</span>
+<span class="c1">//var h = window.innerHeight;</span>
+
+<span class="kd">var</span> <span class="nx">keyc</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">keys</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">keyt</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">keyr</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">keyx</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">keyd</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">keyl</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">keym</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">keyh</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">key1</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">key2</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">key3</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">key0</span> <span class="o">=</span> <span class="kc">true</span>
+
+<span class="kd">var</span> <span class="nx">focus_node</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">highlight_node</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">text_center</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">outline</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">min_score</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">max_score</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">color</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">linear</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">domain</span><span class="p">([</span><span class="nx">min_score</span><span class="p">,</span> <span class="p">(</span><span class="nx">min_score</span><span class="o">+</span><span class="nx">max_score</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="nx">max_score</span><span class="p">])</span>
+  <span class="p">.</span><span class="nx">range</span><span class="p">([</span><span class="s2">&quot;lime&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">]);</span>
+
+<span class="kd">var</span> <span class="nx">highlight_color</span> <span class="o">=</span> <span class="s2">&quot;blue&quot;</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">highlight_trans</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">size</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">scale</span><span class="p">.</span><span class="nx">pow</span><span class="p">().</span><span class="nx">exponent</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">domain</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span>
+  <span class="p">.</span><span class="nx">range</span><span class="p">([</span><span class="mi">8</span><span class="p">,</span><span class="mi">24</span><span class="p">]);</span>
+
+<span class="kd">var</span> <span class="nx">force</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">force</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">linkDistance</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">charge</span><span class="p">(</span><span class="o">-</span><span class="mi">500</span><span class="p">)</span> <span class="c1">// was 800</span>
+  <span class="p">.</span><span class="nx">size</span><span class="p">([</span><span class="nx">divWidth</span><span class="p">,</span><span class="nx">divHeight</span><span class="p">]);</span>
+
+<span class="kd">var</span> <span class="nx">default_node_color</span> <span class="o">=</span> <span class="s2">&quot;#ccc&quot;</span><span class="p">;</span>
+<span class="c1">//var default_node_color = &quot;rgb(3,190,100)&quot;;</span>
+<span class="kd">var</span> <span class="nx">default_link_color</span> <span class="o">=</span> <span class="s2">&quot;#888&quot;</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">nominal_base_node_size</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">nominal_text_size</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">max_text_size</span> <span class="o">=</span> <span class="mi">24</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">nominal_stroke</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">max_stroke</span> <span class="o">=</span> <span class="mf">4.5</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">max_base_node_size</span> <span class="o">=</span> <span class="mi">36</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">min_zoom</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">max_zoom</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+<span class="c1">// append to DOM</span>
+<span class="kd">var</span> <span class="nx">svg</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;#graph_div&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;svg&quot;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">zoom</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">behavior</span><span class="p">.</span><span class="nx">zoom</span><span class="p">().</span><span class="nx">scaleExtent</span><span class="p">([</span><span class="nx">min_zoom</span><span class="p">,</span><span class="nx">max_zoom</span><span class="p">])</span>
+<span class="kd">var</span> <span class="nx">g</span> <span class="o">=</span> <span class="nx">svg</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">);</span>
+<span class="c1">//</span>
+<span class="nx">svg</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;cursor&quot;</span><span class="p">,</span><span class="s2">&quot;move&quot;</span><span class="p">);</span>
+
+<span class="c1">// d3.json(&quot;graph.json&quot;, function(error, graph) {</span>
+
+    <span class="kd">var</span> <span class="nx">graph</span> <span class="o">=</span> <span class="nx">data_local_dynamic</span><span class="p">;</span>
+
+    <span class="kd">var</span> <span class="nx">linkedByIndex</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="nx">graph</span><span class="p">.</span><span class="nx">links</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">linkedByIndex</span><span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">source</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">target</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">});</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">linkedByIndex</span><span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">isConnected</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">linkedByIndex</span><span class="p">[</span><span class="nx">a</span><span class="p">.</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nx">b</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">||</span> <span class="nx">linkedByIndex</span><span class="p">[</span><span class="nx">b</span><span class="p">.</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nx">a</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">||</span> <span class="nx">a</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">b</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// console.log( isConnected(graph.nodes[0], graph.nodes[1]));</span>
+
+    <span class="kd">function</span> <span class="nx">hasConnections</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">property</span> <span class="k">in</span> <span class="nx">linkedByIndex</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">s</span> <span class="o">=</span> <span class="nx">property</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">((</span><span class="nx">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nx">a</span><span class="p">.</span><span class="nx">id</span> <span class="o">||</span> <span class="nx">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nx">a</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">linkedByIndex</span><span class="p">[</span><span class="nx">property</span><span class="p">])</span>                                      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="cm">/* resolve node IDs (not optimized at all!)</span>
+<span class="cm">    http://bl.ocks.org/nitaku/7483341</span>
+<span class="cm">    */</span>
+    <span class="nx">_ref</span> <span class="o">=</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">links</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">_i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">_len</span> <span class="o">=</span> <span class="nx">_ref</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">_i</span> <span class="o">&lt;</span> <span class="nx">_len</span><span class="p">;</span> <span class="nx">_i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">l</span> <span class="o">=</span> <span class="nx">_ref</span><span class="p">[</span><span class="nx">_i</span><span class="p">];</span>
+      <span class="nx">_ref2</span> <span class="o">=</span> <span class="nx">graph</span><span class="p">.</span><span class="nx">nodes</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">_j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">_len2</span> <span class="o">=</span> <span class="nx">_ref2</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">_j</span> <span class="o">&lt;</span> <span class="nx">_len2</span><span class="p">;</span> <span class="nx">_j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">n</span> <span class="o">=</span> <span class="nx">_ref2</span><span class="p">[</span><span class="nx">_j</span><span class="p">];</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">l</span><span class="p">.</span><span class="nx">source</span> <span class="o">===</span> <span class="nx">n</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">l</span><span class="p">.</span><span class="nx">source</span> <span class="o">=</span> <span class="nx">n</span><span class="p">;</span>
+          <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">l</span><span class="p">.</span><span class="nx">target</span> <span class="o">===</span> <span class="nx">n</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">l</span><span class="p">.</span><span class="nx">target</span> <span class="o">=</span> <span class="nx">n</span><span class="p">;</span>
+          <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">force</span>
+        <span class="p">.</span><span class="nx">nodes</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">nodes</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">links</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">links</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+
+    <span class="kd">var</span> <span class="nx">link</span> <span class="o">=</span> <span class="nx">g</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;.link&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">links</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">enter</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;line&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;link&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;stroke-width&quot;</span><span class="p">,</span><span class="nx">nominal_stroke</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;stroke&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="nx">color</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="p">);</span>
+        <span class="k">else</span> <span class="k">return</span> <span class="nx">default_link_color</span><span class="p">;</span> <span class="p">})</span>
+
+
+    <span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">g</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;.node&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">nodes</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">enter</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">)</span>
+
+        <span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">force</span><span class="p">.</span><span class="nx">drag</span><span class="p">)</span>
+
+
+    <span class="c1">//</span>
+    <span class="c1">// NEW: requery on a dbclick</span>
+    <span class="c1">//</span>
+    <span class="nx">node</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;dblclick&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+            <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="s2">&quot;/dbpedialinks/entities/&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+        <span class="p">});</span>
+
+
+
+        <span class="kd">var</span> <span class="nx">tocolor</span> <span class="o">=</span> <span class="s2">&quot;fill&quot;</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">towhite</span> <span class="o">=</span> <span class="s2">&quot;stroke&quot;</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">outline</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">tocolor</span> <span class="o">=</span> <span class="s2">&quot;stroke&quot;</span>
+            <span class="nx">towhite</span> <span class="o">=</span> <span class="s2">&quot;fill&quot;</span>
+        <span class="p">}</span>
+
+
+
+    <span class="kd">var</span> <span class="nx">circle</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">svg</span><span class="p">.</span><span class="nx">symbol</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">*</span><span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">size</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">size</span><span class="p">)</span><span class="o">||</span><span class="nx">nominal_base_node_size</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span> <span class="p">}))</span>
+
+        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="nx">tocolor</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="nx">color</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="p">);</span>
+        <span class="k">else</span> <span class="k">return</span> <span class="nx">default_node_color</span><span class="p">;</span> <span class="p">})</span>
+        <span class="c1">//.attr(&quot;r&quot;, function(d) { return size(d.size)||nominal_base_node_size; })</span>
+        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;stroke-width&quot;</span><span class="p">,</span> <span class="nx">nominal_stroke</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="nx">towhite</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">);</span>
+
+
+    <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="nx">g</span><span class="p">.</span><span class="nx">selectAll</span><span class="p">(</span><span class="s2">&quot;.text&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="nx">graph</span><span class="p">.</span><span class="nx">nodes</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">enter</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;dy&quot;</span><span class="p">,</span> <span class="s2">&quot;.35em&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;font-size&quot;</span><span class="p">,</span> <span class="nx">nominal_text_size</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">text_center</span><span class="p">)</span>
+        <span class="nx">text</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;text-anchor&quot;</span><span class="p">,</span> <span class="s2">&quot;middle&quot;</span><span class="p">);</span>
+        <span class="k">else</span>
+        <span class="nx">text</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;dx&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="p">(</span><span class="nx">size</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">size</span><span class="p">)</span><span class="o">||</span><span class="nx">nominal_base_node_size</span><span class="p">);})</span>
+        <span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="s1">&#39;\u2002&#39;</span><span class="o">+</span><span class="nx">d</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span> <span class="p">});</span>
+
+        <span class="nx">node</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseover&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">set_highlight</span><span class="p">(</span><span class="nx">d</span><span class="p">);</span>
+        <span class="p">})</span>
+    <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mousedown&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+        <span class="nx">focus_node</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span>
+        <span class="nx">set_focus</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">highlight_node</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="nx">set_highlight</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+
+    <span class="p">}</span>       <span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseout&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">exit_highlight</span><span class="p">();</span>
+
+    <span class="p">}</span>       <span class="p">);</span>
+
+            <span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="nb">window</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseup&quot;</span><span class="p">,</span>
+            <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">focus_node</span><span class="o">!==</span><span class="kc">null</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="nx">focus_node</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">highlight_trans</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">)</span>
+                <span class="p">{</span>
+
+            <span class="nx">circle</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;opacity&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="nx">text</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;opacity&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="nx">link</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;opacity&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="p">}</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">highlight_node</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="nx">exit_highlight</span><span class="p">();</span>
+            <span class="p">});</span>
+
+    <span class="kd">function</span> <span class="nx">exit_highlight</span><span class="p">()</span>
+    <span class="p">{</span>
+            <span class="nx">highlight_node</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">focus_node</span><span class="o">===</span><span class="kc">null</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="nx">svg</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;cursor&quot;</span><span class="p">,</span><span class="s2">&quot;move&quot;</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">highlight_color</span><span class="o">!=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+        <span class="p">{</span>
+        <span class="nx">circle</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="nx">towhite</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">);</span>
+        <span class="nx">text</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;font-weight&quot;</span><span class="p">,</span> <span class="s2">&quot;normal&quot;</span><span class="p">);</span>
+        <span class="nx">link</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;stroke&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="p">(</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="nx">color</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span><span class="o">:</span><span class="nx">default_link_color</span><span class="p">});</span>
+    <span class="p">}</span>
+
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">set_focus</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">highlight_trans</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">)</span>  <span class="p">{</span>
+        <span class="nx">circle</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;opacity&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">isConnected</span><span class="p">(</span><span class="nx">d</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="nx">highlight_trans</span><span class="p">;</span>
+                <span class="p">});</span>
+
+                <span class="nx">text</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;opacity&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">isConnected</span><span class="p">(</span><span class="nx">d</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="nx">highlight_trans</span><span class="p">;</span>
+                <span class="p">});</span>
+
+                <span class="nx">link</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;opacity&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">o</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">d</span><span class="p">.</span><span class="nx">id</span> <span class="o">||</span> <span class="nx">o</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">d</span><span class="p">.</span><span class="nx">id</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="nx">highlight_trans</span><span class="p">;</span>
+                <span class="p">});</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+
+    <span class="kd">function</span> <span class="nx">set_highlight</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="nx">svg</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;cursor&quot;</span><span class="p">,</span><span class="s2">&quot;pointer&quot;</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">focus_node</span><span class="o">!==</span><span class="kc">null</span><span class="p">)</span> <span class="nx">d</span> <span class="o">=</span> <span class="nx">focus_node</span><span class="p">;</span>
+        <span class="nx">highlight_node</span> <span class="o">=</span> <span class="nx">d</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">highlight_color</span><span class="o">!=</span><span class="s2">&quot;white&quot;</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="nx">circle</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="nx">towhite</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">isConnected</span><span class="p">(</span><span class="nx">d</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span> <span class="o">?</span> <span class="nx">highlight_color</span> <span class="o">:</span> <span class="s2">&quot;white&quot;</span><span class="p">;});</span>
+                <span class="nx">text</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;font-weight&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="nx">isConnected</span><span class="p">(</span><span class="nx">d</span><span class="p">,</span> <span class="nx">o</span><span class="p">)</span> <span class="o">?</span> <span class="s2">&quot;bold&quot;</span> <span class="o">:</span> <span class="s2">&quot;normal&quot;</span><span class="p">;});</span>
+                <span class="nx">link</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;stroke&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">o</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">d</span><span class="p">.</span><span class="nx">id</span> <span class="o">||</span> <span class="nx">o</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">id</span> <span class="o">==</span> <span class="nx">d</span><span class="p">.</span><span class="nx">id</span> <span class="o">?</span> <span class="nx">highlight_color</span> <span class="o">:</span> <span class="p">((</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">o</span><span class="p">.</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="nx">color</span><span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span><span class="o">:</span><span class="nx">default_link_color</span><span class="p">);</span>
+
+                <span class="p">});</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">zoom</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;zoom&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="kd">var</span> <span class="nx">stroke</span> <span class="o">=</span> <span class="nx">nominal_stroke</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">nominal_stroke</span><span class="o">*</span><span class="nx">zoom</span><span class="p">.</span><span class="nx">scale</span><span class="p">()</span><span class="o">&gt;</span><span class="nx">max_stroke</span><span class="p">)</span> <span class="nx">stroke</span> <span class="o">=</span> <span class="nx">max_stroke</span><span class="o">/</span><span class="nx">zoom</span><span class="p">.</span><span class="nx">scale</span><span class="p">();</span>
+        <span class="nx">link</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;stroke-width&quot;</span><span class="p">,</span><span class="nx">stroke</span><span class="p">);</span>
+        <span class="nx">circle</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;stroke-width&quot;</span><span class="p">,</span><span class="nx">stroke</span><span class="p">);</span>
+
+        <span class="kd">var</span> <span class="nx">base_radius</span> <span class="o">=</span> <span class="nx">nominal_base_node_size</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">nominal_base_node_size</span><span class="o">*</span><span class="nx">zoom</span><span class="p">.</span><span class="nx">scale</span><span class="p">()</span><span class="o">&gt;</span><span class="nx">max_base_node_size</span><span class="p">)</span> <span class="nx">base_radius</span> <span class="o">=</span> <span class="nx">max_base_node_size</span><span class="o">/</span><span class="nx">zoom</span><span class="p">.</span><span class="nx">scale</span><span class="p">();</span>
+            <span class="nx">circle</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">svg</span><span class="p">.</span><span class="nx">symbol</span><span class="p">()</span>
+            <span class="p">.</span><span class="nx">size</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">PI</span><span class="o">*</span><span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">size</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">size</span><span class="p">)</span><span class="o">*</span><span class="nx">base_radius</span><span class="o">/</span><span class="nx">nominal_base_node_size</span><span class="o">||</span><span class="nx">base_radius</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span> <span class="p">})</span>
+            <span class="p">.</span><span class="nx">type</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span> <span class="p">}))</span>
+
+        <span class="c1">//circle.attr(&quot;r&quot;, function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); })</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">text_center</span><span class="p">)</span> <span class="nx">text</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;dx&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="nx">size</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">size</span><span class="p">)</span><span class="o">*</span><span class="nx">base_radius</span><span class="o">/</span><span class="nx">nominal_base_node_size</span><span class="o">||</span><span class="nx">base_radius</span><span class="p">);</span> <span class="p">});</span>
+
+        <span class="kd">var</span> <span class="nx">text_size</span> <span class="o">=</span> <span class="nx">nominal_text_size</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">nominal_text_size</span><span class="o">*</span><span class="nx">zoom</span><span class="p">.</span><span class="nx">scale</span><span class="p">()</span><span class="o">&gt;</span><span class="nx">max_text_size</span><span class="p">)</span> <span class="nx">text_size</span> <span class="o">=</span> <span class="nx">max_text_size</span><span class="o">/</span><span class="nx">zoom</span><span class="p">.</span><span class="nx">scale</span><span class="p">();</span>
+        <span class="nx">text</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;font-size&quot;</span><span class="p">,</span><span class="nx">text_size</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">);</span>
+
+        <span class="nx">g</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="s2">&quot;translate(&quot;</span> <span class="o">+</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">translate</span> <span class="o">+</span> <span class="s2">&quot;)scale(&quot;</span> <span class="o">+</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">scale</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">);</span>
+        <span class="p">});</span>
+
+    <span class="nx">svg</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">zoom</span><span class="p">);</span>
+    <span class="nx">svg</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span><span class="s2">&quot;scale(1,1)&quot;</span><span class="p">);</span>
+
+    <span class="nx">resize</span><span class="p">();</span>
+    <span class="c1">//window.focus();</span>
+    <span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="nb">window</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;resize&quot;</span><span class="p">,</span> <span class="nx">resize</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;keydown&quot;</span><span class="p">,</span> <span class="nx">keydown</span><span class="p">);</span>
+
+    <span class="nx">force</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;tick&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="nx">node</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;translate(&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">;</span> <span class="p">});</span>
+        <span class="nx">text</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;transform&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="s2">&quot;translate(&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">;</span> <span class="p">});</span>
+
+        <span class="nx">link</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;x1&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">x</span><span class="p">;</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;y1&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">y</span><span class="p">;</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;x2&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">x</span><span class="p">;</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;y2&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">y</span><span class="p">;</span> <span class="p">});</span>
+
+        <span class="nx">node</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;cx&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">x</span><span class="p">;</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;cy&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">d</span><span class="p">.</span><span class="nx">y</span><span class="p">;</span> <span class="p">});</span>
+        <span class="p">});</span>
+
+    <span class="kd">function</span> <span class="nx">resize</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">width</span> <span class="o">=</span> <span class="nx">chartDiv</span><span class="p">.</span><span class="nx">clientWidth</span><span class="p">,</span> <span class="nx">height</span> <span class="o">=</span> <span class="nx">chartDiv</span><span class="p">.</span><span class="nx">clientHeight</span><span class="p">;</span>
+        <span class="nx">svg</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="nx">width</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="nx">height</span><span class="p">);</span>
+
+        <span class="nx">force</span><span class="p">.</span><span class="nx">size</span><span class="p">([</span><span class="nx">force</span><span class="p">.</span><span class="nx">size</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="nx">width</span><span class="o">-</span><span class="nx">divWidth</span><span class="p">)</span><span class="o">/</span><span class="nx">zoom</span><span class="p">.</span><span class="nx">scale</span><span class="p">(),</span><span class="nx">force</span><span class="p">.</span><span class="nx">size</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="nx">height</span><span class="o">-</span><span class="nx">divHeight</span><span class="p">)</span><span class="o">/</span><span class="nx">zoom</span><span class="p">.</span><span class="nx">scale</span><span class="p">()]).</span><span class="nx">resume</span><span class="p">();</span>
+        <span class="nx">w</span> <span class="o">=</span> <span class="nx">width</span><span class="p">;</span>
+        <span class="nx">h</span> <span class="o">=</span> <span class="nx">height</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kd">function</span> <span class="nx">keydown</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span><span class="o">==</span><span class="mi">32</span><span class="p">)</span> <span class="p">{</span>  <span class="nx">force</span><span class="p">.</span><span class="nx">stop</span><span class="p">();}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span><span class="o">&gt;=</span><span class="mi">48</span> <span class="o">&amp;&amp;</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span><span class="o">&lt;=</span><span class="mi">90</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">ctrlKey</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">altKey</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">metaKey</span><span class="p">)</span>
+        <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nx">d3</span><span class="p">.</span><span class="nx">event</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="s2">&quot;C&quot;</span><span class="o">:</span> <span class="nx">keyc</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keyc</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;S&quot;</span><span class="o">:</span> <span class="nx">keys</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keys</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;T&quot;</span><span class="o">:</span> <span class="nx">keyt</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keyt</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;R&quot;</span><span class="o">:</span> <span class="nx">keyr</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keyr</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;X&quot;</span><span class="o">:</span> <span class="nx">keyx</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keyx</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;D&quot;</span><span class="o">:</span> <span class="nx">keyd</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keyd</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;L&quot;</span><span class="o">:</span> <span class="nx">keyl</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keyl</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;M&quot;</span><span class="o">:</span> <span class="nx">keym</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keym</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;H&quot;</span><span class="o">:</span> <span class="nx">keyh</span> <span class="o">=</span> <span class="o">!</span><span class="nx">keyh</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;1&quot;</span><span class="o">:</span> <span class="nx">key1</span> <span class="o">=</span> <span class="o">!</span><span class="nx">key1</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;2&quot;</span><span class="o">:</span> <span class="nx">key2</span> <span class="o">=</span> <span class="o">!</span><span class="nx">key2</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;3&quot;</span><span class="o">:</span> <span class="nx">key3</span> <span class="o">=</span> <span class="o">!</span><span class="nx">key3</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s2">&quot;0&quot;</span><span class="o">:</span> <span class="nx">key0</span> <span class="o">=</span> <span class="o">!</span><span class="nx">key0</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">link</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;display&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">flag</span>  <span class="o">=</span> <span class="nx">vis_by_type</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_type</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_node_score</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_node_score</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_link_score</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="p">);</span>
+                    <span class="c1">// console.log(d);</span>
+                    <span class="nx">linkedByIndex</span><span class="p">[</span><span class="nx">d</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nx">d</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="nx">flag</span><span class="p">;</span> <span class="c1">// IMPORTANT?</span>
+                <span class="k">return</span> <span class="nx">flag</span><span class="o">?</span><span class="s2">&quot;inline&quot;</span><span class="o">:</span><span class="s2">&quot;none&quot;</span><span class="p">;});</span>
+    <span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;display&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="p">(</span><span class="nx">key0</span><span class="o">||</span><span class="nx">hasConnections</span><span class="p">(</span><span class="nx">d</span><span class="p">))</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_type</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_node_score</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span><span class="o">?</span><span class="s2">&quot;inline&quot;</span><span class="o">:</span><span class="s2">&quot;none&quot;</span><span class="p">;});</span>
+    <span class="nx">text</span><span class="p">.</span><span class="nx">style</span><span class="p">(</span><span class="s2">&quot;display&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="p">(</span><span class="nx">key0</span><span class="o">||</span><span class="nx">hasConnections</span><span class="p">(</span><span class="nx">d</span><span class="p">))</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_type</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_node_score</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">score</span><span class="p">)</span><span class="o">?</span><span class="s2">&quot;inline&quot;</span><span class="o">:</span><span class="s2">&quot;none&quot;</span><span class="p">;});</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">highlight_node</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">((</span><span class="nx">key0</span><span class="o">||</span><span class="nx">hasConnections</span><span class="p">(</span><span class="nx">highlight_node</span><span class="p">))</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_type</span><span class="p">(</span><span class="nx">highlight_node</span><span class="p">.</span><span class="nx">type</span><span class="p">)</span><span class="o">&amp;&amp;</span><span class="nx">vis_by_node_score</span><span class="p">(</span><span class="nx">highlight_node</span><span class="p">.</span><span class="nx">score</span><span class="p">))</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="nx">focus_node</span><span class="o">!==</span><span class="kc">null</span><span class="p">)</span> <span class="nx">set_focus</span><span class="p">(</span><span class="nx">focus_node</span><span class="p">);</span>
+                        <span class="nx">set_highlight</span><span class="p">(</span><span class="nx">highlight_node</span><span class="p">);</span>
+                        <span class="p">}</span>
+                        <span class="k">else</span> <span class="p">{</span><span class="nx">exit_highlight</span><span class="p">();}</span>
+                    <span class="p">}</span>
+
+    <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="c1">// });  // original d3.json ends here</span>
+
+<span class="kd">function</span> <span class="nx">vis_by_type</span><span class="p">(</span><span class="nx">type</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="s2">&quot;circle&quot;</span><span class="o">:</span> <span class="k">return</span> <span class="nx">keyc</span><span class="p">;</span>
+      <span class="k">case</span> <span class="s2">&quot;square&quot;</span><span class="o">:</span> <span class="k">return</span> <span class="nx">keys</span><span class="p">;</span>
+      <span class="k">case</span> <span class="s2">&quot;triangle-up&quot;</span><span class="o">:</span> <span class="k">return</span> <span class="nx">keyt</span><span class="p">;</span>
+      <span class="k">case</span> <span class="s2">&quot;diamond&quot;</span><span class="o">:</span> <span class="k">return</span> <span class="nx">keyr</span><span class="p">;</span>
+      <span class="k">case</span> <span class="s2">&quot;cross&quot;</span><span class="o">:</span> <span class="k">return</span> <span class="nx">keyx</span><span class="p">;</span>
+      <span class="k">case</span> <span class="s2">&quot;triangle-down&quot;</span><span class="o">:</span> <span class="k">return</span> <span class="nx">keyd</span><span class="p">;</span>
+      <span class="k">default</span><span class="o">:</span> <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">function</span> <span class="nx">vis_by_node_score</span><span class="p">(</span><span class="nx">score</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">score</span><span class="p">))</span>
+    <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mf">0.666</span><span class="p">)</span> <span class="k">return</span> <span class="nx">keyh</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mf">0.333</span><span class="p">)</span> <span class="k">return</span> <span class="nx">keym</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="nx">keyl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">vis_by_link_score</span><span class="p">(</span><span class="nx">score</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">score</span><span class="p">))</span>
+    <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mf">0.666</span><span class="p">)</span> <span class="k">return</span> <span class="nx">key3</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mf">0.333</span><span class="p">)</span> <span class="k">return</span> <span class="nx">key2</span><span class="p">;</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">score</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="nx">key1</span><span class="p">;</span>
+<span class="p">}</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">isNumber</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="o">!</span><span class="nb">isNaN</span><span class="p">(</span><span class="nb">parseFloat</span><span class="p">(</span><span class="nx">n</span><span class="p">))</span> <span class="o">&amp;&amp;</span> <span class="nb">isFinite</span><span class="p">(</span><span class="nx">n</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+    <script type="text/javascript" src="https://d3js.org/d3.v3.min.js"></script>
+  </head>
+  <body>
+
+
+    <div id="graph_div"></div>
+
+<script>
+
+// based on http://bl.ocks.org/eyaler/10586116
+
+var data_local_dynamic = {
+  "graph": [],
+  "links": [
+
+          { "source": 60673, "target": 60667 },
+
+          { "source": 60673, "target": 60648 },
+
+          { "source": 60673, "target": 62339 },
+
+          { "source": 60673, "target": 60671 },
+
+          { "source": 60673, "target": 60721 },
+
+          { "source": 60673, "target": 61318 },
+
+          { "source": 60673, "target": 61108 },
+
+          { "source": 60673, "target": 60653 },
+
+          { "source": 60673, "target": 61852 },
+
+          { "source": 60673, "target": 60759 },
+
+          { "source": 60667, "target": 60673 },
+
+          { "source": 60667, "target": 61108 },
+
+          { "source": 60667, "target": 60648 },
+
+          { "source": 60667, "target": 61322 },
+
+          { "source": 60667, "target": 60671 },
+
+          { "source": 60648, "target": 61318 },
+
+          { "source": 60648, "target": 60673 },
+
+          { "source": 60648, "target": 60650 },
+
+          { "source": 60648, "target": 62013 },
+
+          { "source": 60648, "target": 61322 },
+
+          { "source": 62339, "target": 60673 },
+
+          { "source": 62339, "target": 62372 },
+
+          { "source": 62339, "target": 60671 },
+
+          { "source": 62339, "target": 61108 },
+
+          { "source": 62339, "target": 60648 },
+
+          { "source": 60671, "target": 60759 },
+
+          { "source": 60671, "target": 60905 },
+
+          { "source": 60671, "target": 60673 },
+
+          { "source": 60671, "target": 62339 },
+
+          { "source": 60671, "target": 61850 },
+
+          { "source": 60721, "target": 60759 },
+
+          { "source": 60721, "target": 60905 },
+
+          { "source": 60721, "target": 62013 },
+
+          { "source": 60721, "target": 61143 },
+
+          { "source": 60721, "target": 60911 },
+
+          { "source": 61318, "target": 60648 },
+
+          { "source": 61318, "target": 62013 },
+
+          { "source": 61318, "target": 60653 },
+
+          { "source": 61318, "target": 60650 },
+
+          { "source": 61318, "target": 60721 },
+
+          { "source": 61108, "target": 60672 },
+
+          { "source": 61108, "target": 61629 },
+
+          { "source": 61108, "target": 60667 },
+
+          { "source": 61108, "target": 62339 },
+
+          { "source": 61108, "target": 60921 },
+
+          { "source": 60653, "target": 61318 },
+
+          { "source": 60653, "target": 60648 },
+
+          { "source": 60653, "target": 60673 },
+
+          { "source": 60653, "target": 60721 },
+
+          { "source": 60653, "target": 62013 },
+
+          { "source": 61852, "target": 60673 },
+
+          { "source": 61852, "target": 60720 },
+
+          { "source": 61852, "target": 60667 },
+
+          { "source": 61852, "target": 60721 },
+
+          { "source": 61852, "target": 60759 },
+
+          { "source": 60759, "target": 60905 },
+
+          { "source": 60759, "target": 61961 },
+
+          { "source": 60759, "target": 61045 },
+
+          { "source": 60759, "target": 61260 },
+
+          { "source": 60759, "target": 61143 },
+
+    //{"source": 0, "target": 1},
+    ],
+  "nodes": [
+
+
+        {"id": 60667, "size": 50, "score": 0 , "title": "Body mass index", "type": "circle"},
+
+
+
+        {"id": 60648, "size": 50, "score": 0 , "title": "Diabetes mellitus type 2", "type": "circle"},
+
+
+
+        {"id": 62339, "size": 50, "score": 0 , "title": "Hypertension", "type": "circle"},
+
+
+
+        {"id": 60671, "size": 50, "score": 0 , "title": "Syndrome", "type": "circle"},
+
+
+
+        {"id": 60721, "size": 50, "score": 0 , "title": "Metabolism", "type": "circle"},
+
+
+
+        {"id": 61318, "size": 50, "score": 0 , "title": "Insulin", "type": "circle"},
+
+
+
+        {"id": 61108, "size": 50, "score": 0 , "title": "Logistic regression", "type": "circle"},
+
+
+
+        {"id": 60653, "size": 50, "score": 0 , "title": "Insulin resistance", "type": "circle"},
+
+
+
+        {"id": 61852, "size": 50, "score": 0 , "title": "Adipose tissue", "type": "circle"},
+
+
+
+        {"id": 60759, "size": 50, "score": 0 , "title": "Gene", "type": "circle"},
+
+
+
+        {"id": 60673, "size": 70, "score": 0.5 , "title": "Obesity", "type": "circle"},
+
+
+
+        {"id": 61322, "size": 5, "score": 0.4 , "title": "Fasting", "type": "circle"},
+
+
+
+        {"id": 60650, "size": 5, "score": 0.4 , "title": "Blood sugar", "type": "circle"},
+
+
+
+        {"id": 62013, "size": 5, "score": 0.4 , "title": "Glucose", "type": "circle"},
+
+
+
+        {"id": 62372, "size": 5, "score": 0.4 , "title": "Diabetes mellitus", "type": "circle"},
+
+
+
+        {"id": 60905, "size": 5, "score": 0.4 , "title": "Protein", "type": "circle"},
+
+
+
+        {"id": 61850, "size": 5, "score": 0.4 , "title": "Phenotype", "type": "circle"},
+
+
+
+        {"id": 61143, "size": 5, "score": 0.4 , "title": "Acid", "type": "circle"},
+
+
+
+        {"id": 60911, "size": 5, "score": 0.4 , "title": "Lipid", "type": "circle"},
+
+
+
+        {"id": 60672, "size": 5, "score": 0.4 , "title": "Odds ratio", "type": "circle"},
+
+
+
+        {"id": 61629, "size": 5, "score": 0.4 , "title": "Confidence interval", "type": "circle"},
+
+
+
+        {"id": 60921, "size": 5, "score": 0.4 , "title": "Multivariate analysis", "type": "circle"},
+
+
+
+        {"id": 60720, "size": 5, "score": 0.4 , "title": "Magnetic resonance imaging", "type": "circle"},
+
+
+
+        {"id": 61961, "size": 5, "score": 0.4 , "title": "DNA", "type": "circle"},
+
+
+
+        {"id": 61045, "size": 5, "score": 0.4 , "title": "Polymerase chain reaction", "type": "circle"},
+
+
+
+        {"id": 61260, "size": 5, "score": 0.4 , "title": "Messenger RNA", "type": "circle"},
+
+
+
+    // {"size": 60, "score": 0, "id": "Androsynth", "type": "circle"},
+  ],
+    "directed": false,
+   "multigraph": false
+}
+
+var chartDiv = document.getElementById("graph_div");
+// Extract the width and height that was computed by CSS.
+var divWidth = chartDiv.clientWidth;
+var divHeight = chartDiv.clientHeight;
+
+//var w = window.innerWidth;
+//var h = window.innerHeight;
+
+var keyc = true, keys = true, keyt = true, keyr = true, keyx = true, keyd = true, keyl = true, keym = true, keyh = true, key1 = true, key2 = true, key3 = true, key0 = true
+
+var focus_node = null, highlight_node = null;
+
+var text_center = false;
+var outline = false;
+
+var min_score = 0;
+var max_score = 1;
+
+var color = d3.scale.linear()
+  .domain([min_score, (min_score+max_score)/2, max_score])
+  .range(["lime", "yellow", "red"]);
+
+var highlight_color = "blue";
+var highlight_trans = 0.1;
+
+var size = d3.scale.pow().exponent(1)
+  .domain([1,100])
+  .range([8,24]);
+
+var force = d3.layout.force()
+  .linkDistance(100)
+  .charge(-500) // was 800
+  .size([divWidth,divHeight]);
+
+var default_node_color = "#ccc";
+//var default_node_color = "rgb(3,190,100)";
+var default_link_color = "#888";
+var nominal_base_node_size = 8;
+var nominal_text_size = 10;
+var max_text_size = 24;
+var nominal_stroke = 1.5;
+var max_stroke = 4.5;
+var max_base_node_size = 36;
+var min_zoom = 0.1;
+var max_zoom = 7;
+// append to DOM
+var svg = d3.select("#graph_div").append("svg");
+var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom])
+var g = svg.append("g");
+//
+svg.style("cursor","move");
+
+// d3.json("graph.json", function(error, graph) {
+
+    var graph = data_local_dynamic;
+
+    var linkedByIndex = {};
+    graph.links.forEach(function(d) {
+        linkedByIndex[d.source + "," + d.target] = true;
+    });
+
+    console.log(linkedByIndex);
+
+    function isConnected(a, b) {
+        return linkedByIndex[a.id + "," + b.id] || linkedByIndex[b.id + "," + a.id] || a.id == b.id;
+    }
+    // console.log( isConnected(graph.nodes[0], graph.nodes[1]));
+
+    function hasConnections(a) {
+        for (var property in linkedByIndex) {
+                s = property.split(",");
+                if ((s[0] == a.id || s[1] == a.id) && linkedByIndex[property])                                      return true;
+        }
+    return false;
+    }
+
+    /* resolve node IDs (not optimized at all!)
+    http://bl.ocks.org/nitaku/7483341
+    */
+    _ref = graph.links;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      l = _ref[_i];
+      _ref2 = graph.nodes;
+      for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+        n = _ref2[_j];
+        if (l.source === n.id) {
+          l.source = n;
+          continue;
+        }
+        if (l.target === n.id) {
+          l.target = n;
+          continue;
+        }
+      }
+    }
+
+    force
+        .nodes(graph.nodes)
+        .links(graph.links)
+        .start();
+
+    var link = g.selectAll(".link")
+        .data(graph.links)
+        .enter().append("line")
+        .attr("class", "link")
+        .style("stroke-width",nominal_stroke)
+        .style("stroke", function(d) {
+        if (isNumber(d.score) && d.score>=0) return color(d.score);
+        else return default_link_color; })
+
+
+    var node = g.selectAll(".node")
+        .data(graph.nodes)
+        .enter().append("g")
+        .attr("class", "node")
+
+        .call(force.drag)
+
+
+    //
+    // NEW: requery on a dbclick
+    //
+    node.on("dblclick", function(d) { d3.event.stopPropagation();
+            window.location.href = "/dbpedialinks/entities/" + d.id;
+        });
+
+
+
+        var tocolor = "fill";
+        var towhite = "stroke";
+        if (outline) {
+            tocolor = "stroke"
+            towhite = "fill"
+        }
+
+
+
+    var circle = node.append("path")
+    .attr("d", d3.svg.symbol()
+        .size(function(d) { return Math.PI*Math.pow(size(d.size)||nominal_base_node_size,2); })
+        .type(function(d) { return d.type; }))
+
+        .style(tocolor, function(d) {
+        if (isNumber(d.score) && d.score>=0) return color(d.score);
+        else return default_node_color; })
+        //.attr("r", function(d) { return size(d.size)||nominal_base_node_size; })
+        .style("stroke-width", nominal_stroke)
+        .style(towhite, "white");
+
+
+    var text = g.selectAll(".text")
+        .data(graph.nodes)
+        .enter().append("text")
+        .attr("dy", ".35em")
+        .style("font-size", nominal_text_size + "px")
+
+        if (text_center)
+        text.text(function(d) { return d.title; })
+        .style("text-anchor", "middle");
+        else
+        text.attr("dx", function(d) {return (size(d.size)||nominal_base_node_size);})
+        .text(function(d) { return '\u2002'+d.title; });
+
+        node.on("mouseover", function(d) {
+        set_highlight(d);
+        })
+    .on("mousedown", function(d) { d3.event.stopPropagation();
+        focus_node = d;
+        set_focus(d)
+        if (highlight_node === null) set_highlight(d)
+
+    }       ).on("mouseout", function(d) {
+            exit_highlight();
+
+    }       );
+
+            d3.select(window).on("mouseup",
+            function() {
+            if (focus_node!==null)
+            {
+                focus_node = null;
+                if (highlight_trans<1)
+                {
+
+            circle.style("opacity", 1);
+        text.style("opacity", 1);
+        link.style("opacity", 1);
+        }
+            }
+
+        if (highlight_node === null) exit_highlight();
+            });
+
+    function exit_highlight()
+    {
+            highlight_node = null;
+        if (focus_node===null)
+        {
+            svg.style("cursor","move");
+            if (highlight_color!="white")
+        {
+        circle.style(towhite, "white");
+        text.style("font-weight", "normal");
+        link.style("stroke", function(o) {return (isNumber(o.score) && o.score>=0)?color(o.score):default_link_color});
+    }
+
+        }
+    }
+
+    function set_focus(d)
+    {
+    if (highlight_trans<1)  {
+        circle.style("opacity", function(o) {
+                    return isConnected(d, o) ? 1 : highlight_trans;
+                });
+
+                text.style("opacity", function(o) {
+                    return isConnected(d, o) ? 1 : highlight_trans;
+                });
+
+                link.style("opacity", function(o) {
+                    return o.source.id == d.id || o.target.id == d.id ? 1 : highlight_trans;
+                });
+        }
+    }
+
+
+    function set_highlight(d)
+    {
+        svg.style("cursor","pointer");
+        if (focus_node!==null) d = focus_node;
+        highlight_node = d;
+
+        if (highlight_color!="white")
+        {
+            circle.style(towhite, function(o) {
+                    return isConnected(d, o) ? highlight_color : "white";});
+                text.style("font-weight", function(o) {
+                    return isConnected(d, o) ? "bold" : "normal";});
+                link.style("stroke", function(o) {
+                return o.source.id == d.id || o.target.id == d.id ? highlight_color : ((isNumber(o.score) && o.score>=0)?color(o.score):default_link_color);
+
+                });
+        }
+    }
+
+
+    zoom.on("zoom", function() {
+
+        var stroke = nominal_stroke;
+        if (nominal_stroke*zoom.scale()>max_stroke) stroke = max_stroke/zoom.scale();
+        link.style("stroke-width",stroke);
+        circle.style("stroke-width",stroke);
+
+        var base_radius = nominal_base_node_size;
+        if (nominal_base_node_size*zoom.scale()>max_base_node_size) base_radius = max_base_node_size/zoom.scale();
+            circle.attr("d", d3.svg.symbol()
+            .size(function(d) { return Math.PI*Math.pow(size(d.size)*base_radius/nominal_base_node_size||base_radius,2); })
+            .type(function(d) { return d.type; }))
+
+        //circle.attr("r", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); })
+        if (!text_center) text.attr("dx", function(d) { return (size(d.size)*base_radius/nominal_base_node_size||base_radius); });
+
+        var text_size = nominal_text_size;
+        if (nominal_text_size*zoom.scale()>max_text_size) text_size = max_text_size/zoom.scale();
+        text.style("font-size",text_size + "px");
+
+        g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        });
+
+    svg.call(zoom);
+    svg.attr("transform","scale(1,1)");
+
+    resize();
+    //window.focus();
+    d3.select(window).on("resize", resize).on("keydown", keydown);
+
+    force.on("tick", function() {
+
+        node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+        text.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+        link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+        });
+
+    function resize() {
+        var width = chartDiv.clientWidth, height = chartDiv.clientHeight;
+        svg.attr("width", width).attr("height", height);
+
+        force.size([force.size()[0]+(width-divWidth)/zoom.scale(),force.size()[1]+(height-divHeight)/zoom.scale()]).resume();
+        w = width;
+        h = height;
+        }
+
+        function keydown() {
+        if (d3.event.keyCode==32) {  force.stop();}
+        else if (d3.event.keyCode>=48 && d3.event.keyCode<=90 && !d3.event.ctrlKey && !d3.event.altKey && !d3.event.metaKey)
+        {
+    switch (String.fromCharCode(d3.event.keyCode)) {
+        case "C": keyc = !keyc; break;
+        case "S": keys = !keys; break;
+        case "T": keyt = !keyt; break;
+        case "R": keyr = !keyr; break;
+        case "X": keyx = !keyx; break;
+        case "D": keyd = !keyd; break;
+        case "L": keyl = !keyl; break;
+        case "M": keym = !keym; break;
+        case "H": keyh = !keyh; break;
+        case "1": key1 = !key1; break;
+        case "2": key2 = !key2; break;
+        case "3": key3 = !key3; break;
+        case "0": key0 = !key0; break;
+    }
+
+    link.style("display", function(d) {
+                    var flag  = vis_by_type(d.source.type)&&vis_by_type(d.target.type)&&vis_by_node_score(d.source.score)&&vis_by_node_score(d.target.score)&&vis_by_link_score(d.score);
+                    // console.log(d);
+                    linkedByIndex[d.source.id + "," + d.target.id] = flag; // IMPORTANT?
+                return flag?"inline":"none";});
+    node.style("display", function(d) {
+                    return (key0||hasConnections(d))&&vis_by_type(d.type)&&vis_by_node_score(d.score)?"inline":"none";});
+    text.style("display", function(d) {
+                    return (key0||hasConnections(d))&&vis_by_type(d.type)&&vis_by_node_score(d.score)?"inline":"none";});
+
+                    if (highlight_node !== null)
+                    {
+                        if ((key0||hasConnections(highlight_node))&&vis_by_type(highlight_node.type)&&vis_by_node_score(highlight_node.score)) {
+                        if (focus_node!==null) set_focus(focus_node);
+                        set_highlight(highlight_node);
+                        }
+                        else {exit_highlight();}
+                    }
+
+    }
+    }
+
+// });  // original d3.json ends here
+
+function vis_by_type(type)
+{
+    switch (type) {
+      case "circle": return keyc;
+      case "square": return keys;
+      case "triangle-up": return keyt;
+      case "diamond": return keyr;
+      case "cross": return keyx;
+      case "triangle-down": return keyd;
+      default: return true;
+}
+}
+function vis_by_node_score(score)
+{
+    if (isNumber(score))
+    {
+    if (score>=0.666) return keyh;
+    else if (score>=0.333) return keym;
+    else if (score>=0) return keyl;
+    }
+    return true;
+}
+
+function vis_by_link_score(score)
+{
+    if (isNumber(score))
+    {
+    if (score>=0.666) return key3;
+    else if (score>=0.333) return key2;
+    else if (score>=0) return key1;
+}
+    return true;
+}
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
+</script>
+
+  </body>
+</html></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Wikidata Nobel Prize Winners.html"
+                        title="previous chapter">Wikidata nobel prize winners</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tqdm.html"
+                        title="next chapter">Tqdm and jupyter integration</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/notebooks/embed_html_dataviz.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tqdm.html" title="Tqdm and jupyter integration"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Wikidata Nobel Prize Winners.html" title="Wikidata nobel prize winners"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Embedding HTML and dataviz in jupyter</a></li> 
+      </ul>
+    </div>
+   
+    <div class="footer" role="contentinfo">
+    </div>
+
+    <!-- Adds target=_blank to external links -->
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
+    });
+  </script>
+  
+
+  </body>
+</html>

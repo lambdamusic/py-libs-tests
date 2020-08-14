@@ -1,0 +1,421 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "YpsY58P-RCYN"
+   },
+   "source": [
+    "# Misc queries \n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "OtijMG-DQQc6"
+   },
+   "source": [
+    "## Prerequisites \n",
+    "\n",
+    "Set up a connection.\n",
+    "\n",
+    "### A) Connect using local credentials..\n",
+    "\n",
+    "PS change the credentials file location as needed. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {},
+    "colab_type": "code",
+    "id": "D4utwMMnRCYN"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The google.cloud.bigquery extension is already loaded. To reload it, use:\n",
+      "  %reload_ext google.cloud.bigquery\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install google-cloud-bigquery google-cloud-bigquery-storage grpcio -U --quiet\n",
+    "from google.cloud import bigquery\n",
+    "import os\n",
+    "project_id = \"ds-data-solutions-gbq\"\n",
+    "os.environ[\"GCLOUD_PROJECT\"] = project_id\n",
+    "os.environ[\"GOOGLE_APPLICATION_CREDENTIALS\"] = \"/Users/michele.pasin/.config/gcloud/application_default_credentials.json\"\n",
+    "client = bigquery.Client()\n",
+    "%load_ext google.cloud.bigquery"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "DCOx1CmDRhTO"
+   },
+   "source": [
+    "###  B) Or connect using Colab auth.."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 68
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 18773,
+     "status": "ok",
+     "timestamp": 1592414240089,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "zp26ijPMRMG4",
+    "outputId": "f44e4619-0d74-45d3-ed35-48faf774ccc3"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Authenticated\n",
+      "The google.cloud.bigquery extension is already loaded. To reload it, use:\n",
+      "  %reload_ext google.cloud.bigquery\n"
+     ]
+    }
+   ],
+   "source": [
+    "from google.colab import auth\n",
+    "auth.authenticate_user()\n",
+    "print('Authenticated')\n",
+    "project_id = \"ds-data-solutions-gbq\"\n",
+    "%load_ext google.cloud.bigquery"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "weBnFDbIQQdA"
+   },
+   "source": [
+    "### Set up params variable\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {},
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 520,
+     "status": "ok",
+     "timestamp": 1592414457738,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "5O1kjYkrRYGB"
+   },
+   "outputs": [],
+   "source": [
+    "# eg for params\n",
+    "bq_params = {}\n",
+    "bq_params[\"journal_id\"] = \"jour.1115214\"\n",
+    "# encrypted version\n",
+    "bq_params[\"journal_id\"] = \"AWaTKQAMhuTV562k80rVwFE9WWHwRWgOnx+I9nt5faQRIFO5BvHevMOL5RODBWV8Vv2S7D0iM63iSeiJuZp+GXpy7Hn9uA==\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "5dvNsPhnQQdD"
+   },
+   "source": [
+    "### Test connection"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 1666,
+     "status": "ok",
+     "timestamp": 1592414461908,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "4prsVQUmQQdD",
+    "outputId": "c194890b-2453-4aed-8f78-2a3edd2aa7a8"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>tot</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>386</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   tot\n",
+       "0  386"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "SELECT count(*) as tot \n",
+    "from `dimensions-ai.data_analytics.publications`\n",
+    "where year = 2019\n",
+    "and journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "oxw16ZgcQQdG"
+   },
+   "source": [
+    "## Publication corresponding authors"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 390
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 3657,
+     "status": "ok",
+     "timestamp": 1592414569536,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "e7pWFdPdQQdG",
+    "outputId": "dc1b4b9f-6b00-4f75-c775-984a9b15af80"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>count_pubs</th>\n",
+       "      <th>year</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>486</td>\n",
+       "      <td>2010</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>459</td>\n",
+       "      <td>2011</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>507</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>462</td>\n",
+       "      <td>2013</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>475</td>\n",
+       "      <td>2014</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>467</td>\n",
+       "      <td>2015</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>436</td>\n",
+       "      <td>2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>380</td>\n",
+       "      <td>2017</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>374</td>\n",
+       "      <td>2018</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>386</td>\n",
+       "      <td>2019</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>291</td>\n",
+       "      <td>2020</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    count_pubs  year\n",
+       "0          486  2010\n",
+       "1          459  2011\n",
+       "2          507  2012\n",
+       "3          462  2013\n",
+       "4          475  2014\n",
+       "5          467  2015\n",
+       "6          436  2016\n",
+       "7          380  2017\n",
+       "8          374  2018\n",
+       "9          386  2019\n",
+       "10         291  2020"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select id, doi, title, a.first_name, a.last_name, a.corresponding, journal.title as journal_title \n",
+    "from `dimensions-ai.data_analytics.publications`, unnest(authors) as a\n",
+    "where journal.id = \"jour.1113716\"\n",
+    "and a.corresponding = True\n",
+    "limit 10"
+   ]
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "collapsed_sections": [],
+   "name": "2020-06-SN-Journals-Report.ipynb",
+   "provenance": [],
+   "toc_visible": true
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

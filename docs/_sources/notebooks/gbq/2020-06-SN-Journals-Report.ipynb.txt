@@ -1,0 +1,2849 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "YpsY58P-RCYN"
+   },
+   "source": [
+    "# SN Journal Report queries \n",
+    "\n",
+    "* https://github.com/digital-science/dimensions-journal-report"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "OtijMG-DQQc6"
+   },
+   "source": [
+    "## Prerequisites \n",
+    "\n",
+    "Set up a connection.\n",
+    "\n",
+    "### A) Connect using local credentials..\n",
+    "\n",
+    "PS change the credentials file location as needed. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {},
+    "colab_type": "code",
+    "id": "D4utwMMnRCYN"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The google.cloud.bigquery extension is already loaded. To reload it, use:\n",
+      "  %reload_ext google.cloud.bigquery\n"
+     ]
+    }
+   ],
+   "source": [
+    "!pip install google-cloud-bigquery google-cloud-bigquery-storage grpcio -U --quiet\n",
+    "from google.cloud import bigquery\n",
+    "import os\n",
+    "project_id = \"ds-data-solutions-gbq\"\n",
+    "os.environ[\"GCLOUD_PROJECT\"] = project_id\n",
+    "os.environ[\"GOOGLE_APPLICATION_CREDENTIALS\"] = \"/Users/michele.pasin/.config/gcloud/application_default_credentials.json\"\n",
+    "client = bigquery.Client()\n",
+    "%load_ext google.cloud.bigquery"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "DCOx1CmDRhTO"
+   },
+   "source": [
+    "###  B) Or connect using Colab auth.."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 68
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 18773,
+     "status": "ok",
+     "timestamp": 1592414240089,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "zp26ijPMRMG4",
+    "outputId": "f44e4619-0d74-45d3-ed35-48faf774ccc3"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Authenticated\n",
+      "The google.cloud.bigquery extension is already loaded. To reload it, use:\n",
+      "  %reload_ext google.cloud.bigquery\n"
+     ]
+    }
+   ],
+   "source": [
+    "from google.colab import auth\n",
+    "auth.authenticate_user()\n",
+    "print('Authenticated')\n",
+    "project_id = \"ds-data-solutions-gbq\"\n",
+    "%load_ext google.cloud.bigquery"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "weBnFDbIQQdA"
+   },
+   "source": [
+    "### Set up params variable\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {},
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 520,
+     "status": "ok",
+     "timestamp": 1592414457738,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "5O1kjYkrRYGB"
+   },
+   "outputs": [],
+   "source": [
+    "# eg for params\n",
+    "bq_params = {}\n",
+    "bq_params[\"journal_id\"] = \"jour.1115214\"\n",
+    "# encrypted version\n",
+    "bq_params[\"journal_id\"] = \"AWaTKQAMhuTV562k80rVwFE9WWHwRWgOnx+I9nt5faQRIFO5BvHevMOL5RODBWV8Vv2S7D0iM63iSeiJuZp+GXpy7Hn9uA==\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "5dvNsPhnQQdD"
+   },
+   "source": [
+    "### Test connection"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 1666,
+     "status": "ok",
+     "timestamp": 1592414461908,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "4prsVQUmQQdD",
+    "outputId": "c194890b-2453-4aed-8f78-2a3edd2aa7a8"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>tot</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>386</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   tot\n",
+       "0  386"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "SELECT count(*) as tot \n",
+    "from `dimensions-ai.data_analytics.publications`\n",
+    "where year = 2019\n",
+    "and journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "oxw16ZgcQQdG"
+   },
+   "source": [
+    "## XJR1-1-Publications by Year"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 390
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 3657,
+     "status": "ok",
+     "timestamp": 1592414569536,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "e7pWFdPdQQdG",
+    "outputId": "dc1b4b9f-6b00-4f75-c775-984a9b15af80"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>count_pubs</th>\n",
+       "      <th>year</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>486</td>\n",
+       "      <td>2010</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>459</td>\n",
+       "      <td>2011</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>507</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>462</td>\n",
+       "      <td>2013</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>475</td>\n",
+       "      <td>2014</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>467</td>\n",
+       "      <td>2015</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>436</td>\n",
+       "      <td>2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>380</td>\n",
+       "      <td>2017</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>374</td>\n",
+       "      <td>2018</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>386</td>\n",
+       "      <td>2019</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>291</td>\n",
+       "      <td>2020</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    count_pubs  year\n",
+       "0          486  2010\n",
+       "1          459  2011\n",
+       "2          507  2012\n",
+       "3          462  2013\n",
+       "4          475  2014\n",
+       "5          467  2015\n",
+       "6          436  2016\n",
+       "7          380  2017\n",
+       "8          374  2018\n",
+       "9          386  2019\n",
+       "10         291  2020"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select COUNT(id) AS count_pubs, year\n",
+    "from `dimensions-ai.data_analytics.publications`\n",
+    "where journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and year>=2010\n",
+    "group by year\n",
+    "order by year asc"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "zrHKgqU1QQdJ"
+   },
+   "source": [
+    "## XJR1-1-Journal Title Issn"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 5301,
+     "status": "ok",
+     "timestamp": 1592417120698,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "QP91fvi7QQdL",
+    "outputId": "87737f80-c499-4c64-eceb-b1dcd2bb12c7"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>title</th>\n",
+       "      <th>issn</th>\n",
+       "      <th>eissn</th>\n",
+       "      <th>name</th>\n",
+       "      <th>date_inserted</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>jour.1115214</td>\n",
+       "      <td>Nature Biotechnology</td>\n",
+       "      <td>1087-0156</td>\n",
+       "      <td>1546-1696</td>\n",
+       "      <td>Springer Nature</td>\n",
+       "      <td>2020-07-31 20:04:03+00:00</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "             id                 title       issn      eissn             name  \\\n",
+       "0  jour.1115214  Nature Biotechnology  1087-0156  1546-1696  Springer Nature   \n",
+       "\n",
+       "              date_inserted  \n",
+       "0 2020-07-31 20:04:03+00:00  "
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select distinct journal.id, journal.title, journal.issn, journal.eissn, publisher.name, date_inserted\n",
+    "from `dimensions-ai.data_analytics.publications` \n",
+    "where  journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and publisher is not null\n",
+    "order by date_inserted desc\n",
+    "limit 1\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "EAf8TcUeQQdN"
+   },
+   "source": [
+    "## XJR1-2-New VS Recurring Authors"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 390
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 5660,
+     "status": "ok",
+     "timestamp": 1592417117794,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "apMsL9FTQQdS",
+    "outputId": "9ad58b67-e4a0-4edb-fc99-655c9715604b"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>year</th>\n",
+       "      <th>num_first</th>\n",
+       "      <th>num_recurring</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2010</td>\n",
+       "      <td>1085</td>\n",
+       "      <td>308</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2011</td>\n",
+       "      <td>992</td>\n",
+       "      <td>342</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2012</td>\n",
+       "      <td>870</td>\n",
+       "      <td>373</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2013</td>\n",
+       "      <td>910</td>\n",
+       "      <td>344</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2014</td>\n",
+       "      <td>1013</td>\n",
+       "      <td>326</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>2015</td>\n",
+       "      <td>1147</td>\n",
+       "      <td>412</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>1262</td>\n",
+       "      <td>335</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>2017</td>\n",
+       "      <td>1042</td>\n",
+       "      <td>380</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>2018</td>\n",
+       "      <td>1067</td>\n",
+       "      <td>429</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>2019</td>\n",
+       "      <td>1087</td>\n",
+       "      <td>395</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>2020</td>\n",
+       "      <td>1169</td>\n",
+       "      <td>417</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    year  num_first  num_recurring\n",
+       "0   2010       1085            308\n",
+       "1   2011        992            342\n",
+       "2   2012        870            373\n",
+       "3   2013        910            344\n",
+       "4   2014       1013            326\n",
+       "5   2015       1147            412\n",
+       "6   2016       1262            335\n",
+       "7   2017       1042            380\n",
+       "8   2018       1067            429\n",
+       "9   2019       1087            395\n",
+       "10  2020       1169            417"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "WITH authoryear AS (\n",
+    "  select pubs.year, author.researcher_id, COUNT(pubs.id) AS numpubs\n",
+    "  FROM `dimensions-ai.data_analytics.publications` as pubs\n",
+    "  CROSS JOIN UNNEST(pubs.authors) AS author\n",
+    "  WHERE author.researcher_id IS NOT NULL AND journal.id= (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "  GROUP BY author.researcher_id, pubs.year\n",
+    "), authorfirst AS (\n",
+    "  select researcher_id, MIN(year) AS minyear\n",
+    "  FROM authoryear\n",
+    "  GROUP BY researcher_id\n",
+    "), authorsummary AS (\n",
+    "  SELECT ay.*, IF(ay.year=af.minyear, TRUE, FALSE) AS firstyear\n",
+    "  FROM authoryear ay\n",
+    "  JOIN authorfirst af ON af.researcher_id=ay.researcher_id\n",
+    "  ORDER BY ay.researcher_id, year\n",
+    "), numauthors AS (\n",
+    "  SELECT year, firstyear, COUNT(DISTINCT researcher_id) AS numresearchers\n",
+    "  FROM authorsummary\n",
+    "  WHERE year>=2010\n",
+    "  GROUP BY year, firstyear\n",
+    ")\n",
+    "SELECT year, SUM(CASE when firstyear then numresearchers else 0 end) as num_first,\n",
+    "             SUM(CASE when NOT firstyear then numresearchers else 0 end) as num_recurring\n",
+    "from numauthors\n",
+    "group by year\n",
+    "order by year;\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "2spyOM_5c0hv"
+   },
+   "source": [
+    "## XJR1-3-Researchers Places"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 419
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 11471,
+     "status": "ok",
+     "timestamp": 1592417091187,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "CzuE9FBJc0kb",
+    "outputId": "a037062a-6cf8-4d2c-9bc5-b38dd6cc359f"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>people</th>\n",
+       "      <th>gridid</th>\n",
+       "      <th>country</th>\n",
+       "      <th>city</th>\n",
+       "      <th>latlong</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1</td>\n",
+       "      <td>grid.9647.c</td>\n",
+       "      <td>Germany</td>\n",
+       "      <td>Leipzig</td>\n",
+       "      <td>51.3390007019043, 12.378999710083008</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>3</td>\n",
+       "      <td>grid.7605.4</td>\n",
+       "      <td>Italy</td>\n",
+       "      <td>Turin</td>\n",
+       "      <td>45.066665649414062, 7.6890192031860352</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>6</td>\n",
+       "      <td>grid.411760.5</td>\n",
+       "      <td>Germany</td>\n",
+       "      <td>Wurzburg</td>\n",
+       "      <td>49.801517486572266, 9.9537296295166016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1</td>\n",
+       "      <td>grid.8379.5</td>\n",
+       "      <td>Germany</td>\n",
+       "      <td>Wurzburg</td>\n",
+       "      <td>49.788055419921875, 9.9352779388427734</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>3</td>\n",
+       "      <td>grid.5399.6</td>\n",
+       "      <td>France</td>\n",
+       "      <td>Marseille</td>\n",
+       "      <td>43.293537139892578, 5.3579440116882324</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1816</th>\n",
+       "      <td>10</td>\n",
+       "      <td>grid.418068.3</td>\n",
+       "      <td>Brazil</td>\n",
+       "      <td>Rio de Janeiro</td>\n",
+       "      <td>-22.874881744384766, -43.245437622070312</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1817</th>\n",
+       "      <td>4</td>\n",
+       "      <td>grid.177174.3</td>\n",
+       "      <td>Japan</td>\n",
+       "      <td>Fukuoka</td>\n",
+       "      <td>33.626533508300781, 130.42465209960938</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1818</th>\n",
+       "      <td>3</td>\n",
+       "      <td>grid.7107.1</td>\n",
+       "      <td>United Kingdom</td>\n",
+       "      <td>Aberdeen</td>\n",
+       "      <td>57.165061950683594, -2.1022980213165283</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1819</th>\n",
+       "      <td>1</td>\n",
+       "      <td>grid.7159.a</td>\n",
+       "      <td>Spain</td>\n",
+       "      <td>Alcalá de Henares</td>\n",
+       "      <td>40.482536315917969, -3.3611509799957275</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1820</th>\n",
+       "      <td>1</td>\n",
+       "      <td>grid.5338.d</td>\n",
+       "      <td>Spain</td>\n",
+       "      <td>Valencia</td>\n",
+       "      <td>39.479465484619141, -0.36472800374031067</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1821 rows × 5 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      people         gridid         country               city  \\\n",
+       "0          1    grid.9647.c         Germany            Leipzig   \n",
+       "1          3    grid.7605.4           Italy              Turin   \n",
+       "2          6  grid.411760.5         Germany           Wurzburg   \n",
+       "3          1    grid.8379.5         Germany           Wurzburg   \n",
+       "4          3    grid.5399.6          France          Marseille   \n",
+       "...      ...            ...             ...                ...   \n",
+       "1816      10  grid.418068.3          Brazil     Rio de Janeiro   \n",
+       "1817       4  grid.177174.3           Japan            Fukuoka   \n",
+       "1818       3    grid.7107.1  United Kingdom           Aberdeen   \n",
+       "1819       1    grid.7159.a           Spain  Alcalá de Henares   \n",
+       "1820       1    grid.5338.d           Spain           Valencia   \n",
+       "\n",
+       "                                       latlong  \n",
+       "0         51.3390007019043, 12.378999710083008  \n",
+       "1       45.066665649414062, 7.6890192031860352  \n",
+       "2       49.801517486572266, 9.9537296295166016  \n",
+       "3       49.788055419921875, 9.9352779388427734  \n",
+       "4       43.293537139892578, 5.3579440116882324  \n",
+       "...                                        ...  \n",
+       "1816  -22.874881744384766, -43.245437622070312  \n",
+       "1817    33.626533508300781, 130.42465209960938  \n",
+       "1818   57.165061950683594, -2.1022980213165283  \n",
+       "1819   40.482536315917969, -3.3611509799957275  \n",
+       "1820  39.479465484619141, -0.36472800374031067  \n",
+       "\n",
+       "[1821 rows x 5 columns]"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "with people_and_grids as (\n",
+    "  select COUNT(DISTINCT auth.researcher_id) as people, res.current_research_org as gridid\n",
+    "  from `dimensions-ai.data_analytics.publications` pubs, UNNEST(authors) as auth\n",
+    "  join `dimensions-ai.data_analytics.researchers` res ON res.id=auth.researcher_id\n",
+    "  where  pubs.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "  and pubs.year>=2010\n",
+    "  group by gridid\n",
+    "  -- limit 5\n",
+    "), places as (\n",
+    "  select people, gridid, address.country, address.city, CONCAT(address.latitude, ', ', address.longitude) AS latlong\n",
+    "  from people_and_grids \n",
+    "  join `dimensions-ai.data_analytics.grid` gridinfo ON gridinfo.id=people_and_grids.gridid\n",
+    ") \n",
+    "select *\n",
+    "from places\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "usjCEfSXc0nM"
+   },
+   "source": [
+    "## XJR1-4-Researchers Total Count"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 6571,
+     "status": "ok",
+     "timestamp": 1592417221791,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "Kl-SXZAHc0rl",
+    "outputId": "3a3dde14-4ba1-4da1-bd83-7348721d8852"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>tot_researchers</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>11726</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   tot_researchers\n",
+       "0            11726"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "-- [3] options \n",
+    "\n",
+    "-- 1) tot authors\n",
+    "--select COUNT(auth) as tot_researchers \n",
+    "\n",
+    "-- 2) tot disambiguated authors\n",
+    "-- select COUNT(auth.researcher_id) as tot_researchers \n",
+    "\n",
+    "-- 3) tot unique researchers \n",
+    "select COUNT(distinct auth.researcher_id) as tot_researchers \n",
+    "from `dimensions-ai.data_analytics.publications`, UNNEST(authors) as auth\n",
+    "where  journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and year > 2010\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "WtrX11qfc0uD"
+   },
+   "source": [
+    "## XJR1-5-Authors VS Researchers"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 390
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 5728,
+     "status": "ok",
+     "timestamp": 1592417285642,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "QX-yaTDUc0wo",
+    "outputId": "da673897-c89b-4c96-ff8f-2b822c71b7b2"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>year</th>\n",
+       "      <th>tot_authors</th>\n",
+       "      <th>tot_researchers</th>\n",
+       "      <th>tot_distinct</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2010</td>\n",
+       "      <td>2186</td>\n",
+       "      <td>1625</td>\n",
+       "      <td>1393</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2011</td>\n",
+       "      <td>1760</td>\n",
+       "      <td>1450</td>\n",
+       "      <td>1334</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>2012</td>\n",
+       "      <td>1853</td>\n",
+       "      <td>1385</td>\n",
+       "      <td>1243</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2013</td>\n",
+       "      <td>1608</td>\n",
+       "      <td>1338</td>\n",
+       "      <td>1254</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2014</td>\n",
+       "      <td>1819</td>\n",
+       "      <td>1446</td>\n",
+       "      <td>1339</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>2015</td>\n",
+       "      <td>1955</td>\n",
+       "      <td>1709</td>\n",
+       "      <td>1559</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>2016</td>\n",
+       "      <td>2190</td>\n",
+       "      <td>1756</td>\n",
+       "      <td>1597</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>2017</td>\n",
+       "      <td>1981</td>\n",
+       "      <td>1549</td>\n",
+       "      <td>1422</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>2018</td>\n",
+       "      <td>2126</td>\n",
+       "      <td>1688</td>\n",
+       "      <td>1496</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>2019</td>\n",
+       "      <td>2376</td>\n",
+       "      <td>1803</td>\n",
+       "      <td>1482</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>2020</td>\n",
+       "      <td>2669</td>\n",
+       "      <td>2152</td>\n",
+       "      <td>1586</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    year  tot_authors  tot_researchers  tot_distinct\n",
+       "0   2010         2186             1625          1393\n",
+       "1   2011         1760             1450          1334\n",
+       "2   2012         1853             1385          1243\n",
+       "3   2013         1608             1338          1254\n",
+       "4   2014         1819             1446          1339\n",
+       "5   2015         1955             1709          1559\n",
+       "6   2016         2190             1756          1597\n",
+       "7   2017         1981             1549          1422\n",
+       "8   2018         2126             1688          1496\n",
+       "9   2019         2376             1803          1482\n",
+       "10  2020         2669             2152          1586"
+      ]
+     },
+     "execution_count": 27,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select year, COUNT(auth) as tot_authors, COUNT(auth.researcher_id) as tot_researchers,  COUNT(DISTINCT auth.researcher_id) as tot_distinct\n",
+    "from `dimensions-ai.data_analytics.publications`, UNNEST(authors) as auth\n",
+    "where  journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and year>=2010\n",
+    "group by year\n",
+    "order by year"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "67BB-a0HrD_D"
+   },
+   "source": [
+    "## XJR1-6-Citations - pubtype breakdown"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 419
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 21278,
+     "status": "ok",
+     "timestamp": 1592420794465,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "F1HpO_pkrD18",
+    "outputId": "fcd1ce67-d295-4e42-b677-1e4296b14304"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>pubtype</th>\n",
+       "      <th>year</th>\n",
+       "      <th>totcount</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>article</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>3</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>article</td>\n",
+       "      <td>1970.0</td>\n",
+       "      <td>8</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>article</td>\n",
+       "      <td>1989.0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>article</td>\n",
+       "      <td>1996.0</td>\n",
+       "      <td>5</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>article</td>\n",
+       "      <td>2000.0</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>69</th>\n",
+       "      <td>article</td>\n",
+       "      <td>2020.0</td>\n",
+       "      <td>33910</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>70</th>\n",
+       "      <td>chapter</td>\n",
+       "      <td>2020.0</td>\n",
+       "      <td>2988</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>71</th>\n",
+       "      <td>monograph</td>\n",
+       "      <td>2020.0</td>\n",
+       "      <td>62</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>72</th>\n",
+       "      <td>preprint</td>\n",
+       "      <td>2020.0</td>\n",
+       "      <td>5907</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>73</th>\n",
+       "      <td>proceeding</td>\n",
+       "      <td>2020.0</td>\n",
+       "      <td>76</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>74 rows × 3 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       pubtype    year  totcount\n",
+       "0      article     NaN         3\n",
+       "1      article  1970.0         8\n",
+       "2      article  1989.0         1\n",
+       "3      article  1996.0         5\n",
+       "4      article  2000.0         1\n",
+       "..         ...     ...       ...\n",
+       "69     article  2020.0     33910\n",
+       "70     chapter  2020.0      2988\n",
+       "71   monograph  2020.0        62\n",
+       "72    preprint  2020.0      5907\n",
+       "73  proceeding  2020.0        76\n",
+       "\n",
+       "[74 rows x 3 columns]"
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select cp.type as pubtype, cp.year as year, count(citing_pubs.id) as totcount\n",
+    "from `dimensions-ai.data_analytics.publications` p, UNNEST(citations) as citing_pubs\n",
+    "join `dimensions-ai.data_analytics.publications` cp ON cp.id=citing_pubs.id\n",
+    "where  p.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and p.year>=2010 -- year of cited object\n",
+    "group by year, pubtype\n",
+    "order by year, pubtype "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "7c3Ty2vZc0zQ"
+   },
+   "source": [
+    "## XJR1-6-B-SelfCitations"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 24526,
+     "status": "ok",
+     "timestamp": 1592417369768,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "s-Jbzt_hc010",
+    "outputId": "86874846-07ab-4f7c-bd44-59c5595f7851"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>title</th>\n",
+       "      <th>totcount</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Nature Biotechnology</td>\n",
+       "      <td>4126</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                  title  totcount\n",
+       "0  Nature Biotechnology      4126"
+      ]
+     },
+     "execution_count": 30,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select cp.journal.title, count(citing_pubs.id) as totcount\n",
+    "from `dimensions-ai.data_analytics.publications` p, UNNEST(citations) as citing_pubs\n",
+    "join `dimensions-ai.data_analytics.publications` cp ON cp.id=citing_pubs.id\n",
+    "where  p.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and p.year>=2010\n",
+    "and cp.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "group by cp.journal.title"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "M9XrRVhUc07G"
+   },
+   "source": [
+    "## XJR1-7-Citations - journals top ten"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 419
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 18875,
+     "status": "ok",
+     "timestamp": 1592417477927,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "RTUqnxMnc1AK",
+    "outputId": "97416406-b438-4877-f28e-b2119f2f748e"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>title</th>\n",
+       "      <th>totcount</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>bioRxiv</td>\n",
+       "      <td>21756</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Scientific Reports</td>\n",
+       "      <td>7058</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>PLoS ONE</td>\n",
+       "      <td>6415</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Nature Communications</td>\n",
+       "      <td>5150</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Nature Biotechnology</td>\n",
+       "      <td>4126</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7544</th>\n",
+       "      <td>Wood Material Science and Engineering</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7545</th>\n",
+       "      <td>Journal of Genetic Medicine</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7546</th>\n",
+       "      <td>World Allergy Organization Journal</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7547</th>\n",
+       "      <td>Boletín Médico Del Hospital Infantil de México...</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7548</th>\n",
+       "      <td>Nippon Ronen Igakkai Zasshi Japanese Journal o...</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>7549 rows × 2 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                  title  totcount\n",
+       "0                                               bioRxiv     21756\n",
+       "1                                    Scientific Reports      7058\n",
+       "2                                              PLoS ONE      6415\n",
+       "3                                 Nature Communications      5150\n",
+       "4                                  Nature Biotechnology      4126\n",
+       "...                                                 ...       ...\n",
+       "7544              Wood Material Science and Engineering         1\n",
+       "7545                        Journal of Genetic Medicine         1\n",
+       "7546                 World Allergy Organization Journal         1\n",
+       "7547  Boletín Médico Del Hospital Infantil de México...         1\n",
+       "7548  Nippon Ronen Igakkai Zasshi Japanese Journal o...         1\n",
+       "\n",
+       "[7549 rows x 2 columns]"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select cp.journal.title, count(citing_pubs.id) as totcount\n",
+    "from `dimensions-ai.data_analytics.publications` p, UNNEST(citations) as citing_pubs\n",
+    "join `dimensions-ai.data_analytics.publications` cp ON cp.id=citing_pubs.id\n",
+    "where  p.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and p.year>=2010\n",
+    "and cp.journal.title is not null\n",
+    "group by cp.journal.title\n",
+    "order by totcount desc"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "QhwkMDQEc1GF"
+   },
+   "source": [
+    "## XJR1-8-B2-SelfReferences"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 12051,
+     "status": "ok",
+     "timestamp": 1592417588882,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "5bN2oKRFc1DV",
+    "outputId": "92819651-3ab8-431e-ed64-7b5957e30022"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>title</th>\n",
+       "      <th>totcount</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Nature Biotechnology</td>\n",
+       "      <td>5487</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                  title  totcount\n",
+       "0  Nature Biotechnology      5487"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select cp.journal.title, count(reference_pubs) as totcount\n",
+    "from `dimensions-ai.data_analytics.publications` p, UNNEST(reference_ids) as reference_pubs\n",
+    "join `dimensions-ai.data_analytics.publications` cp ON cp.id=reference_pubs\n",
+    "where  p.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and p.year>=2010\n",
+    "and cp.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "group by cp.journal.title"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "BUsBXDbOewUh"
+   },
+   "source": [
+    "## XJR1-8-B-ReferencesByPubType"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 235
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 9242,
+     "status": "ok",
+     "timestamp": 1592417643956,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "bSM_XUmVewUh",
+    "outputId": "1e311def-46bb-485e-a257-d1a5851e94eb"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>publication_type</th>\n",
+       "      <th>totcount</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>article</td>\n",
+       "      <td>64026</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>book</td>\n",
+       "      <td>52</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>chapter</td>\n",
+       "      <td>552</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>monograph</td>\n",
+       "      <td>135</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>preprint</td>\n",
+       "      <td>256</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>proceeding</td>\n",
+       "      <td>154</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  publication_type  totcount\n",
+       "0          article     64026\n",
+       "1             book        52\n",
+       "2          chapter       552\n",
+       "3        monograph       135\n",
+       "4         preprint       256\n",
+       "5       proceeding       154"
+      ]
+     },
+     "execution_count": 34,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select cp.type as publication_type, count(reference_pubs) as totcount\n",
+    "from `dimensions-ai.data_analytics.publications` p, UNNEST(reference_ids) as reference_pubs\n",
+    "join `dimensions-ai.data_analytics.publications` cp ON cp.id=reference_pubs\n",
+    "where  p.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and p.year>=2010\n",
+    "group by publication_type\n",
+    "order by publication_type "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "ZCLctWvKe1dW"
+   },
+   "source": [
+    "## XJB1-9-B-ReferencesByJournal"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 419
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 8622,
+     "status": "ok",
+     "timestamp": 1592417711317,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "iCzhNJrUe1dW",
+    "outputId": "13a8668d-0bca-4da9-ce38-b72bf6db31aa"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>title</th>\n",
+       "      <th>totcount</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Nature Biotechnology</td>\n",
+       "      <td>5487</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Nature</td>\n",
+       "      <td>4585</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Science</td>\n",
+       "      <td>3643</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Proceedings of the National Academy of Science...</td>\n",
+       "      <td>2734</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Cell</td>\n",
+       "      <td>2251</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3281</th>\n",
+       "      <td>Pharmacology Research &amp; Perspectives</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3282</th>\n",
+       "      <td>Journal of Molecular Microbiology and Biotechn...</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3283</th>\n",
+       "      <td>Journal of Archaeological Research</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3284</th>\n",
+       "      <td>The Application of Clinical Genetics</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3285</th>\n",
+       "      <td>Tuberculosis</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>3286 rows × 2 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                  title  totcount\n",
+       "0                                  Nature Biotechnology      5487\n",
+       "1                                                Nature      4585\n",
+       "2                                               Science      3643\n",
+       "3     Proceedings of the National Academy of Science...      2734\n",
+       "4                                                  Cell      2251\n",
+       "...                                                 ...       ...\n",
+       "3281               Pharmacology Research & Perspectives         1\n",
+       "3282  Journal of Molecular Microbiology and Biotechn...         1\n",
+       "3283                 Journal of Archaeological Research         1\n",
+       "3284               The Application of Clinical Genetics         1\n",
+       "3285                                       Tuberculosis         1\n",
+       "\n",
+       "[3286 rows x 2 columns]"
+      ]
+     },
+     "execution_count": 35,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select cp.journal.title, count(reference_pubs) as totcount\n",
+    "from `dimensions-ai.data_analytics.publications` p, UNNEST(reference_ids) as reference_pubs\n",
+    "join `dimensions-ai.data_analytics.publications` cp ON cp.id=reference_pubs\n",
+    "where  p.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and p.year>=2010\n",
+    "and cp.journal.title is not null\n",
+    "group by cp.journal.title\n",
+    "order by totcount desc"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "ltdGS4d-e2oS"
+   },
+   "source": [
+    "## XJR1-10-Competing Journals - ALL segmented by year\n",
+    "\n",
+    "The query works BUT it can certainly be optimized using some SQL magic\n",
+    "  * https://www.xaprb.com/blog/2006/12/07/how-to-select-the-firstleastmax-row-per-group-in-sql/\n",
+    "  * https://stackoverflow.com/questions/42404394/limiting-group-bys-in-bigquery"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 419
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 7231,
+     "status": "ok",
+     "timestamp": 1592417769484,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "3uf_Yrj_e2oT",
+    "outputId": "93769747-aae0-461f-c07f-2b5ddd993d3d"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>totcount</th>\n",
+       "      <th>year</th>\n",
+       "      <th>journal_id</th>\n",
+       "      <th>journal_title</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>4109</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>jour.1293558</td>\n",
+       "      <td>bioRxiv</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>3254</td>\n",
+       "      <td>2018</td>\n",
+       "      <td>jour.1293558</td>\n",
+       "      <td>bioRxiv</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3104</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>jour.1293558</td>\n",
+       "      <td>bioRxiv</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2199</td>\n",
+       "      <td>2017</td>\n",
+       "      <td>jour.1293558</td>\n",
+       "      <td>bioRxiv</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1915</td>\n",
+       "      <td>2013</td>\n",
+       "      <td>jour.1037553</td>\n",
+       "      <td>PLoS ONE</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46124</th>\n",
+       "      <td>1</td>\n",
+       "      <td>2018</td>\n",
+       "      <td>jour.1053348</td>\n",
+       "      <td>Clinical Cancer Drugs</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46125</th>\n",
+       "      <td>1</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>jour.1045662</td>\n",
+       "      <td>Food Analytical Methods</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46126</th>\n",
+       "      <td>1</td>\n",
+       "      <td>2015</td>\n",
+       "      <td>jour.1135911</td>\n",
+       "      <td>Agroforestry Systems</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46127</th>\n",
+       "      <td>1</td>\n",
+       "      <td>2010</td>\n",
+       "      <td>jour.1008534</td>\n",
+       "      <td>Radiologic Clinics of North America</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>46128</th>\n",
+       "      <td>1</td>\n",
+       "      <td>2018</td>\n",
+       "      <td>jour.1154962</td>\n",
+       "      <td>Journal of Legal Aspects of Sport</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>46129 rows × 4 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       totcount  year    journal_id                        journal_title\n",
+       "0          4109  2019  jour.1293558                              bioRxiv\n",
+       "1          3254  2018  jour.1293558                              bioRxiv\n",
+       "2          3104  2020  jour.1293558                              bioRxiv\n",
+       "3          2199  2017  jour.1293558                              bioRxiv\n",
+       "4          1915  2013  jour.1037553                             PLoS ONE\n",
+       "...         ...   ...           ...                                  ...\n",
+       "46124         1  2018  jour.1053348                Clinical Cancer Drugs\n",
+       "46125         1  2019  jour.1045662              Food Analytical Methods\n",
+       "46126         1  2015  jour.1135911                 Agroforestry Systems\n",
+       "46127         1  2010  jour.1008534  Radiologic Clinics of North America\n",
+       "46128         1  2018  jour.1154962    Journal of Legal Aspects of Sport\n",
+       "\n",
+       "[46129 rows x 4 columns]"
+      ]
+     },
+     "execution_count": 36,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select COUNT(distinct id) as totcount, year, journal.id as journal_id, journal.title as journal_title \n",
+    "from `dimensions-ai.data_analytics.publications`, UNNEST(authors) \n",
+    "where journal.id is not null \n",
+    "and journal.id <> (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and year>=2010\n",
+    "and researcher_id in \n",
+    "  (\n",
+    "    select distinct researcher_id\n",
+    "    from `dimensions-ai.data_analytics.publications`, UNNEST(authors) \n",
+    "    where  journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "    and year>=2010\n",
+    "    and researcher_id  <> \"\"   -- DAMN NON NULL EMPTY VALUES!\n",
+    "  )\n",
+    "group by journal_id, journal_title, year\n",
+    "order by totcount desc "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "zxiHXSA-e3pe"
+   },
+   "source": [
+    "## XJR1-11-B-Top Ten Competitors"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 419
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 5723,
+     "status": "ok",
+     "timestamp": 1592417847514,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "I8rC9X5Ke3pf",
+    "outputId": "7b502eff-e3b1-42bb-f0e3-988dd7e8235e"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>id</th>\n",
+       "      <th>title</th>\n",
+       "      <th>year</th>\n",
+       "      <th>totpubs</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>jour.1018957</td>\n",
+       "      <td>Nature</td>\n",
+       "      <td>2010</td>\n",
+       "      <td>306</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>jour.1018957</td>\n",
+       "      <td>Nature</td>\n",
+       "      <td>2011</td>\n",
+       "      <td>327</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>jour.1018957</td>\n",
+       "      <td>Nature</td>\n",
+       "      <td>2012</td>\n",
+       "      <td>351</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>jour.1018957</td>\n",
+       "      <td>Nature</td>\n",
+       "      <td>2013</td>\n",
+       "      <td>308</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>jour.1018957</td>\n",
+       "      <td>Nature</td>\n",
+       "      <td>2014</td>\n",
+       "      <td>347</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>100</th>\n",
+       "      <td>jour.1371339</td>\n",
+       "      <td>arXiv</td>\n",
+       "      <td>2016</td>\n",
+       "      <td>283</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>101</th>\n",
+       "      <td>jour.1371339</td>\n",
+       "      <td>arXiv</td>\n",
+       "      <td>2017</td>\n",
+       "      <td>361</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>102</th>\n",
+       "      <td>jour.1371339</td>\n",
+       "      <td>arXiv</td>\n",
+       "      <td>2018</td>\n",
+       "      <td>411</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>103</th>\n",
+       "      <td>jour.1371339</td>\n",
+       "      <td>arXiv</td>\n",
+       "      <td>2019</td>\n",
+       "      <td>420</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>104</th>\n",
+       "      <td>jour.1371339</td>\n",
+       "      <td>arXiv</td>\n",
+       "      <td>2020</td>\n",
+       "      <td>290</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>105 rows × 4 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "               id   title  year  totpubs\n",
+       "0    jour.1018957  Nature  2010      306\n",
+       "1    jour.1018957  Nature  2011      327\n",
+       "2    jour.1018957  Nature  2012      351\n",
+       "3    jour.1018957  Nature  2013      308\n",
+       "4    jour.1018957  Nature  2014      347\n",
+       "..            ...     ...   ...      ...\n",
+       "100  jour.1371339   arXiv  2016      283\n",
+       "101  jour.1371339   arXiv  2017      361\n",
+       "102  jour.1371339   arXiv  2018      411\n",
+       "103  jour.1371339   arXiv  2019      420\n",
+       "104  jour.1371339   arXiv  2020      290\n",
+       "\n",
+       "[105 rows x 4 columns]"
+      ]
+     },
+     "execution_count": 37,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "-- [*] get top ten competitor journals (title and ID)\n",
+    "with top_ten as (\n",
+    "  select COUNT(distinct pubs.id) as totpubs, journal.id as journal_id, journal.title as journal_title \n",
+    "  from `dimensions-ai.data_analytics.publications` as pubs, UNNEST(authors)\n",
+    "  where journal.id is not null \n",
+    "  and journal.id <> (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "  and year>=2010\n",
+    "  and researcher_id in \n",
+    "    (\n",
+    "      select distinct researcher_id\n",
+    "      from `dimensions-ai.data_analytics.publications`, UNNEST(authors) \n",
+    "      where  journal.id =  (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "      and year>=2010\n",
+    "      and researcher_id  <> \"\"   -- DAMN NON NULL EMPTY VALUES!\n",
+    "    )\n",
+    "  group by journal_id, journal_title\n",
+    "  order by totpubs desc \n",
+    "  limit 10\n",
+    ")\n",
+    "-- [*] get pubs by year for last ten years\n",
+    "select \n",
+    "   p.journal.id, p.journal.title,  p.year, COUNT(distinct p.id) as totpubs,\n",
+    "  from `dimensions-ai.data_analytics.publications` p, UNNEST(authors)\n",
+    "  join  top_ten ON top_ten.journal_id = p.journal.id\n",
+    "  where p.year>=2010\n",
+    "  and researcher_id in \n",
+    "  (\n",
+    "    select distinct researcher_id\n",
+    "    from `dimensions-ai.data_analytics.publications`, UNNEST(authors) \n",
+    "    where  journal.id =  (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "    and year>=2010\n",
+    "    and researcher_id  <> \"\"   -- DAMN NON NULL EMPTY VALUES!\n",
+    "  )\n",
+    "  group by p.journal.id, p.journal.title, p.year, top_ten.totpubs\n",
+    "  order by p.journal.id, p.year"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "Xq-I6gK5e5Mr"
+   },
+   "source": [
+    "## XJR1-12-B-Competing Journals Performance"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 376
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 11210,
+     "status": "ok",
+     "timestamp": 1592417936380,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "JJVOq5Mbe5Ms",
+    "outputId": "fb371f39-5c32-46ec-a589-2a440d0b465f"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>journal_id</th>\n",
+       "      <th>journal_title</th>\n",
+       "      <th>tot_pubs</th>\n",
+       "      <th>tot_altmetrics</th>\n",
+       "      <th>tot_cit</th>\n",
+       "      <th>altm_per_pub</th>\n",
+       "      <th>cit_per_pub</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>jour.1037553</td>\n",
+       "      <td>PLoS ONE</td>\n",
+       "      <td>228216</td>\n",
+       "      <td>2013848</td>\n",
+       "      <td>4318120</td>\n",
+       "      <td>8.824307</td>\n",
+       "      <td>18.921197</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>jour.1371339</td>\n",
+       "      <td>arXiv</td>\n",
+       "      <td>1161201</td>\n",
+       "      <td>13</td>\n",
+       "      <td>43</td>\n",
+       "      <td>0.000011</td>\n",
+       "      <td>0.000037</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>jour.1293558</td>\n",
+       "      <td>bioRxiv</td>\n",
+       "      <td>91936</td>\n",
+       "      <td>1279002</td>\n",
+       "      <td>113540</td>\n",
+       "      <td>13.911873</td>\n",
+       "      <td>1.234990</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>jour.1085025</td>\n",
+       "      <td>Blood</td>\n",
+       "      <td>65018</td>\n",
+       "      <td>101292</td>\n",
+       "      <td>672572</td>\n",
+       "      <td>1.557907</td>\n",
+       "      <td>10.344397</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>jour.1018957</td>\n",
+       "      <td>Nature</td>\n",
+       "      <td>42939</td>\n",
+       "      <td>6092628</td>\n",
+       "      <td>2338523</td>\n",
+       "      <td>141.890310</td>\n",
+       "      <td>54.461515</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>jour.1043282</td>\n",
+       "      <td>Nature Communications</td>\n",
+       "      <td>32620</td>\n",
+       "      <td>1465068</td>\n",
+       "      <td>1334426</td>\n",
+       "      <td>44.913182</td>\n",
+       "      <td>40.908216</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>jour.1312191</td>\n",
+       "      <td>Journal of Clinical Oncology</td>\n",
+       "      <td>81281</td>\n",
+       "      <td>217758</td>\n",
+       "      <td>711105</td>\n",
+       "      <td>2.679076</td>\n",
+       "      <td>8.748724</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>jour.1115214</td>\n",
+       "      <td>Nature Biotechnology</td>\n",
+       "      <td>4723</td>\n",
+       "      <td>197906</td>\n",
+       "      <td>287576</td>\n",
+       "      <td>41.902604</td>\n",
+       "      <td>60.888418</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>jour.1018982</td>\n",
+       "      <td>Nucleic Acids Research</td>\n",
+       "      <td>14744</td>\n",
+       "      <td>74031</td>\n",
+       "      <td>801202</td>\n",
+       "      <td>5.021093</td>\n",
+       "      <td>54.340884</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>jour.1082971</td>\n",
+       "      <td>Proceedings of the National Academy of Science...</td>\n",
+       "      <td>43894</td>\n",
+       "      <td>2028332</td>\n",
+       "      <td>2318670</td>\n",
+       "      <td>46.209778</td>\n",
+       "      <td>52.824304</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>jour.1045337</td>\n",
+       "      <td>Scientific Reports</td>\n",
+       "      <td>116586</td>\n",
+       "      <td>1339929</td>\n",
+       "      <td>1506533</td>\n",
+       "      <td>11.493052</td>\n",
+       "      <td>12.922075</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      journal_id                                      journal_title  tot_pubs  \\\n",
+       "0   jour.1037553                                           PLoS ONE    228216   \n",
+       "1   jour.1371339                                              arXiv   1161201   \n",
+       "2   jour.1293558                                            bioRxiv     91936   \n",
+       "3   jour.1085025                                              Blood     65018   \n",
+       "4   jour.1018957                                             Nature     42939   \n",
+       "5   jour.1043282                              Nature Communications     32620   \n",
+       "6   jour.1312191                       Journal of Clinical Oncology     81281   \n",
+       "7   jour.1115214                               Nature Biotechnology      4723   \n",
+       "8   jour.1018982                             Nucleic Acids Research     14744   \n",
+       "9   jour.1082971  Proceedings of the National Academy of Science...     43894   \n",
+       "10  jour.1045337                                 Scientific Reports    116586   \n",
+       "\n",
+       "    tot_altmetrics  tot_cit  altm_per_pub  cit_per_pub  \n",
+       "0          2013848  4318120      8.824307    18.921197  \n",
+       "1               13       43      0.000011     0.000037  \n",
+       "2          1279002   113540     13.911873     1.234990  \n",
+       "3           101292   672572      1.557907    10.344397  \n",
+       "4          6092628  2338523    141.890310    54.461515  \n",
+       "5          1465068  1334426     44.913182    40.908216  \n",
+       "6           217758   711105      2.679076     8.748724  \n",
+       "7           197906   287576     41.902604    60.888418  \n",
+       "8            74031   801202      5.021093    54.340884  \n",
+       "9          2028332  2318670     46.209778    52.824304  \n",
+       "10         1339929  1506533     11.493052    12.922075  "
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "-- [*] get top ten competitor journals (title and ID)\n",
+    "------   note the pubs counts can't be reused cause they refer only to same-authors-pubs-from-departing-journal \n",
+    "with top_ten as (\n",
+    "  select COUNT(distinct pubs.id) as totpubs, journal.id as journal_id, journal.title as journal_title \n",
+    "  from `dimensions-ai.data_analytics.publications` as pubs, UNNEST(authors)\n",
+    "  where journal.id is not null \n",
+    "  and journal.id <> (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "  and year>=2010\n",
+    "  and researcher_id in \n",
+    "    (\n",
+    "      select distinct researcher_id\n",
+    "      from `dimensions-ai.data_analytics.publications`, UNNEST(authors) \n",
+    "      where  journal.id =  (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "      and year>=2010\n",
+    "      and researcher_id  <> \"\"   -- DAMN NON NULL EMPTY VALUES!\n",
+    "    )\n",
+    "  group by journal_id, journal_title\n",
+    "  order by totpubs desc \n",
+    "  limit 10\n",
+    "), \n",
+    "-- [*] extra step to augment table with SEED journal\n",
+    "table_seed as (\n",
+    "  select * from top_ten\n",
+    "  union all  -- ps toppubs not used, just to make cols match\n",
+    "  select RAND() as totpubs, journal.id as journal_id,  journal.title as journal_title \n",
+    "  from `dimensions-ai.data_analytics.publications` as pubs\n",
+    "  where journal.id =  (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "  group by journal_id, journal_title\n",
+    "), \n",
+    "-- [*] get totpubs and totaltmetric for each of the competitor journals\n",
+    "table1 as (\n",
+    "  select count(*) as tot_pubs, sum(IFNULL(altmetrics.score, 0)) as tot_altmetrics, table_seed.journal_id\n",
+    "  from `dimensions-ai.data_analytics.publications` p\n",
+    "  join  table_seed ON table_seed.journal_id = p.journal.id\n",
+    "  where p.year>=2010\n",
+    "  group by table_seed.journal_id\n",
+    "),\n",
+    "-- [*] get tot citations for each of the competitor journals\n",
+    "table2 as (\n",
+    "  select count(citing_pubs.id) as tot_cit, table1.journal_id\n",
+    "  from `dimensions-ai.data_analytics.publications` p, UNNEST(citations) as citing_pubs\n",
+    "  join `dimensions-ai.data_analytics.publications` cp ON cp.id=citing_pubs.id\n",
+    "  join  table1 ON table1.journal_id = p.journal.id\n",
+    "  where p.year>=2010\n",
+    "  group by table1.journal_id\n",
+    "),\n",
+    "-- [*] final step: combine all data from prev tables into single table  \n",
+    "table_final as (\n",
+    "  select table_seed.journal_id, table_seed.journal_title, table1.tot_pubs, table1.tot_altmetrics, table2.tot_cit \n",
+    "  from  table_seed\n",
+    "  join  table1 ON table1.journal_id = table_seed.journal_id\n",
+    "  join  table2 ON table2.journal_id = table_seed.journal_id\n",
+    ")\n",
+    "select journal_id, journal_title, tot_pubs, tot_altmetrics, tot_cit, tot_altmetrics / tot_pubs as altm_per_pub,  tot_cit / tot_pubs as cit_per_pub\n",
+    "from table_final"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "12JBDeyJggg3"
+   },
+   "source": [
+    "## XJR1-13-Citations Tot 2019"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 3605,
+     "status": "ok",
+     "timestamp": 1592418075036,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "y1oeFGwmevsB",
+    "outputId": "e33f31ca-8c89-4810-a582-22602ba0b35c"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>citations</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>5337</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   citations\n",
+       "0       5337"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select count(citing_pubs.id) as citations\n",
+    "from `dimensions-ai.data_analytics.publications` p, UNNEST(citations) as citing_pubs\n",
+    "join `dimensions-ai.data_analytics.publications` cp ON cp.id=citing_pubs.id\n",
+    "where  p.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and p.year=2019 -- year of cited object "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "colab_type": "text",
+    "id": "NDAV819Jc095"
+   },
+   "source": [
+    "## XJR1-14-Altmetric tot 2019\n",
+    "\n",
+    "Social media mentions in 2019\n",
+    "\n",
+    "(= mentions of articles published in 2019)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {
+    "Collapsed": "false",
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 80
+    },
+    "colab_type": "code",
+    "executionInfo": {
+     "elapsed": 2923,
+     "status": "ok",
+     "timestamp": 1592418022969,
+     "user": {
+      "displayName": "Michele Pasin",
+      "photoUrl": "https://lh3.googleusercontent.com/a-/AOh14GjipTjNOii6dOauGPuXYYkJI5yDxiFjhaKyo9n3dQ=s64",
+      "userId": "16817767946054086877"
+     },
+     "user_tz": -60
+    },
+    "id": "Nv16Pm9Lc04x",
+    "outputId": "0ab74176-74d8-4dce-ab0b-07a8521ce5fe"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>altmetric</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>27015</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   altmetric\n",
+       "0      27015"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {
+      "tags": []
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%bigquery --params $bq_params --project $project_id \n",
+    "\n",
+    "select sum(altmetrics.score) as altmetric\n",
+    "from `dimensions-ai.data_analytics.publications` p\n",
+    "where  p.journal.id = (`ds-data-solutions-gbq.dev_encrypted_param.decode_encrypted_url_param`(@journal_id))\n",
+    "and p.year=2019 -- year of cited object "
+   ]
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "collapsed_sections": [],
+   "name": "2020-06-SN-Journals-Report.ipynb",
+   "provenance": [],
+   "toc_visible": true
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

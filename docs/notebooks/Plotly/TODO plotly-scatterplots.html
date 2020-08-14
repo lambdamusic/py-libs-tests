@@ -1,0 +1,735 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO Plotly Scatter plots and bubble charts with Dimensions data &#8212; Python tests [PRIVATE]</title>
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/_custom.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="TODO Plotly Sunburst plots with Dimensions data" href="TODO plotly-sunburst.html" />
+    <link rel="prev" title="TODO Plotly Histograms with Dimensions data" href="TODO plotly-histogram.html" />
+   
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+
+   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149959808-1"></script>
+   <!-- <script src="_static/js/custom.js"></script> -->
+
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="TODO plotly-sunburst.html" title="TODO Plotly Sunburst plots with Dimensions data"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="TODO plotly-histogram.html" title="TODO Plotly Histograms with Dimensions data"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">TODO Plotly Scatter plots and bubble charts with Dimensions data</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="TODO-Plotly-Scatter-plots-and-bubble-charts-with-Dimensions-data">
+<h1>TODO Plotly Scatter plots and bubble charts with Dimensions data<a class="headerlink" href="#TODO-Plotly-Scatter-plots-and-bubble-charts-with-Dimensions-data" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference external" href="https://plotly.com/python/bubble-charts/">https://plotly.com/python/bubble-charts/</a></p></li>
+<li><p><a class="reference external" href="https://plotly.com/python/line-and-scatter/">https://plotly.com/python/line-and-scatter/</a></p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">json_normalize</span>
+<span class="kn">from</span> <span class="nn">tqdm.notebook</span> <span class="kn">import</span> <span class="n">tqdm</span> <span class="k">as</span> <span class="n">progress</span>
+<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+<span class="kn">from</span> <span class="nn">plotly.offline</span> <span class="kn">import</span> <span class="n">plot</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;google.colab&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+  <span class="c1"># make js dependecies local / needed by html exports</span>
+  <span class="kn">from</span> <span class="nn">plotly.offline</span> <span class="kn">import</span> <span class="n">init_notebook_mode</span>
+  <span class="n">init_notebook_mode</span><span class="p">(</span><span class="n">connected</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">dimcli</span>
+<span class="kn">from</span> <span class="nn">dimcli.shortcuts</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="c1">#</span>
+<span class="n">dimcli</span><span class="o">.</span><span class="n">login</span><span class="p">()</span>
+<span class="n">dsl</span> <span class="o">=</span> <span class="n">dimcli</span><span class="o">.</span><span class="n">Dsl</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+DimCli v0.5.4 - Succesfully connected to &lt;https://app.dimensions.ai&gt; (method: dsl.ini file)
+</pre></div></div>
+</div>
+<div class="section" id="Testing-out-plotly_express-with-DSL-data">
+<h2>Testing out plotly_express with DSL data<a class="headerlink" href="#Testing-out-plotly_express-with-DSL-data" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">res</span> <span class="o">=</span> <span class="n">dslquery</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;search publications for &quot;malaria&quot; where research_org_country_names=&quot;Italy&quot; and year &lt; 2010 return publications[basics] limit 500&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Returned Publications: 500 (total = 3331)
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">as_dataframe</span><span class="p">()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;undefined&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>author_affiliations</th>
+      <th>id</th>
+      <th>issue</th>
+      <th>journal.id</th>
+      <th>journal.title</th>
+      <th>pages</th>
+      <th>title</th>
+      <th>type</th>
+      <th>volume</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[[{'first_name': 'Francesco', 'last_name': 'Se...</td>
+      <td>pub.1032403232</td>
+      <td>2</td>
+      <td>jour.1295566</td>
+      <td>Fragmenta entomologica</td>
+      <td>213-372</td>
+      <td>LE ZANZARE ITALIANE: GENERALITÀ E IDENTIFICAZI...</td>
+      <td>article</td>
+      <td>41</td>
+      <td>2009</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[[{'first_name': 'Barbara C.', 'last_name': 'B...</td>
+      <td>pub.1004146769</td>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>undefined</td>
+      <td>261-285</td>
+      <td>Determining the Activity of Mucosal Adjuvants</td>
+      <td>chapter</td>
+      <td>626</td>
+      <td>2009</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[[{'first_name': 'David W.', 'last_name': 'Rog...</td>
+      <td>pub.1052568629</td>
+      <td>12</td>
+      <td>jour.1032549</td>
+      <td>PLoS Biology</td>
+      <td>e1000272</td>
+      <td>Transglutaminase-Mediated Semen Coagulation Co...</td>
+      <td>article</td>
+      <td>7</td>
+      <td>2009</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[[{'first_name': 'Devendra', 'last_name': 'Ban...</td>
+      <td>pub.1007487910</td>
+      <td>12</td>
+      <td>jour.1037553</td>
+      <td>PLoS ONE</td>
+      <td>e8245</td>
+      <td>IgG Autoantibody to Brain Beta Tubulin III Ass...</td>
+      <td>article</td>
+      <td>4</td>
+      <td>2009</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>[[{'first_name': 'Paolo', 'last_name': 'Coghi'...</td>
+      <td>pub.1026635135</td>
+      <td>12</td>
+      <td>jour.1036021</td>
+      <td>ChemMedChem</td>
+      <td>1957-1957</td>
+      <td>Cover Picture: Interaction of Artemisinins wit...</td>
+      <td>article</td>
+      <td>4</td>
+      <td>2009</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="scatter-matrix-is-prob-better-when-you-have-numeric-values-or-not-too-many-categorical-ones">
+<h2>scatter matrix is prob better when you have numeric values or not too many categorical ones<a class="headerlink" href="#scatter-matrix-is-prob-better-when-you-have-numeric-values-or-not-too-many-categorical-ones" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">px</span><span class="o">.</span><span class="n">scatter_matrix</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;journal.title&quot;</span><span class="p">,</span>  <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+
+
+            <div id="15414fc7-c00d-4a36-87f6-374e5d940639" class="plotly-graph-div" style="height:600px; width:100%;"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+                    window.PLOTLYENV.BASE_URL='https://plot.ly';
+
+                if (document.getElementById("15414fc7-c00d-4a36-87f6-374e5d940639")) {
+                    Plotly.newPlot(
+                        '15414fc7-c00d-4a36-87f6-374e5d940639',
+                        [{"dimensions": [{"axis": {"matches": true}, "label": "journal.title", "values": ["Fragmenta entomologica", "undefined", "PLoS Biology", "PLoS ONE", "ChemMedChem", "undefined", "ChemMedChem", "FEBS Letters", "Malaria Journal", "BMC Ecology", "Food Security", "Environmental Microbiology", "Evidence-Based Child Health A Cochrane Review Journal", "Journal of Mathematical Analysis and Applications", "Natural product communications", "Malaria Journal", "Malaria Journal", "BMC Medical Informatics and Decision Making", "BMC Evolutionary Biology", "Glia", "Biological Invasions", "Clinical Biochemistry", "Clinics in Chest Medicine", "BMC Genomics", "Malaria Journal", "Cases Journal", "Health Research Policy and Systems", "Malaria Journal", "Evidence-Based Child Health A Cochrane Review Journal", "Seminars in Cancer Biology", "Journal of Infection", "BMC Research Notes", "Genetic Testing and Molecular Biomarkers", "Pathogens and Global Health", "Paediatrics and Child Health", "Clinical & Experimental Immunology", "Genes & Immunity", "Journal of Ethnobiology and Ethnomedicine", "Aging Clinical and Experimental Research", "Vector-Borne and Zoonotic Diseases", "Malaria Journal", "International Journal for Equity in Health", "BMC Pregnancy and Childbirth", "Natural product communications", "Natural product communications", "International Journal of Health Geographics", "Journal of Ethnobiology and Ethnomedicine", "Prenatal Diagnosis", "Journal of Molecular Evolution", "Chromatographia", "Ophthalmic Epidemiology", "BMC Ecology", "Diagnostic Pathology", "Journal of Inherited Metabolic Disease", "BMC Genomics", "Toxicon", "Natural product communications", "Malaria Journal", "PLoS ONE", "Journal of Reproductive Immunology", "Parasitology Research", "Mutation Research/Fundamental and Molecular Mechanisms of Mutagenesis", "The Journal of Heart and Lung Transplantation", "Human Immunology", "Journal of Ethnopharmacology", "Evolutionary Applications", "Journal of Clinical Ultrasound", "The FEBS Journal", "Radio Graphics", "Data & Knowledge Engineering", "Nature Reviews Nephrology", "Cell and Tissue Banking", "Proteomics Clinical Applications", "Molecular Ecology", "Desalination", "Comptes Rendus Physique", "Medical Hypotheses", "EFSA Supporting Publications", "undefined", "Journal of Intellectual Capital", "undefined", "PLoS ONE", "Antimicrobial Agents and Chemotherapy", "The Journal of Immunology", "Human Reproduction", "Expert Review of Vaccines", "The International Journal of Tuberculosis and Lung Disease", "Cancer Gene Therapy", "Food Chemistry", "Child and Adolescent Psychiatric Clinics of North America", "International Journal of Immunopathology and Pharmacology", "Revista chilena de infectolog\u00eda", "European Journal of Gastroenterology & Hepatology", "Genes & Immunity", "Tropical Medicine and International Health", "Tetrahedron Letters", "Journal of Pharmaceutical Sciences", "Investigational New Drugs", "Physiological Reviews", "British Journal of Cancer", "Veterinary Parasitology", "undefined", "PLoS ONE", "undefined", "Journal of Travel Medicine", "Pediatric Blood & Cancer", "Microbes and Infection", "Biodiversity", "The International Journal of Artificial Organs", "Bioorganic & Medicinal Chemistry", "Journal of Animal Ecology", "Experimental Hematology", "European Journal of Clinical Microbiology & Infectious Diseases", "Parasite", "Le infezioni in medicina : rivista periodica di eziologia, epidemiologia, diagnostica, clinica e terapia delle patologie infettive", "Human Genetics", "Heart and Vessels", "Journal of Ethnopharmacology", "Biochimica et Biophysica Acta (BBA) - Lipids and Lipid Metabolism", "Medical and Veterinary Entomology", "Politische Vierteljahresschrift", "Emerging Infectious Diseases", "Molecular Immunology", "Tumori Journal", "Emergency Care Journal", "Journal of Biological Chemistry", "European Journal of Histochemistry", "Proceedings of the National Academy of Sciences", "undefined", "Clinical Microbiology and Infection", "Journal of Theoretical Biology", "Nonlinear Analysis Real World Applications", "European Journal of Immunology", "Journal of Medicine and the Person", "Analytical and Bioanalytical Chemistry", "The Indian Journal of Medical Research", "Veterinary Parasitology", "Nucleic Acids Research", "Cellular Microbiology", "Clinical Therapeutics", "undefined", "ChemMedChem", "Biotechnology Advances", "Molecular Microbiology", "Nature", "Human Mutation", "Journal of Family History", "Parasitology", "IEEE/ACM Transactions on Computational Biology and Bioinformatics", "The American Journal of Human Genetics", "The FEBS Journal", "Infection Genetics and Evolution", "Acta Tropica", "Ecological Modelling", "European Journal of Medicinal Chemistry", "Emerging Infectious Diseases", "Mem\u00f3rias do Instituto Oswaldo Cruz", "Journal of Ethnopharmacology", "Gene", "Gene", "Journal of Ethnopharmacology", "Insect Biochemistry and Molecular Biology", "Acta Neurologica Scandinavica", "Fitoterapia", "Journal of Investigative Dermatology", "mSphere", "Anthropologischer Anzeiger", "Chemosphere", "Revista de Nutri\u00e7\u00e3o", "Drug Discovery Today", "International Journal of Immunogenetics", "Nature Genetics", "Heredity", "Population and Development Review", "Experimental and Applied Acarology", "Vaccine", "Infectious Disease Clinics of North America", "American Journal of Hematology", "The British Journal for the History of Science", "Transplant Infectious Disease", "Experimental and Applied Acarology", "European Journal of Political Economy", "Therapeutic Drug Monitoring", "Neuroscience", "The Lancet Infectious Diseases", "Indoor and Built Environment", "Vaccine", "Journal of Applied Microbiology", "Gastroenterology", "Vaccine", "Science", "Applied and Environmental Microbiology", "Clinical Infectious Diseases", "American Journal of Tropical Medicine and Hygiene", "Journal of Travel Medicine", "Parasite Immunology", "Nature", "Expert Systems with Applications", "The Lancet Infectious Diseases", "Entomologia Experimentalis et Applicata", "Tropical Medicine and International Health", "Journal of Eukaryotic Microbiology", "Transplantation Proceedings", "Vaccine", "Artificial Intelligence in Medicine", "Tetrahedron", "Vaccine", "Journal of the American Academy of Dermatology", "Journal of Essential Oil Research", "PLoS Medicine", "Marine Drugs", "undefined", "Corporate Governance", "undefined", "Journal of Ethnopharmacology", "Auris Nasus Larynx", "Human Mutation", "British Journal of Pharmacology", "Toxicological Sciences", "Filaria Journal", "Trends in Parasitology", "Radiology", "Journal of Internal Medicine", "Experimental and Molecular Pathology", "Cell", "Journal of Neurochemistry", "Biochimica et Biophysica Acta (BBA) - Lipids and Lipid Metabolism", "Infection", "Science", "Science", "Biochemical Journal", "The Journal of Infectious Diseases", "Journal of Essential Oil Research", "Journal of Archaeological Science", "Placenta", "Analytica Chimica Acta", "Clinical Pharmacology & Therapeutics", "Evolution and Human Behavior", "Journal of Virological Methods", "TrAC Trends in Analytical Chemistry", "Parasite Immunology", "Autoimmunity Reviews", "Future Microbiology", "Revista Brasileira de Farmacognosia", "Fisheries Research", "Marine Genomics", "Pharmaceutical Research", "Parasitology", "Le infezioni in medicina : rivista periodica di eziologia, epidemiologia, diagnostica, clinica e terapia delle patologie infettive", "undefined", "Science Signaling", "Journal of Analytical Psychology", "Jornal de Pediatria", "Emerging Infectious Diseases", "Molecular Ecology", "Vaccine", "Analytical Biochemistry", "Journal of Inorganic Biochemistry", "Pharmacogenetics and Genomics", "Vaccine", "Comptes Rendus Biologies", "Journal of Archaeological Science", "International Journal of Antimicrobial Agents", "undefined", "Studies in Ethics Law and Technology", "Global Jurist", "PLoS ONE", "Applied and Environmental Microbiology", "Disability and Rehabilitation", "The International Journal of Health Planning and Management", "Journal of Chemical Ecology", "Journal of Ethnopharmacology", "Reviews on Environmental Health", "The Journal of Membrane Biology", "Journal of NeuroVirology", "Journal of Clinical Virology", "International Journal for Parasitology", "International Journal of STD & AIDS", "Vaccine", "IUBMB Life", "Journal of Molecular Biology", "undefined", "undefined", "undefined", "Photochemical & Photobiological Sciences", "undefined", "undefined", "undefined", "undefined", "Cellular Physiology and Biochemistry", "undefined", "Mediterranean Journal of Hematology and Infectious Diseases", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "Cellular Physiology and Biochemistry", "undefined", "undefined", "Acta Haematologica", "undefined", "Medicinal Research Reviews", "International Journal of Osteoarchaeology", "undefined", "undefined", "undefined", "Blood Purification", "undefined", "undefined", "undefined", "undefined", "undefined", "undefined", "International Organizations Law Review", "World Journal of Gastroenterology", "undefined", "undefined", "Mediterranean Journal of Hematology and Infectious Diseases", "undefined", "undefined", "undefined", "Annales Nestl\u00e9 (Ed espa\u00f1ola)", "Green Chemistry", "undefined", "undefined", "undefined", "Mediterranean Journal of Hematology and Infectious Diseases", "undefined", "International Organizations Law Review", "International Organizations Law Review", "Amphibia-Reptilia", "undefined", "PLoS ONE", "Genome Research", "Occupational Medicine", "Genome Biology", "Coordination Chemistry Reviews", "Malaria Journal", "Current Opinion in Infectious Diseases", "BMC Evolutionary Biology", "Food Policy", "European View", "BMC Evolutionary Biology", "Public Health Nutrition", "The American Journal of the Medical Sciences", "Genes & Immunity", "Bone", "Hepatology", "Autoimmunity Reviews", "Emerging Themes in Epidemiology", "Epilepsy Research", "Medical and Veterinary Entomology", "Clinical & Experimental Immunology", "Natural product communications", "Global Biogeochemical Cycles", "BMC Genomics", "Malaria Journal", "Malaria Journal", "Medical and Veterinary Entomology", "Parassitologia", "Le infezioni in medicina : rivista periodica di eziologia, epidemiologia, diagnostica, clinica e terapia delle patologie infettive", "Natural product communications", "BMC Genomics", "Malaria Journal", "BMC Public Health", "BMC Bioinformatics", "Natural product communications", "Malaria Journal", "Analytical and Bioanalytical Chemistry", "Current Biology", "Malaria Journal", "Parasite", "Public Health Nutrition", "Infection", "Phytoth\u00e9rapie", "Health Promotion International", "Molecules", "mSphere", "Journal of Chromatography B", "The FEBS Journal", "Vaccine", "Tropical Medicine and International Health", "Environmental Health Perspectives", "Small Ruminant Research", "Phytomedicine", "Cytokine", "International Journal of Infectious Diseases", "Natural Resources Forum", "Pesticide Biochemistry and Physiology", "Veterinary Parasitology", "Blood", "The Journal of Immunology", "mSphere", "Archives of Environmental Contamination and Toxicology", "Bioorganic & Medicinal Chemistry Letters", "Preventive Veterinary Medicine", "Wiener klinische Wochenschrift", "Vaccine", "Molecular and Biochemical Parasitology", "Chemosphere", "Hydrobiologia", "Journal of Organizational Behavior", "Fish & Shellfish Immunology", "Therapeutics and Clinical Risk Management", "Microbiologica", "Evolutionary Applications", "Food and Chemical Toxicology", "On the Horizon", "The Open AIDS Journal", "undefined", "Journal of Travel Medicine", "Journal of Travel Medicine", "Journal of Virology", "Journal of Eukaryotic Microbiology", "Journal of Affective Disorders", "Vaccine", "Reproductive Toxicology", "Clinical Practice", "Molecular Phylogenetics and Evolution", "Expert Opinion on Pharmacotherapy", "Food and Nutrition Bulletin", "Insect Biochemistry and Molecular Biology", "Reproductive Toxicology", "Trends in Parasitology", "Clinics in Chest Medicine", "Reproductive Toxicology", "Genetic Resources and Crop Evolution", "Acta Paediatrica", "Advances in Pediatrics", "Ethnobotany Research and Applications", "undefined", "PLoS ONE", "Corporate Governance", "Infection and Immunity", "Biophysical Journal", "Biochemical and Biophysical Research Communications", "Biotechnology Letters", "Parasitology Research", "Journal of the American Academy of Dermatology", "Reproductive Toxicology", "Diagnostic Microbiology and Infectious Disease", "Toxicology Letters", "Chemosphere", "Burns", "Molecular Pharmacology", "Tissue and Cell", "Prenatal Diagnosis", "Trends in Pharmacological Sciences", "European Journal of Protistology", "PLoS ONE", "Movement Disorders", "Journal of Antimicrobial Chemotherapy", "undefined", "The Journal of Immunology", "ChemMedChem", "Philosophical Transactions of The Royal Society A Mathematical Physical and Engineering Sciences", "Journal of Travel Medicine", "Scandinavian Journal of Immunology", "International Journal of Medical Microbiology", "Emerging Infectious Diseases", "Public Health Nutrition", "Emerging Infectious Diseases", "Journal of Neuroimmunology", "Immunology", "Proteins Structure Function and Bioinformatics", "Bone Marrow Transplantation", "Rendiconti Lincei. Scienze Fisiche e Naturali", "Journal of Archaeological Science", "Human Genetics", "Journal of Separation Science", "Travel Medicine and Infectious Disease", "Bioorganic & Medicinal Chemistry", "Human Gene Therapy", "Bioorganic & Medicinal Chemistry Letters", "Public Health Nutrition", "European Journal of Anaesthesiology", "undefined", "PLoS ONE", "PLoS Neglected Tropical Diseases", "ChemMedChem", "PLoS ONE", "Cellular & Molecular Immunology", "Proteomics", "Molecular Aspects of Medicine", "Parassitologia", "Journal of Inherited Metabolic Disease", "Parassitologia", "Parassitologia", "Vaccine", "Parassitologia", "Autoimmunity Reviews", "Cellular and Molecular Life Sciences", "Statistica", "Vaccine", "Environmental and Molecular Mutagenesis"]}, {"axis": {"matches": true}, "label": "type", "values": ["article", "chapter", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "chapter", "proceeding", "article", "chapter", "chapter", "chapter", "chapter", "article", "chapter", "article", "chapter", "chapter", "chapter", "chapter", "chapter", "monograph", "chapter", "chapter", "chapter", "article", "chapter", "chapter", "article", "chapter", "article", "article", "chapter", "chapter", "chapter", "article", "chapter", "chapter", "chapter", "chapter", "chapter", "chapter", "article", "article", "chapter", "chapter", "article", "chapter", "chapter", "chapter", "article", "article", "chapter", "chapter", "chapter", "article", "chapter", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "chapter", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article", "article"]}, {"axis": {"matches": true}, "label": "year", "values": [2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008, 2008]}], "hoverlabel": {"namelength": 0}, "hovertemplate": "%{xaxis.title.text}=%{x}<br>%{yaxis.title.text}=%{y}", "legendgroup": "", "marker": {"color": "#636efa", "symbol": "circle"}, "name": "", "showlegend": false, "type": "splom", "uid": "d9aef8ca-075f-4eed-ae7e-0c3b2a4d70c4"}],
+                        {"dragmode": "select", "height": 600, "legend": {"tracegroupgap": 0}, "margin": {"t": 60}, "template": {"data": {"bar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#506784", "arrowhead": 0, "arrowwidth": 1}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "sequentialminus": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#19d3f3", "#e763fa", "#FECB52", "#FFA15A", "#FF6692", "#B6E880"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"fillcolor": "#506784", "line": {"width": 0}, "opacity": 0.4}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "zerolinecolor": "white", "zerolinewidth": 2}}}},
+                        {"showLink": false, "linkText": "Export to plot.ly", "plotlyServerURL": "https://plot.ly", "responsive": true}
+                    ).then(function(){
+
+var gd = document.getElementById('15414fc7-c00d-4a36-87f6-374e5d940639');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })
+                };
+                });
+            </script>
+        </div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Testing-out-plotly_express-default-examples">
+<h2>Testing out plotly_express default examples<a class="headerlink" href="#Testing-out-plotly_express-default-examples" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">plotly_express</span> <span class="k">as</span> <span class="nn">px</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">px</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iris</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+<span class="n">iris</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iris</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+    Each row represents a flower.
+
+    https://en.wikipedia.org/wiki/Iris_flower_data_set
+
+    Returns:
+        A `pandas.DataFrame` with 150 rows and the following columns: `[&#39;sepal_length&#39;, &#39;sepal_width&#39;, &#39;petal_length&#39;, &#39;petal_width&#39;, &#39;species&#39;,
+       &#39;species_id&#39;]`.
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">px</span><span class="o">.</span><span class="n">scatter_matrix</span><span class="p">(</span><span class="n">iris</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+
+
+            <div id="9747d00e-1314-44b3-adaa-ec40d881dc7c" class="plotly-graph-div" style="height:600px; width:100%;"></div>
+            <script type="text/javascript">
+                require(["plotly"], function(Plotly) {
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+                    window.PLOTLYENV.BASE_URL='https://plot.ly';
+
+                if (document.getElementById("9747d00e-1314-44b3-adaa-ec40d881dc7c")) {
+                    Plotly.newPlot(
+                        '9747d00e-1314-44b3-adaa-ec40d881dc7c',
+                        [{"dimensions": [{"axis": {"matches": true}, "label": "sepal_length", "values": [5.1, 4.9, 4.7, 4.6, 5.0, 5.4, 4.6, 5.0, 4.4, 4.9, 5.4, 4.8, 4.8, 4.3, 5.8, 5.7, 5.4, 5.1, 5.7, 5.1, 5.4, 5.1, 4.6, 5.1, 4.8, 5.0, 5.0, 5.2, 5.2, 4.7, 4.8, 5.4, 5.2, 5.5, 4.9, 5.0, 5.5, 4.9, 4.4, 5.1, 5.0, 4.5, 4.4, 5.0, 5.1, 4.8, 5.1, 4.6, 5.3, 5.0, 7.0, 6.4, 6.9, 5.5, 6.5, 5.7, 6.3, 4.9, 6.6, 5.2, 5.0, 5.9, 6.0, 6.1, 5.6, 6.7, 5.6, 5.8, 6.2, 5.6, 5.9, 6.1, 6.3, 6.1, 6.4, 6.6, 6.8, 6.7, 6.0, 5.7, 5.5, 5.5, 5.8, 6.0, 5.4, 6.0, 6.7, 6.3, 5.6, 5.5, 5.5, 6.1, 5.8, 5.0, 5.6, 5.7, 5.7, 6.2, 5.1, 5.7, 6.3, 5.8, 7.1, 6.3, 6.5, 7.6, 4.9, 7.3, 6.7, 7.2, 6.5, 6.4, 6.8, 5.7, 5.8, 6.4, 6.5, 7.7, 7.7, 6.0, 6.9, 5.6, 7.7, 6.3, 6.7, 7.2, 6.2, 6.1, 6.4, 7.2, 7.4, 7.9, 6.4, 6.3, 6.1, 7.7, 6.3, 6.4, 6.0, 6.9, 6.7, 6.9, 5.8, 6.8, 6.7, 6.7, 6.3, 6.5, 6.2, 5.9]}, {"axis": {"matches": true}, "label": "sepal_width", "values": [3.5, 3.0, 3.2, 3.1, 3.6, 3.9, 3.4, 3.4, 2.9, 3.1, 3.7, 3.4, 3.0, 3.0, 4.0, 4.4, 3.9, 3.5, 3.8, 3.8, 3.4, 3.7, 3.6, 3.3, 3.4, 3.0, 3.4, 3.5, 3.4, 3.2, 3.1, 3.4, 4.1, 4.2, 3.1, 3.2, 3.5, 3.1, 3.0, 3.4, 3.5, 2.3, 3.2, 3.5, 3.8, 3.0, 3.8, 3.2, 3.7, 3.3, 3.2, 3.2, 3.1, 2.3, 2.8, 2.8, 3.3, 2.4, 2.9, 2.7, 2.0, 3.0, 2.2, 2.9, 2.9, 3.1, 3.0, 2.7, 2.2, 2.5, 3.2, 2.8, 2.5, 2.8, 2.9, 3.0, 2.8, 3.0, 2.9, 2.6, 2.4, 2.4, 2.7, 2.7, 3.0, 3.4, 3.1, 2.3, 3.0, 2.5, 2.6, 3.0, 2.6, 2.3, 2.7, 3.0, 2.9, 2.9, 2.5, 2.8, 3.3, 2.7, 3.0, 2.9, 3.0, 3.0, 2.5, 2.9, 2.5, 3.6, 3.2, 2.7, 3.0, 2.5, 2.8, 3.2, 3.0, 3.8, 2.6, 2.2, 3.2, 2.8, 2.8, 2.7, 3.3, 3.2, 2.8, 3.0, 2.8, 3.0, 2.8, 3.8, 2.8, 2.8, 2.6, 3.0, 3.4, 3.1, 3.0, 3.1, 3.1, 3.1, 2.7, 3.2, 3.3, 3.0, 2.5, 3.0, 3.4, 3.0]}, {"axis": {"matches": true}, "label": "petal_length", "values": [1.4, 1.4, 1.3, 1.5, 1.4, 1.7, 1.4, 1.5, 1.4, 1.5, 1.5, 1.6, 1.4, 1.1, 1.2, 1.5, 1.3, 1.4, 1.7, 1.5, 1.7, 1.5, 1.0, 1.7, 1.9, 1.6, 1.6, 1.5, 1.4, 1.6, 1.6, 1.5, 1.5, 1.4, 1.5, 1.2, 1.3, 1.5, 1.3, 1.5, 1.3, 1.3, 1.3, 1.6, 1.9, 1.4, 1.6, 1.4, 1.5, 1.4, 4.7, 4.5, 4.9, 4.0, 4.6, 4.5, 4.7, 3.3, 4.6, 3.9, 3.5, 4.2, 4.0, 4.7, 3.6, 4.4, 4.5, 4.1, 4.5, 3.9, 4.8, 4.0, 4.9, 4.7, 4.3, 4.4, 4.8, 5.0, 4.5, 3.5, 3.8, 3.7, 3.9, 5.1, 4.5, 4.5, 4.7, 4.4, 4.1, 4.0, 4.4, 4.6, 4.0, 3.3, 4.2, 4.2, 4.2, 4.3, 3.0, 4.1, 6.0, 5.1, 5.9, 5.6, 5.8, 6.6, 4.5, 6.3, 5.8, 6.1, 5.1, 5.3, 5.5, 5.0, 5.1, 5.3, 5.5, 6.7, 6.9, 5.0, 5.7, 4.9, 6.7, 4.9, 5.7, 6.0, 4.8, 4.9, 5.6, 5.8, 6.1, 6.4, 5.6, 5.1, 5.6, 6.1, 5.6, 5.5, 4.8, 5.4, 5.6, 5.1, 5.1, 5.9, 5.7, 5.2, 5.0, 5.2, 5.4, 5.1]}, {"axis": {"matches": true}, "label": "petal_width", "values": [0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.4, 0.2, 0.5, 0.2, 0.2, 0.4, 0.2, 0.2, 0.2, 0.2, 0.4, 0.1, 0.2, 0.1, 0.2, 0.2, 0.1, 0.2, 0.2, 0.3, 0.3, 0.2, 0.6, 0.4, 0.3, 0.2, 0.2, 0.2, 0.2, 1.4, 1.5, 1.5, 1.3, 1.5, 1.3, 1.6, 1.0, 1.3, 1.4, 1.0, 1.5, 1.0, 1.4, 1.3, 1.4, 1.5, 1.0, 1.5, 1.1, 1.8, 1.3, 1.5, 1.2, 1.3, 1.4, 1.4, 1.7, 1.5, 1.0, 1.1, 1.0, 1.2, 1.6, 1.5, 1.6, 1.5, 1.3, 1.3, 1.3, 1.2, 1.4, 1.2, 1.0, 1.3, 1.2, 1.3, 1.3, 1.1, 1.3, 2.5, 1.9, 2.1, 1.8, 2.2, 2.1, 1.7, 1.8, 1.8, 2.5, 2.0, 1.9, 2.1, 2.0, 2.4, 2.3, 1.8, 2.2, 2.3, 1.5, 2.3, 2.0, 2.0, 1.8, 2.1, 1.8, 1.8, 1.8, 2.1, 1.6, 1.9, 2.0, 2.2, 1.5, 1.4, 2.3, 2.4, 1.8, 1.8, 2.1, 2.4, 2.3, 1.9, 2.3, 2.5, 2.3, 1.9, 2.0, 2.3, 1.8]}, {"axis": {"matches": true}, "label": "species", "values": ["setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "setosa", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "versicolor", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica", "virginica"]}, {"axis": {"matches": true}, "label": "species_id", "values": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]}], "hoverlabel": {"namelength": 0}, "hovertemplate": "%{xaxis.title.text}=%{x}<br>%{yaxis.title.text}=%{y}", "legendgroup": "", "marker": {"color": "#636efa", "symbol": "circle"}, "name": "", "showlegend": false, "type": "splom", "uid": "3bce700a-7ba5-4d09-ab5d-dd1a56288a95"}],
+                        {"dragmode": "select", "height": 600, "legend": {"tracegroupgap": 0}, "margin": {"t": 60}, "template": {"data": {"bar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "bar"}], "barpolar": [{"marker": {"line": {"color": "#E5ECF6", "width": 0.5}}, "type": "barpolar"}], "carpet": [{"aaxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "baxis": {"endlinecolor": "#2a3f5f", "gridcolor": "white", "linecolor": "white", "minorgridcolor": "white", "startlinecolor": "#2a3f5f"}, "type": "carpet"}], "choropleth": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "choropleth"}], "contour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "type": "contour"}], "contourcarpet": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "contourcarpet"}], "heatmap": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "type": "heatmap"}], "heatmapgl": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "heatmapgl"}], "histogram": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "histogram"}], "histogram2d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "type": "histogram2d"}], "histogram2dcontour": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "colorscale": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "type": "histogram2dcontour"}], "mesh3d": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "mesh3d"}], "parcoords": [{"line": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "parcoords"}], "scatter": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter"}], "scatter3d": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatter3d"}], "scattercarpet": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattercarpet"}], "scattergeo": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergeo"}], "scattergl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattergl"}], "scattermapbox": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scattermapbox"}], "scatterpolar": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolar"}], "scatterpolargl": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterpolargl"}], "scatterternary": [{"marker": {"colorbar": {"outlinewidth": 0, "ticks": ""}}, "type": "scatterternary"}], "surface": [{"colorbar": {"outlinewidth": 0, "ticks": ""}, "type": "surface"}], "table": [{"cells": {"fill": {"color": "#EBF0F8"}, "line": {"color": "white"}}, "header": {"fill": {"color": "#C8D4E3"}, "line": {"color": "white"}}, "type": "table"}]}, "layout": {"annotationdefaults": {"arrowcolor": "#506784", "arrowhead": 0, "arrowwidth": 1}, "colorscale": {"diverging": [[0, "#8e0152"], [0.1, "#c51b7d"], [0.2, "#de77ae"], [0.3, "#f1b6da"], [0.4, "#fde0ef"], [0.5, "#f7f7f7"], [0.6, "#e6f5d0"], [0.7, "#b8e186"], [0.8, "#7fbc41"], [0.9, "#4d9221"], [1, "#276419"]], "sequential": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]], "sequentialminus": [[0.0, "#0508b8"], [0.0893854748603352, "#1910d8"], [0.1787709497206704, "#3c19f0"], [0.2681564245810056, "#6b1cfb"], [0.3575418994413408, "#981cfd"], [0.44692737430167595, "#bf1cfd"], [0.5363128491620112, "#dd2bfd"], [0.6256983240223464, "#f246fe"], [0.7150837988826816, "#fc67fd"], [0.8044692737430168, "#fe88fc"], [0.8938547486033519, "#fea5fd"], [0.9832402234636871, "#febefe"], [1.0, "#fec3fe"]]}, "colorway": ["#636efa", "#EF553B", "#00cc96", "#ab63fa", "#19d3f3", "#e763fa", "#FECB52", "#FFA15A", "#FF6692", "#B6E880"], "font": {"color": "#2a3f5f"}, "geo": {"bgcolor": "white", "lakecolor": "white", "landcolor": "#E5ECF6", "showlakes": true, "showland": true, "subunitcolor": "white"}, "hoverlabel": {"align": "left"}, "hovermode": "closest", "mapbox": {"style": "light"}, "paper_bgcolor": "white", "plot_bgcolor": "#E5ECF6", "polar": {"angularaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "radialaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "scene": {"xaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "yaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}, "zaxis": {"backgroundcolor": "#E5ECF6", "gridcolor": "white", "gridwidth": 2, "linecolor": "white", "showbackground": true, "ticks": "", "zerolinecolor": "white"}}, "shapedefaults": {"fillcolor": "#506784", "line": {"width": 0}, "opacity": 0.4}, "ternary": {"aaxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "baxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}, "bgcolor": "#E5ECF6", "caxis": {"gridcolor": "white", "linecolor": "white", "ticks": ""}}, "title": {"x": 0.05}, "xaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "zerolinecolor": "white", "zerolinewidth": 2}, "yaxis": {"automargin": true, "gridcolor": "white", "linecolor": "white", "ticks": "", "zerolinecolor": "white", "zerolinewidth": 2}}}},
+                        {"showLink": false, "linkText": "Export to plot.ly", "plotlyServerURL": "https://plot.ly", "responsive": true}
+                    ).then(function(){
+
+var gd = document.getElementById('9747d00e-1314-44b3-adaa-ec40d881dc7c');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })
+                };
+                });
+            </script>
+        </div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">TODO Plotly Scatter plots and bubble charts with Dimensions data</a><ul>
+<li><a class="reference internal" href="#Testing-out-plotly_express-with-DSL-data">Testing out plotly_express with DSL data</a></li>
+<li><a class="reference internal" href="#scatter-matrix-is-prob-better-when-you-have-numeric-values-or-not-too-many-categorical-ones">scatter matrix is prob better when you have numeric values or not too many categorical ones</a></li>
+<li><a class="reference internal" href="#Testing-out-plotly_express-default-examples">Testing out plotly_express default examples</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="TODO plotly-histogram.html"
+                        title="previous chapter">TODO Plotly Histograms with Dimensions data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="TODO plotly-sunburst.html"
+                        title="next chapter">TODO Plotly Sunburst plots with Dimensions data</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/notebooks/Plotly/TODO plotly-scatterplots.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="TODO plotly-sunburst.html" title="TODO Plotly Sunburst plots with Dimensions data"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="TODO plotly-histogram.html" title="TODO Plotly Histograms with Dimensions data"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">TODO Plotly Scatter plots and bubble charts with Dimensions data</a></li> 
+      </ul>
+    </div>
+   
+    <div class="footer" role="contentinfo">
+    </div>
+
+    <!-- Adds target=_blank to external links -->
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
+    });
+  </script>
+  
+
+  </body>
+</html>

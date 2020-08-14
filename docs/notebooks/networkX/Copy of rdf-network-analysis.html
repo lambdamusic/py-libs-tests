@@ -1,0 +1,728 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Analysis of RDF Graphs &#8212; Python tests [PRIVATE]</title>
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/_custom.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Creating a topic map visualization using concepts" href="NetworkX-concepts-v2-SHARED.html" />
+    <link rel="prev" title="NetworkX tests" href="Citations and NetworkX.html" />
+   
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+
+   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149959808-1"></script>
+   <!-- <script src="_static/js/custom.js"></script> -->
+
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="NetworkX-concepts-v2-SHARED.html" title="Creating a topic map visualization using concepts"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Citations and NetworkX.html" title="NetworkX tests"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Network Analysis of RDF Graphs</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Network-Analysis-of-RDF-Graphs">
+<h1>Network Analysis of RDF Graphs<a class="headerlink" href="#Network-Analysis-of-RDF-Graphs" title="Permalink to this headline">¶</a></h1>
+<p>In this notebook we provide basic facilities for performing network analyses of RDF graphs easily with Python <a class="reference external" href="https://github.com/RDFLib/rdflib">rdflib</a> and <a class="reference external" href="https://networkx.github.io/">networkx</a></p>
+<p>We do this in 4 steps: 1. Load an arbitrary RDF graph into rdflib 2. Get a subgraph of relevance (optional) 3. Convert the rdflib Graph into an networkx Graph, as shown <a class="reference external" href="https://github.com/RDFLib/rdflib/blob/master/rdflib/extras/external_graph_libs.py">here</a> 4. Get an network analysis report by running networkx’s algorithms on that data structure</p>
+<div class="section" id="0.-Preparation">
+<h2>0. Preparation<a class="headerlink" href="#0.-Preparation" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Install required packages in the current Jupyter kernel</span>
+<span class="c1"># Uncomment the following lines if you need to install these libraries</span>
+<span class="c1"># If you run into permission issues, try with the --user option</span>
+<span class="c1"># import sys</span>
+<span class="c1"># !pip install -q rdflib networkx matplotlib</span>
+<span class="c1"># !{sys.executable} -m pip install rdflib networkx matplotlib --user</span>
+
+<span class="c1"># Imports</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span> <span class="k">as</span> <span class="n">RDFGraph</span>
+<span class="kn">from</span> <span class="nn">rdflib.extras.external_graph_libs</span> <span class="kn">import</span> <span class="n">rdflib_to_networkx_graph</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx</span> <span class="kn">import</span> <span class="n">Graph</span> <span class="k">as</span> <span class="n">NXGraph</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">statistics</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="1.-Loading-RDF">
+<h2>1. Loading RDF<a class="headerlink" href="#1.-Loading-RDF" title="Permalink to this headline">¶</a></h2>
+<p>The first thing to do is to load the RDF graph we want to perform the network analysis on. By executing the next cell, we’ll be asked to fill in the path to an RDF graph. This can be any path, local or online, that we can look up.</p>
+<p>Any of the Turtle (<code class="docutils literal notranslate"><span class="pre">ttl.</span></code>) files that we include with this notebook will do; for example, <code class="docutils literal notranslate"><span class="pre">bsbm-sample.ttl</span></code>. But any Web location that leads to an RDF file (for example, the GitHub copy of that same file at <a class="reference external" href="https://raw.githubusercontent.com/albertmeronyo/rdf-network-analysis/master/bsbm-sample.ttl">https://raw.githubusercontent.com/albertmeronyo/rdf-network-analysis/master/bsbm-sample.ttl</a>; or any other RDF file on the Web like <a class="reference external" href="https://raw.githubusercontent.com/albertmeronyo/lodapi/master/ghostbusters.ttl">https://raw.githubusercontent.com/albertmeronyo/lodapi/master/ghostbusters.ttl</a>) will work too.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># RDF graph loading</span>
+<span class="n">path</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Path or URI of the RDF graph to load: &quot;</span><span class="p">)</span>
+<span class="n">rg</span> <span class="o">=</span> <span class="n">RDFGraph</span><span class="p">()</span>
+<span class="n">rg</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;turtle&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rdflib Graph loaded successfully with </span><span class="si">{}</span><span class="s2"> triples&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rg</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Path or URI of the RDF graph to load: bsbm-sample.ttl
+rdflib Graph loaded successfully with 20 triples
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="2.-Get-a-subgraph-out-of-the-loaded-RDF-graph-(optional)">
+<h2>2. Get a subgraph out of the loaded RDF graph (optional)<a class="headerlink" href="#2.-Get-a-subgraph-out-of-the-loaded-RDF-graph-(optional)" title="Permalink to this headline">¶</a></h2>
+<p>This cell can be skipped altogether without affecting the rest of the notebook; but it will be useful if instead of using the whole RDF grahp of the previous step, we just want to use a subgraph that’s included in it.</p>
+<p>By executing the next cell, we’ll be asked two things:</p>
+<ul class="simple">
+<li><p>The URI of the ‘’entiy’’ type we are interested in (e.g. <code class="docutils literal notranslate"><span class="pre">http://dbpedia.org/ontology/Band</span></code>)</p></li>
+<li><p>The URI of the ‘’relation’’ connecting entities we are interested in (e.g. <code class="docutils literal notranslate"><span class="pre">http://dbpedia.org/ontology/influencedBy</span></code>)</p></li>
+</ul>
+<p>Using these two, the notebook will replace the original graph with the subgraph that’s constructed by those entity types and relations only.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Subgraph construction (optional)</span>
+<span class="n">entity</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Entity type to build nodes of the subgraph with: &quot;</span><span class="p">)</span>
+<span class="n">relation</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Relation type to build edges of the subgraph with: &quot;</span><span class="p">)</span>
+
+<span class="c1"># TODO: Use entity and relation as parameters of a CONSTRUCT query</span>
+<span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">PREFIX bsbm: &lt;http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/&gt;</span>
+<span class="s2">CONSTRUCT {{ ?u a </span><span class="si">{}</span><span class="s2"> . ?u </span><span class="si">{}</span><span class="s2"> ?v }} WHERE {{ ?u a </span><span class="si">{}</span><span class="s2"> . ?u </span><span class="si">{}</span><span class="s2"> ?v }}&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">relation</span><span class="p">,</span> <span class="n">entity</span><span class="p">,</span> <span class="n">relation</span><span class="p">)</span>
+<span class="c1"># print(query)</span>
+<span class="n">subg</span> <span class="o">=</span> <span class="n">rg</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="n">rg</span> <span class="o">=</span> <span class="n">subg</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="3.-Converting-rdflib.Graph-to-networkx.Graph">
+<h2>3. Converting rdflib.Graph to networkx.Graph<a class="headerlink" href="#3.-Converting-rdflib.Graph-to-networkx.Graph" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to <a class="reference external" href="https://github.com/RDFLib/rdflib/blob/master/rdflib/extras/external_graph_libs.py">the great work done by the rdflib developers</a> this step, which converts the basic graph data structure of rdflib into its equivalent in networkx, is straightforward. Just run the next cell to make our RDF dataset ready for network analysis!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Conversion of rdflib.Graph to networkx.Graph</span>
+<span class="n">G</span> <span class="o">=</span> <span class="n">rdflib_to_networkx_graph</span><span class="p">(</span><span class="n">rg</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;networkx Graph loaded successfully with length </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+networkx Graph loaded successfully with length 16
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="4.-Network-analysis">
+<h2>4. Network analysis<a class="headerlink" href="#4.-Network-analysis" title="Permalink to this headline">¶</a></h2>
+<p>At this point we can run the network analysis on our RDF graph by using the networkx algorithms. Exeucting the next cell will output a full network analysis report, with the following parts:</p>
+<ul class="simple">
+<li><p>General network metrics (network size, pendants, density)</p></li>
+<li><p>Node centrality metrics (degree, eigenvector, betwenness). For these, averages, stdevs, maximum, minimum and distribution histograms are given</p></li>
+<li><p>Clustering metrics (connected components, clustering)</p></li>
+<li><p>Overall network plot</p></li>
+</ul>
+<p>The report can be easily selected and copy-pasted for further use in other tools.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Analysis</span>
+
+<span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">numbers</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">numbers</span><span class="p">))</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">numbers</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">number_of_pendants</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Equals the number of nodes with degree 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pendants</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">pendants</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">pendants</span>
+
+
+<span class="k">def</span> <span class="nf">histogram</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="n">degree_sequence</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">d</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">items</span><span class="p">())],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">degreeCount</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">)</span>
+    <span class="n">deg</span><span class="p">,</span> <span class="n">cnt</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">degreeCount</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">cnt</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">deg</span><span class="p">,</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.80</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Histogram&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Value&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="n">d</span> <span class="o">+</span> <span class="mf">0.4</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">deg</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">deg</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># Network size</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NETWORK SIZE&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The network has </span><span class="si">{}</span><span class="s2"> nodes and </span><span class="si">{}</span><span class="s2"> edges&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">(),</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()))</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Network size</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PENDANTS&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The network has </span><span class="si">{}</span><span class="s2"> pendants&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">number_of_pendants</span><span class="p">(</span><span class="n">G</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Density</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DENSITY&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;============&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The network density is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">density</span><span class="p">(</span><span class="n">G</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Degree centrality -- mean and stdev</span>
+<span class="n">dc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">degree_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">degrees</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">dc</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">degrees</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DEGREE CENTRALITY&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=================&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The mean degree centrality is </span><span class="si">{}</span><span class="s2">, with stdev </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">degrees</span><span class="p">),</span> <span class="n">statistics</span><span class="o">.</span><span class="n">stdev</span><span class="p">(</span><span class="n">degrees</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The maximum node is </span><span class="si">{}</span><span class="s2">, with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">dc</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">dc</span><span class="o">.</span><span class="n">get</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The minimum node is </span><span class="si">{}</span><span class="s2">, with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">dc</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">dc</span><span class="o">.</span><span class="n">get</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">dc</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+<span class="n">histogram</span><span class="p">(</span><span class="n">dc</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Eigenvector centrality -- mean and stdev</span>
+<span class="n">ec</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eigenvector_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">degrees</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">ec</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">degrees</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EIGENVECTOR CENTRALITY&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;======================&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The mean network eigenvector centrality is </span><span class="si">{}</span><span class="s2">, with stdev </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">degrees</span><span class="p">),</span> <span class="n">statistics</span><span class="o">.</span><span class="n">stdev</span><span class="p">(</span><span class="n">degrees</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The maximum node is </span><span class="si">{}</span><span class="s2">, with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">ec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">ec</span><span class="o">.</span><span class="n">get</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">ec</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The minimum node is </span><span class="si">{}</span><span class="s2">, with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">ec</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">ec</span><span class="o">.</span><span class="n">get</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">ec</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+<span class="n">histogram</span><span class="p">(</span><span class="n">ec</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Betweenness centrality -- mean and stdev</span>
+<span class="n">bc</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">betweenness_centrality</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="n">degrees</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">bc</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">degrees</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BETWEENNESS CENTRALITY&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;======================&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The mean betwenness centrality is </span><span class="si">{}</span><span class="s2">, with stdev </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mean</span><span class="p">(</span><span class="n">degrees</span><span class="p">),</span> <span class="n">statistics</span><span class="o">.</span><span class="n">stdev</span><span class="p">(</span><span class="n">degrees</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The maximum node is </span><span class="si">{}</span><span class="s2">, with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">bc</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">bc</span><span class="o">.</span><span class="n">get</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">bc</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The minimum node is </span><span class="si">{}</span><span class="s2">, with value </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">bc</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">bc</span><span class="o">.</span><span class="n">get</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">bc</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+<span class="n">histogram</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+
+<span class="c1"># Connected components</span>
+<span class="n">cc</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CONNECTED COMPONENTS&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;====================&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The graph has </span><span class="si">{}</span><span class="s2"> connected components&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cc</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cc</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Connected component </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> nodes&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Clusters</span>
+<span class="n">cl</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">clustering</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;CLUSTERS&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;========&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The graph has </span><span class="si">{}</span><span class="s2"> clusters&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cl</span><span class="p">)))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cl</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cluster </span><span class="si">{}</span><span class="s2"> has </span><span class="si">{}</span><span class="s2"> nodes&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="c1"># Plot</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Visualizing the graph:&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">font_weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+NETWORK SIZE
+============
+The network has 16 nodes and 18 edges
+
+PENDANTS
+============
+The network has 10 pendants
+
+DENSITY
+============
+The network density is 0.15
+
+DEGREE CENTRALITY
+=================
+The mean degree centrality is 0.15000000000000005, with stdev 0.17805533888009004
+The maximum node is http://aOffer2414, with value 0.6
+The minimum node is 2008-02-22, with value 0.06666666666666667
+(0.6, 0.13333333333333333, 0.06666666666666667) (2, 4, 10)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_networkX_Copy_of_rdf-network-analysis_10_1.png" src="../../_images/notebooks_networkX_Copy_of_rdf-network-analysis_10_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+EIGENVECTOR CENTRALITY
+======================
+The mean network eigenvector centrality is 0.2185095746777181, with stdev 0.12544774539932385
+The maximum node is http://aOffer2414, with value 0.49999922740548974
+The minimum node is 2008-02-22, with value 0.1386752633351396
+(0.49999922740548974, 0.2773505266702785, 0.1386752633351396) (2, 4, 10)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_networkX_Copy_of_rdf-network-analysis_10_3.png" src="../../_images/notebooks_networkX_Copy_of_rdf-network-analysis_10_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+BETWEENNESS CENTRALITY
+======================
+The mean betwenness centrality is 0.09642857142857143, with stdev 0.20010201479877862
+The maximum node is http://aOffer2414, with value 0.6000000000000001
+The minimum node is 2008-02-22, with value 0.0
+(0.6000000000000001, 0.08571428571428572, 0.0) (2, 4, 10)
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_networkX_Copy_of_rdf-network-analysis_10_5.png" src="../../_images/notebooks_networkX_Copy_of_rdf-network-analysis_10_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+CONNECTED COMPONENTS
+====================
+The graph has 1 connected components
+Connected component 0 has 16 nodes
+
+CLUSTERS
+========
+The graph has 16 clusters
+Cluster 0 has 17 nodes
+Cluster 1 has 10 nodes
+Cluster 2 has 10 nodes
+Cluster 3 has 20 nodes
+Cluster 4 has 17 nodes
+Cluster 5 has 10 nodes
+Cluster 6 has 10 nodes
+Cluster 7 has 1 nodes
+Cluster 8 has 63 nodes
+Cluster 9 has 10 nodes
+Cluster 10 has 40 nodes
+Cluster 11 has 26 nodes
+Cluster 12 has 40 nodes
+Cluster 13 has 26 nodes
+Cluster 14 has 5 nodes
+Cluster 15 has 5 nodes
+
+Visualizing the graph:
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_networkX_Copy_of_rdf-network-analysis_10_7.png" src="../../_images/notebooks_networkX_Copy_of_rdf-network-analysis_10_7.png" />
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Network Analysis of RDF Graphs</a><ul>
+<li><a class="reference internal" href="#0.-Preparation">0. Preparation</a></li>
+<li><a class="reference internal" href="#1.-Loading-RDF">1. Loading RDF</a></li>
+<li><a class="reference internal" href="#2.-Get-a-subgraph-out-of-the-loaded-RDF-graph-(optional)">2. Get a subgraph out of the loaded RDF graph (optional)</a></li>
+<li><a class="reference internal" href="#3.-Converting-rdflib.Graph-to-networkx.Graph">3. Converting rdflib.Graph to networkx.Graph</a></li>
+<li><a class="reference internal" href="#4.-Network-analysis">4. Network analysis</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Citations and NetworkX.html"
+                        title="previous chapter">NetworkX tests</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="NetworkX-concepts-v2-SHARED.html"
+                        title="next chapter">Creating a topic map visualization using concepts</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/notebooks/networkX/Copy of rdf-network-analysis.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="NetworkX-concepts-v2-SHARED.html" title="Creating a topic map visualization using concepts"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Citations and NetworkX.html" title="NetworkX tests"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Network Analysis of RDF Graphs</a></li> 
+      </ul>
+    </div>
+   
+    <div class="footer" role="contentinfo">
+    </div>
+
+    <!-- Adds target=_blank to external links -->
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
+    });
+  </script>
+  
+
+  </body>
+</html>

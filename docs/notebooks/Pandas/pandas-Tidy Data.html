@@ -1,0 +1,1928 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tidy Data in Python &#8212; Python tests [PRIVATE]</title>
+    <link rel="stylesheet" href="../../_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/_custom.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="TODO Plotly bar charts with Dimensions data" href="../Plotly/TODO plotly-barchart.html" />
+    <link rel="prev" title="Pandas Recipes" href="pandas recipes.html" />
+   
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="../../_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+
+   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-149959808-1"></script>
+   <!-- <script src="_static/js/custom.js"></script> -->
+
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../Plotly/TODO plotly-barchart.html" title="TODO Plotly bar charts with Dimensions data"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pandas recipes.html" title="Pandas Recipes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tidy Data in Python</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Tidy-Data-in-Python">
+<h1>Tidy Data in Python<a class="headerlink" href="#Tidy-Data-in-Python" title="Permalink to this headline">¶</a></h1>
+<p>by <a class="reference external" href="http://www.jeannicholashould.com/">Jean-Nicholas Hould</a></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">listdir</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">isfile</span><span class="p">,</span> <span class="n">join</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">re</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Column-headers-are-values,-not-variable-names">
+<h2>Column headers are values, not variable names<a class="headerlink" href="#Column-headers-are-values,-not-variable-names" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Pew-Research-Center-Dataset">
+<h3>Pew Research Center Dataset<a class="headerlink" href="#Pew-Research-Center-Dataset" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./data/pew-raw.csv&quot;</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>religion</th>
+      <th>&lt;$10k</th>
+      <th>$10-20k</th>
+      <th>$20-30k</th>
+      <th>$30-40k</th>
+      <th>$40-50k</th>
+      <th>$50-75k</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Agnostic</td>
+      <td>27</td>
+      <td>34</td>
+      <td>60</td>
+      <td>81</td>
+      <td>76</td>
+      <td>137</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Atheist</td>
+      <td>12</td>
+      <td>27</td>
+      <td>37</td>
+      <td>52</td>
+      <td>35</td>
+      <td>70</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Buddhist</td>
+      <td>27</td>
+      <td>21</td>
+      <td>30</td>
+      <td>34</td>
+      <td>33</td>
+      <td>58</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Catholic</td>
+      <td>418</td>
+      <td>617</td>
+      <td>732</td>
+      <td>670</td>
+      <td>638</td>
+      <td>1116</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Dont know/refused</td>
+      <td>15</td>
+      <td>14</td>
+      <td>15</td>
+      <td>11</td>
+      <td>10</td>
+      <td>35</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Evangelical Prot</td>
+      <td>575</td>
+      <td>869</td>
+      <td>1064</td>
+      <td>982</td>
+      <td>881</td>
+      <td>1486</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Hindu</td>
+      <td>1</td>
+      <td>9</td>
+      <td>7</td>
+      <td>9</td>
+      <td>11</td>
+      <td>34</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Historically Black Prot</td>
+      <td>228</td>
+      <td>244</td>
+      <td>236</td>
+      <td>238</td>
+      <td>197</td>
+      <td>223</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Jehovahs Witness</td>
+      <td>20</td>
+      <td>27</td>
+      <td>24</td>
+      <td>24</td>
+      <td>21</td>
+      <td>30</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Jewish</td>
+      <td>19</td>
+      <td>19</td>
+      <td>25</td>
+      <td>25</td>
+      <td>30</td>
+      <td>95</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">formatted_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,[</span><span class="s2">&quot;religion&quot;</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;income&quot;</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;freq&quot;</span><span class="p">)</span>
+<span class="n">formatted_df</span> <span class="o">=</span> <span class="n">formatted_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;religion&quot;</span><span class="p">])</span>
+<span class="n">formatted_df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>religion</th>
+      <th>income</th>
+      <th>freq</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Agnostic</td>
+      <td>&lt;$10k</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>Agnostic</td>
+      <td>$30-40k</td>
+      <td>81</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>Agnostic</td>
+      <td>$40-50k</td>
+      <td>76</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>Agnostic</td>
+      <td>$50-75k</td>
+      <td>137</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Agnostic</td>
+      <td>$10-20k</td>
+      <td>34</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>Agnostic</td>
+      <td>$20-30k</td>
+      <td>60</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>Atheist</td>
+      <td>$40-50k</td>
+      <td>35</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>Atheist</td>
+      <td>$20-30k</td>
+      <td>37</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Atheist</td>
+      <td>$10-20k</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>Atheist</td>
+      <td>$30-40k</td>
+      <td>52</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Billboard-Top-100-Dataset">
+<h3>Billboard Top 100 Dataset<a class="headerlink" href="#Billboard-Top-100-Dataset" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./data/billboard.csv&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;mac_latin2&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[69]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>artist.inverted</th>
+      <th>track</th>
+      <th>time</th>
+      <th>genre</th>
+      <th>date.entered</th>
+      <th>date.peaked</th>
+      <th>x1st.week</th>
+      <th>x2nd.week</th>
+      <th>x3rd.week</th>
+      <th>...</th>
+      <th>x67th.week</th>
+      <th>x68th.week</th>
+      <th>x69th.week</th>
+      <th>x70th.week</th>
+      <th>x71st.week</th>
+      <th>x72nd.week</th>
+      <th>x73rd.week</th>
+      <th>x74th.week</th>
+      <th>x75th.week</th>
+      <th>x76th.week</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2000</td>
+      <td>Destiny's Child</td>
+      <td>Independent Women Part I</td>
+      <td>3:38</td>
+      <td>Rock</td>
+      <td>2000-09-23</td>
+      <td>2000-11-18</td>
+      <td>78</td>
+      <td>63.0</td>
+      <td>49.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2000</td>
+      <td>Santana</td>
+      <td>Maria, Maria</td>
+      <td>4:18</td>
+      <td>Rock</td>
+      <td>2000-02-12</td>
+      <td>2000-04-08</td>
+      <td>15</td>
+      <td>8.0</td>
+      <td>6.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2000</td>
+      <td>Savage Garden</td>
+      <td>I Knew I Loved You</td>
+      <td>4:07</td>
+      <td>Rock</td>
+      <td>1999-10-23</td>
+      <td>2000-01-29</td>
+      <td>71</td>
+      <td>48.0</td>
+      <td>43.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2000</td>
+      <td>Madonna</td>
+      <td>Music</td>
+      <td>3:45</td>
+      <td>Rock</td>
+      <td>2000-08-12</td>
+      <td>2000-09-16</td>
+      <td>41</td>
+      <td>23.0</td>
+      <td>18.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2000</td>
+      <td>Aguilera, Christina</td>
+      <td>Come On Over Baby (All I Want Is You)</td>
+      <td>3:38</td>
+      <td>Rock</td>
+      <td>2000-08-05</td>
+      <td>2000-10-14</td>
+      <td>57</td>
+      <td>47.0</td>
+      <td>45.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2000</td>
+      <td>Janet</td>
+      <td>Doesn't Really Matter</td>
+      <td>4:17</td>
+      <td>Rock</td>
+      <td>2000-06-17</td>
+      <td>2000-08-26</td>
+      <td>59</td>
+      <td>52.0</td>
+      <td>43.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2000</td>
+      <td>Destiny's Child</td>
+      <td>Say My Name</td>
+      <td>4:31</td>
+      <td>Rock</td>
+      <td>1999-12-25</td>
+      <td>2000-03-18</td>
+      <td>83</td>
+      <td>83.0</td>
+      <td>44.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2000</td>
+      <td>Iglesias, Enrique</td>
+      <td>Be With You</td>
+      <td>3:36</td>
+      <td>Latin</td>
+      <td>2000-04-01</td>
+      <td>2000-06-24</td>
+      <td>63</td>
+      <td>45.0</td>
+      <td>34.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2000</td>
+      <td>Sisqo</td>
+      <td>Incomplete</td>
+      <td>3:52</td>
+      <td>Rock</td>
+      <td>2000-06-24</td>
+      <td>2000-08-12</td>
+      <td>77</td>
+      <td>66.0</td>
+      <td>61.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2000</td>
+      <td>Lonestar</td>
+      <td>Amazed</td>
+      <td>4:25</td>
+      <td>Country</td>
+      <td>1999-06-05</td>
+      <td>2000-03-04</td>
+      <td>81</td>
+      <td>54.0</td>
+      <td>44.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>10 rows × 83 columns</p>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Melting</span>
+<span class="n">id_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="s2">&quot;artist.inverted&quot;</span><span class="p">,</span><span class="s2">&quot;track&quot;</span><span class="p">,</span><span class="s2">&quot;time&quot;</span><span class="p">,</span><span class="s2">&quot;genre&quot;</span><span class="p">,</span><span class="s2">&quot;date.entered&quot;</span><span class="p">,</span><span class="s2">&quot;date.peaked&quot;</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="n">df</span><span class="p">,</span><span class="n">id_vars</span><span class="o">=</span><span class="n">id_vars</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;rank&quot;</span><span class="p">)</span>
+
+<span class="c1"># Formatting</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;week&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;week&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s1">&#39;(\d+)&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;rank&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;rank&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c1"># Cleaning out unnecessary rows</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+<span class="c1"># Create &quot;date&quot; columns</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date.entered&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;week&#39;</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">DateOffset</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;artist.inverted&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;genre&quot;</span><span class="p">,</span> <span class="s2">&quot;week&quot;</span><span class="p">,</span> <span class="s2">&quot;rank&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">]]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="s2">&quot;artist.inverted&quot;</span><span class="p">,</span><span class="s2">&quot;track&quot;</span><span class="p">,</span><span class="s2">&quot;week&quot;</span><span class="p">,</span><span class="s2">&quot;rank&quot;</span><span class="p">])</span>
+
+<span class="c1"># Assigning the tidy dataset to a variable for future usage</span>
+<span class="n">billboard</span> <span class="o">=</span> <span class="n">df</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[70]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>artist.inverted</th>
+      <th>track</th>
+      <th>time</th>
+      <th>genre</th>
+      <th>week</th>
+      <th>rank</th>
+      <th>date</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>246</th>
+      <td>2000</td>
+      <td>2 Pac</td>
+      <td>Baby Don't Cry (Keep Ya Head Up II)</td>
+      <td>4:22</td>
+      <td>Rap</td>
+      <td>1</td>
+      <td>87</td>
+      <td>2000-02-26</td>
+    </tr>
+    <tr>
+      <th>563</th>
+      <td>2000</td>
+      <td>2 Pac</td>
+      <td>Baby Don't Cry (Keep Ya Head Up II)</td>
+      <td>4:22</td>
+      <td>Rap</td>
+      <td>2</td>
+      <td>82</td>
+      <td>2000-03-04</td>
+    </tr>
+    <tr>
+      <th>880</th>
+      <td>2000</td>
+      <td>2 Pac</td>
+      <td>Baby Don't Cry (Keep Ya Head Up II)</td>
+      <td>4:22</td>
+      <td>Rap</td>
+      <td>3</td>
+      <td>72</td>
+      <td>2000-03-11</td>
+    </tr>
+    <tr>
+      <th>1197</th>
+      <td>2000</td>
+      <td>2 Pac</td>
+      <td>Baby Don't Cry (Keep Ya Head Up II)</td>
+      <td>4:22</td>
+      <td>Rap</td>
+      <td>4</td>
+      <td>77</td>
+      <td>2000-03-18</td>
+    </tr>
+    <tr>
+      <th>1514</th>
+      <td>2000</td>
+      <td>2 Pac</td>
+      <td>Baby Don't Cry (Keep Ya Head Up II)</td>
+      <td>4:22</td>
+      <td>Rap</td>
+      <td>5</td>
+      <td>87</td>
+      <td>2000-03-25</td>
+    </tr>
+    <tr>
+      <th>1831</th>
+      <td>2000</td>
+      <td>2 Pac</td>
+      <td>Baby Don't Cry (Keep Ya Head Up II)</td>
+      <td>4:22</td>
+      <td>Rap</td>
+      <td>6</td>
+      <td>94</td>
+      <td>2000-04-01</td>
+    </tr>
+    <tr>
+      <th>2148</th>
+      <td>2000</td>
+      <td>2 Pac</td>
+      <td>Baby Don't Cry (Keep Ya Head Up II)</td>
+      <td>4:22</td>
+      <td>Rap</td>
+      <td>7</td>
+      <td>99</td>
+      <td>2000-04-08</td>
+    </tr>
+    <tr>
+      <th>287</th>
+      <td>2000</td>
+      <td>2Ge+her</td>
+      <td>The Hardest Part Of Breaking Up (Is Getting Ba...</td>
+      <td>3:15</td>
+      <td>R&amp;B</td>
+      <td>1</td>
+      <td>91</td>
+      <td>2000-09-02</td>
+    </tr>
+    <tr>
+      <th>604</th>
+      <td>2000</td>
+      <td>2Ge+her</td>
+      <td>The Hardest Part Of Breaking Up (Is Getting Ba...</td>
+      <td>3:15</td>
+      <td>R&amp;B</td>
+      <td>2</td>
+      <td>87</td>
+      <td>2000-09-09</td>
+    </tr>
+    <tr>
+      <th>921</th>
+      <td>2000</td>
+      <td>2Ge+her</td>
+      <td>The Hardest Part Of Breaking Up (Is Getting Ba...</td>
+      <td>3:15</td>
+      <td>R&amp;B</td>
+      <td>3</td>
+      <td>92</td>
+      <td>2000-09-16</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Multiple-types-in-one-table">
+<h2>Multiple types in one table<a class="headerlink" href="#Multiple-types-in-one-table" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">songs_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;artist.inverted&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;genre&quot;</span><span class="p">]</span>
+<span class="n">songs</span> <span class="o">=</span> <span class="n">billboard</span><span class="p">[</span><span class="n">songs_cols</span><span class="p">]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+<span class="n">songs</span> <span class="o">=</span> <span class="n">songs</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">songs</span><span class="p">[</span><span class="s2">&quot;song_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">songs</span><span class="o">.</span><span class="n">index</span>
+<span class="n">songs</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>artist.inverted</th>
+      <th>track</th>
+      <th>time</th>
+      <th>genre</th>
+      <th>song_id</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2000</td>
+      <td>2 Pac</td>
+      <td>Baby Don't Cry (Keep Ya Head Up II)</td>
+      <td>4:22</td>
+      <td>Rap</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2000</td>
+      <td>2Ge+her</td>
+      <td>The Hardest Part Of Breaking Up (Is Getting Ba...</td>
+      <td>3:15</td>
+      <td>R&amp;B</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2000</td>
+      <td>3 Doors Down</td>
+      <td>Kryptonite</td>
+      <td>3:53</td>
+      <td>Rock</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2000</td>
+      <td>3 Doors Down</td>
+      <td>Loser</td>
+      <td>4:24</td>
+      <td>Rock</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2000</td>
+      <td>504 Boyz</td>
+      <td>Wobble Wobble</td>
+      <td>3:35</td>
+      <td>Rap</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2000</td>
+      <td>98°</td>
+      <td>Give Me Just One Night (Una Noche)</td>
+      <td>3:24</td>
+      <td>Rock</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2000</td>
+      <td>A*Teens</td>
+      <td>Dancing Queen</td>
+      <td>3:44</td>
+      <td>Pop</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2000</td>
+      <td>Aaliyah</td>
+      <td>I Don't Wanna</td>
+      <td>4:15</td>
+      <td>Rock</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2000</td>
+      <td>Aaliyah</td>
+      <td>Try Again</td>
+      <td>4:03</td>
+      <td>Rock</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2000</td>
+      <td>Adams, Yolanda</td>
+      <td>Open My Heart</td>
+      <td>5:30</td>
+      <td>Gospel</td>
+      <td>9</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ranks</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">billboard</span><span class="p">,</span> <span class="n">songs</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="s2">&quot;artist.inverted&quot;</span><span class="p">,</span> <span class="s2">&quot;track&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;genre&quot;</span><span class="p">])</span>
+<span class="n">ranks</span> <span class="o">=</span> <span class="n">ranks</span><span class="p">[[</span><span class="s2">&quot;song_id&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="s2">&quot;rank&quot;</span><span class="p">]]</span>
+<span class="n">ranks</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>song_id</th>
+      <th>date</th>
+      <th>rank</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>2000-02-26</td>
+      <td>87</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>2000-03-04</td>
+      <td>82</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>2000-03-11</td>
+      <td>72</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>2000-03-18</td>
+      <td>77</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>2000-03-25</td>
+      <td>87</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0</td>
+      <td>2000-04-01</td>
+      <td>94</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0</td>
+      <td>2000-04-08</td>
+      <td>99</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>1</td>
+      <td>2000-09-02</td>
+      <td>91</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>1</td>
+      <td>2000-09-09</td>
+      <td>87</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>1</td>
+      <td>2000-09-16</td>
+      <td>92</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Multiple-variables-stored-in-one-column">
+<h2>Multiple variables stored in one column<a class="headerlink" href="#Multiple-variables-stored-in-one-column" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Tubercolosis-Example">
+<h3>Tubercolosis Example<a class="headerlink" href="#Tubercolosis-Example" title="Permalink to this headline">¶</a></h3>
+<p>A few notes on the raw data set:</p>
+<ul class="simple">
+<li><p>The columns starting with “m” or “f” contain multiple variables:</p>
+<ul>
+<li><p>Sex (“m” or “f”)</p></li>
+<li><p>Age Group (“0-14”,“15-24”, “25-34”, “45-54”, “55-64”, “65”, “unknown”)</p></li>
+</ul>
+</li>
+<li><p>Mixture of 0s and missing values(“NaN”). This is due to the data collection process and the distinction is important for this dataset.</p></li>
+</ul>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[49]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./data/tb-raw.csv&quot;</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[49]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>country</th>
+      <th>year</th>
+      <th>m014</th>
+      <th>m1524</th>
+      <th>m2534</th>
+      <th>m3544</th>
+      <th>m4554</th>
+      <th>m5564</th>
+      <th>m65</th>
+      <th>mu</th>
+      <th>f014</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AD</td>
+      <td>2000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>AE</td>
+      <td>2000</td>
+      <td>2.0</td>
+      <td>4.0</td>
+      <td>4.0</td>
+      <td>6.0</td>
+      <td>5</td>
+      <td>12</td>
+      <td>10.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>AF</td>
+      <td>2000</td>
+      <td>52.0</td>
+      <td>228.0</td>
+      <td>183.0</td>
+      <td>149.0</td>
+      <td>129</td>
+      <td>94</td>
+      <td>80.0</td>
+      <td>NaN</td>
+      <td>93.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>AG</td>
+      <td>2000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>AL</td>
+      <td>2000</td>
+      <td>2.0</td>
+      <td>19.0</td>
+      <td>21.0</td>
+      <td>14.0</td>
+      <td>24</td>
+      <td>19</td>
+      <td>16.0</td>
+      <td>NaN</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>AM</td>
+      <td>2000</td>
+      <td>2.0</td>
+      <td>152.0</td>
+      <td>130.0</td>
+      <td>131.0</td>
+      <td>63</td>
+      <td>26</td>
+      <td>21.0</td>
+      <td>NaN</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>AN</td>
+      <td>2000</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>AO</td>
+      <td>2000</td>
+      <td>186.0</td>
+      <td>999.0</td>
+      <td>1003.0</td>
+      <td>912.0</td>
+      <td>482</td>
+      <td>312</td>
+      <td>194.0</td>
+      <td>NaN</td>
+      <td>247.0</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>AR</td>
+      <td>2000</td>
+      <td>97.0</td>
+      <td>278.0</td>
+      <td>594.0</td>
+      <td>402.0</td>
+      <td>419</td>
+      <td>368</td>
+      <td>330.0</td>
+      <td>NaN</td>
+      <td>121.0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>AS</td>
+      <td>2000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[50]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;country&quot;</span><span class="p">,</span><span class="s2">&quot;year&quot;</span><span class="p">],</span> <span class="n">value_name</span><span class="o">=</span><span class="s2">&quot;cases&quot;</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;sex_and_age&quot;</span><span class="p">)</span>
+
+<span class="c1"># Extract Sex, Age lower bound and Age upper bound group</span>
+<span class="n">tmp_df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;sex_and_age&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s2">&quot;(\D)(\d+)(\d</span><span class="si">{2}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Name columns</span>
+<span class="n">tmp_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;age_lower&quot;</span><span class="p">,</span> <span class="s2">&quot;age_upper&quot;</span><span class="p">]</span>
+
+<span class="c1"># Create `age`column based on `age_lower` and `age_upper`</span>
+<span class="n">tmp_df</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_df</span><span class="p">[</span><span class="s2">&quot;age_lower&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">tmp_df</span><span class="p">[</span><span class="s2">&quot;age_upper&quot;</span><span class="p">]</span>
+
+<span class="c1"># Merge</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="n">tmp_df</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Drop unnecessary columns and rows</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;sex_and_age&#39;</span><span class="p">,</span><span class="s2">&quot;age_lower&quot;</span><span class="p">,</span><span class="s2">&quot;age_upper&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;country&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;sex&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">])</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[50]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>country</th>
+      <th>year</th>
+      <th>cases</th>
+      <th>sex</th>
+      <th>age</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>AD</td>
+      <td>2000</td>
+      <td>0.0</td>
+      <td>m</td>
+      <td>0-14</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>AD</td>
+      <td>2000</td>
+      <td>0.0</td>
+      <td>m</td>
+      <td>15-24</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>AD</td>
+      <td>2000</td>
+      <td>1.0</td>
+      <td>m</td>
+      <td>25-34</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>AD</td>
+      <td>2000</td>
+      <td>0.0</td>
+      <td>m</td>
+      <td>35-44</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>AD</td>
+      <td>2000</td>
+      <td>0.0</td>
+      <td>m</td>
+      <td>45-54</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>AD</td>
+      <td>2000</td>
+      <td>0.0</td>
+      <td>m</td>
+      <td>55-64</td>
+    </tr>
+    <tr>
+      <th>81</th>
+      <td>AE</td>
+      <td>2000</td>
+      <td>3.0</td>
+      <td>f</td>
+      <td>0-14</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>AE</td>
+      <td>2000</td>
+      <td>2.0</td>
+      <td>m</td>
+      <td>0-14</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>AE</td>
+      <td>2000</td>
+      <td>4.0</td>
+      <td>m</td>
+      <td>15-24</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>AE</td>
+      <td>2000</td>
+      <td>4.0</td>
+      <td>m</td>
+      <td>25-34</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Variables-are-stored-in-both-rows-and-columns">
+<h2>Variables are stored in both rows and columns<a class="headerlink" href="#Variables-are-stored-in-both-rows-and-columns" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Global-Historical-Climatology-Network-Dataset">
+<h3>Global Historical Climatology Network Dataset<a class="headerlink" href="#Global-Historical-Climatology-Network-Dataset" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;./data/weather-raw.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">melt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">id_vars</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="s2">&quot;month&quot;</span><span class="p">,</span><span class="s2">&quot;element&quot;</span><span class="p">],</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;day_raw&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>year</th>
+      <th>month</th>
+      <th>element</th>
+      <th>day_raw</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>tmax</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>1</td>
+      <td>tmin</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>2</td>
+      <td>tmax</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>2</td>
+      <td>tmin</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>3</td>
+      <td>tmax</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>3</td>
+      <td>tmin</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>4</td>
+      <td>tmax</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>4</td>
+      <td>tmin</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>5</td>
+      <td>tmax</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>MX17004</td>
+      <td>2010</td>
+      <td>5</td>
+      <td>tmin</td>
+      <td>d1</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># Extracting day</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;day&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;day_raw&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="s2">&quot;d(\d+)&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;MX17004&quot;</span>
+
+<span class="c1"># To numeric values</span>
+<span class="n">df</span><span class="p">[[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="s2">&quot;month&quot;</span><span class="p">,</span><span class="s2">&quot;day&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span><span class="s2">&quot;month&quot;</span><span class="p">,</span><span class="s2">&quot;day&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">))</span>
+
+<span class="c1"># Creating a date from the different columns</span>
+<span class="k">def</span> <span class="nf">create_date_from_year_month_day</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">],</span> <span class="n">month</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;month&quot;</span><span class="p">]),</span> <span class="n">day</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;day&quot;</span><span class="p">])</span>
+
+<span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">create_date_from_year_month_day</span><span class="p">(</span><span class="n">row</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;year&#39;</span><span class="p">,</span><span class="s2">&quot;month&quot;</span><span class="p">,</span><span class="s2">&quot;day&quot;</span><span class="p">,</span> <span class="s2">&quot;day_raw&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+<span class="c1"># Unmelting column &quot;element&quot;</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span><span class="s2">&quot;date&quot;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;element&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>element</th>
+      <th>id</th>
+      <th>date</th>
+      <th>tmax</th>
+      <th>tmin</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>MX17004</td>
+      <td>2010-02-02</td>
+      <td>27.3</td>
+      <td>14.4</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>MX17004</td>
+      <td>2010-02-03</td>
+      <td>24.1</td>
+      <td>14.4</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>MX17004</td>
+      <td>2010-03-05</td>
+      <td>32.1</td>
+      <td>14.2</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="One-type-in-multiple-tables">
+<h2>One type in multiple tables<a class="headerlink" href="#One-type-in-multiple-tables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Baby-Names-in-Illinois">
+<h3>Baby Names in Illinois<a class="headerlink" href="#Baby-Names-in-Illinois" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">extract_year</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;.+(\d</span><span class="si">{4}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./data&#39;</span>
+<span class="n">allFiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/201*-baby-names-illinois.csv&quot;</span><span class="p">)</span>
+<span class="n">frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="n">df_list</span><span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">file_</span> <span class="ow">in</span> <span class="n">allFiles</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_</span><span class="p">,</span><span class="n">index_col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extract_year</span><span class="p">(</span><span class="n">file_</span><span class="p">)</span>
+    <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rank</th>
+      <th>name</th>
+      <th>frequency</th>
+      <th>sex</th>
+      <th>year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>Noah</td>
+      <td>837</td>
+      <td>Male</td>
+      <td>2014</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>Alexander</td>
+      <td>747</td>
+      <td>Male</td>
+      <td>2014</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>William</td>
+      <td>687</td>
+      <td>Male</td>
+      <td>2014</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>Michael</td>
+      <td>680</td>
+      <td>Male</td>
+      <td>2014</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>Liam</td>
+      <td>670</td>
+      <td>Male</td>
+      <td>2014</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tidy Data in Python</a><ul>
+<li><a class="reference internal" href="#Column-headers-are-values,-not-variable-names">Column headers are values, not variable names</a><ul>
+<li><a class="reference internal" href="#Pew-Research-Center-Dataset">Pew Research Center Dataset</a></li>
+<li><a class="reference internal" href="#Billboard-Top-100-Dataset">Billboard Top 100 Dataset</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Multiple-types-in-one-table">Multiple types in one table</a></li>
+<li><a class="reference internal" href="#Multiple-variables-stored-in-one-column">Multiple variables stored in one column</a><ul>
+<li><a class="reference internal" href="#Tubercolosis-Example">Tubercolosis Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Variables-are-stored-in-both-rows-and-columns">Variables are stored in both rows and columns</a><ul>
+<li><a class="reference internal" href="#Global-Historical-Climatology-Network-Dataset">Global Historical Climatology Network Dataset</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#One-type-in-multiple-tables">One type in multiple tables</a><ul>
+<li><a class="reference internal" href="#Baby-Names-in-Illinois">Baby Names in Illinois</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pandas recipes.html"
+                        title="previous chapter">Pandas Recipes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../Plotly/TODO plotly-barchart.html"
+                        title="next chapter">TODO Plotly bar charts with Dimensions data</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/notebooks/Pandas/pandas-Tidy Data.ipynb.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../Plotly/TODO plotly-barchart.html" title="TODO Plotly bar charts with Dimensions data"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pandas recipes.html" title="Pandas Recipes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Python tests [PRIVATE]</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tidy Data in Python</a></li> 
+      </ul>
+    </div>
+   
+    <div class="footer" role="contentinfo">
+    </div>
+
+    <!-- Adds target=_blank to external links -->
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
+    });
+  </script>
+  
+
+  </body>
+</html>

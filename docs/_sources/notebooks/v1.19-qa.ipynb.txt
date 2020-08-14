@@ -1,0 +1,3774 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false",
+    "slideshow": {
+     "slide_type": "slide"
+    }
+   },
+   "source": [
+    "# QA of DSL Release v1.19\n",
+    "The purpose of this notebook is to review and test the new features in 1.19\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "DimCli v0.5.4 - Succesfully connected to <https://integration.ds-metrics.com> (method: dsl.ini file)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import dimcli\n",
+    "from dimcli.shortcuts import dslquery, dslqueryall\n",
+    "import pandas as pd\n",
+    "dimcli.login(instance=\"test\")\n",
+    "dsl = dimcli.Dsl() # by default it reuses object from %dsl_login"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "## DSL-119 - HRA and BRA classification\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-119\n",
+    "\n",
+    "> note this was released in v 1.18 already\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "search publications return category_hra\n",
+      "Returned Category_hra: 4\n",
+      "search publications return category_bra\n",
+      "Returned Category_bra: 4\n",
+      "search grants return category_hra\n",
+      "Returned Category_hra: 4\n",
+      "search grants return category_bra\n",
+      "Returned Category_bra: 4\n",
+      "search patents return category_hra\n",
+      "Returned Category_hra: 4\n",
+      "search patents return category_bra\n",
+      "Returned Category_bra: 4\n",
+      "search clinical_trials return category_hra\n",
+      "Returned Category_hra: 4\n",
+      "search clinical_trials return category_bra\n",
+      "Returned Category_bra: 4\n"
+     ]
+    }
+   ],
+   "source": [
+    "q = \"\"\"search {} return {}\"\"\"\n",
+    "for x in ['publications', 'grants', 'patents', 'clinical_trials']:\n",
+    "    for y in ['category_hra', 'category_bra']:\n",
+    "        qq = q.format(x, y)\n",
+    "        print(qq)\n",
+    "        dslquery(qq).as_dataframe()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "search publications where category_hra is not empty return publications\n",
+      "Returned Publications: 20 (total = 12272959)\n",
+      "search publications where category_bra is not empty return publications\n",
+      "Returned Publications: 20 (total = 12111511)\n",
+      "search grants where category_hra is not empty return grants\n",
+      "Returned Grants: 20 (total = 1021001)\n",
+      "search grants where category_bra is not empty return grants\n",
+      "Returned Grants: 20 (total = 903311)\n",
+      "search patents where category_hra is not empty return patents\n",
+      "Returned Patents: 20 (total = 871287)\n",
+      "search patents where category_bra is not empty return patents\n",
+      "Returned Patents: 20 (total = 922865)\n",
+      "search clinical_trials where category_hra is not empty return clinical_trials\n",
+      "Returned Clinical_trials: 20 (total = 335045)\n",
+      "search clinical_trials where category_bra is not empty return clinical_trials\n",
+      "Returned Clinical_trials: 20 (total = 341782)\n"
+     ]
+    }
+   ],
+   "source": [
+    "q = \"\"\"search {} where {} is not empty return {}\"\"\"\n",
+    "for x in ['publications', 'grants', 'patents', 'clinical_trials']:\n",
+    "    for y in ['category_hra', 'category_bra']:\n",
+    "        qq = q.format(x, y, x)\n",
+    "        print(qq)\n",
+    "        dslquery(qq)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-124\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-124\n",
+    "\n",
+    "> note this was released in v 1.18 already\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Researchers: 2\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "{'_stats': {'total_count': 102281885},\n",
+       " 'researchers': [{'id': 'ur.011177563061.78',\n",
+       "   'count': 8926,\n",
+       "   'last_name': 'Kehiaian',\n",
+       "   'research_orgs': ['grid.7452.4'],\n",
+       "   'first_name': 'H V'},\n",
+       "  {'id': 'ur.012623766757.24',\n",
+       "   'count': 7897,\n",
+       "   'last_name': 'Gladyshevskii',\n",
+       "   'orcid_id': ['0000-0003-1320-155X'],\n",
+       "   'research_orgs': ['grid.77054.31',\n",
+       "    'grid.5388.6',\n",
+       "    'grid.29328.32',\n",
+       "    'grid.6936.a',\n",
+       "    'grid.10711.36',\n",
+       "    'grid.8591.5'],\n",
+       "   'first_name': 'Roman E'}]}"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"search publications return researchers limit 2\").json"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Researchers: 2\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "{'_stats': {'total_count': 4909795},\n",
+       " 'researchers': [{'id': 'ur.014665603100.22',\n",
+       "   'count': 496,\n",
+       "   'last_name': 'Brak',\n",
+       "   'research_orgs': ['grid.22254.33',\n",
+       "    'grid.445268.9',\n",
+       "    'grid.22555.35',\n",
+       "    'grid.411637.6',\n",
+       "    'grid.445123.5',\n",
+       "    'grid.29328.32',\n",
+       "    'grid.445634.4',\n",
+       "    'grid.6979.1',\n",
+       "    'grid.5522.0',\n",
+       "    'grid.460445.7',\n",
+       "    'grid.445481.8',\n",
+       "    'grid.498979.2',\n",
+       "    'grid.445493.b',\n",
+       "    'grid.7005.2',\n",
+       "    'grid.418838.e',\n",
+       "    'grid.498983.7',\n",
+       "    'grid.445161.3',\n",
+       "    'grid.435475.4',\n",
+       "    'grid.474039.d',\n",
+       "    'grid.446127.2',\n",
+       "    'grid.5374.5',\n",
+       "    'grid.440608.e',\n",
+       "    'grid.12847.38',\n",
+       "    'grid.418860.3',\n",
+       "    'grid.411484.c',\n",
+       "    'grid.445199.4',\n",
+       "    'grid.460284.c',\n",
+       "    'grid.412464.1',\n",
+       "    'grid.8505.8',\n",
+       "    'grid.435465.5',\n",
+       "    'grid.433536.4',\n",
+       "    'grid.445174.7',\n",
+       "    'grid.460358.c',\n",
+       "    'grid.107891.6',\n",
+       "    'grid.445633.3',\n",
+       "    'grid.460325.6',\n",
+       "    'grid.460468.8',\n",
+       "    'grid.431808.6',\n",
+       "    'grid.452699.5',\n",
+       "    'grid.6963.a',\n",
+       "    'grid.460603.7',\n",
+       "    'grid.445007.2',\n",
+       "    'grid.445642.5',\n",
+       "    'grid.9922.0',\n",
+       "    'grid.79757.3b',\n",
+       "    'grid.460348.d',\n",
+       "    'grid.450295.f',\n",
+       "    'grid.445408.9',\n",
+       "    'grid.410688.3',\n",
+       "    'grid.445027.0',\n",
+       "    'grid.6868.0',\n",
+       "    'grid.412284.9',\n",
+       "    'grid.37179.3b',\n",
+       "    'grid.425301.1',\n",
+       "    'grid.460364.3',\n",
+       "    'grid.433082.e',\n",
+       "    'grid.10789.37',\n",
+       "    'grid.460600.4',\n",
+       "    'grid.41056.36',\n",
+       "    'grid.498905.9',\n",
+       "    'grid.445394.b',\n",
+       "    'grid.425299.1',\n",
+       "    'grid.431804.a',\n",
+       "    'grid.445470.6',\n",
+       "    'grid.498902.e',\n",
+       "    'grid.460461.1',\n",
+       "    'grid.445366.6'],\n",
+       "   'first_name': 'Brak'},\n",
+       "  {'id': 'ur.014537014427.17',\n",
+       "   'count': 406,\n",
+       "   'last_name': 'Kolthur',\n",
+       "   'research_orgs': ['grid.22401.35'],\n",
+       "   'first_name': 'Ullas'}]}"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"search grants return researchers limit 2\").json"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-140\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-140\n",
+    "\n",
+    "> note this was released in v 1.18 already\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Grants: 20 (total = 4059491)\n"
+     ]
+    },
+    {
+     "data": {
+      "application/json": {
+       "_stats": {
+        "total_count": 4059491
+       },
+       "grants": [
+        {
+         "active_year": [
+          2021
+         ],
+         "funders": [
+          {
+           "acronym": "NWO",
+           "country_name": "Netherlands",
+           "id": "grid.420488.2",
+           "name": "Netherlands Organisation for Scientific Research"
+          }
+         ],
+         "funding_org_name": "Netherlands Organisation for Scientific Research",
+         "id": "grant.6946936",
+         "language": "en",
+         "original_title": "Sensing alarm responses of ungulate herds to prevent poaching of endangered megafauna.",
+         "project_num": "RAAK.PRO02.048",
+         "start_date": "2021-12-27",
+         "start_year": 2021,
+         "title": "Sensing alarm responses of ungulate herds to prevent poaching of endangered megafauna.",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2021
+         ],
+         "funders": [
+          {
+           "acronym": "NWO",
+           "country_name": "Netherlands",
+           "id": "grid.420488.2",
+           "name": "Netherlands Organisation for Scientific Research"
+          }
+         ],
+         "funding_org_name": "Netherlands Organisation for Scientific Research",
+         "id": "grant.7918845",
+         "language": "en",
+         "original_title": "Optimizing the effects of vacations on quality of life",
+         "project_num": "HBOPD.2018.02.011",
+         "start_date": "2021-09-01",
+         "start_year": 2021,
+         "title": "Optimizing the effects of vacations on quality of life",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-08-31",
+         "funders": [
+          {
+           "acronym": "NSHRF",
+           "country_name": "Canada",
+           "id": "grid.453119.b",
+           "name": "Nova Scotia Health Research Foundation"
+          }
+         ],
+         "funding_org_name": "Nova Scotia Health Research Foundation",
+         "id": "grant.7882631",
+         "language": "en",
+         "original_title": "Imagining to learn: Neural correlates of motor imagery-based skill acquisition and the contribution of on- and offline learning",
+         "project_num": "1678",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Imagining to learn: Neural correlates of motor imagery-based skill acquisition and the contribution of on- and offline learning",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-08-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.7925589",
+         "language": "en",
+         "original_title": "Kabuki Actors, Print Technology, and the Theatrical Origins of Modern Media",
+         "project_num": "FEL-263245-19",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Kabuki Actors, Print Technology, and the Theatrical Origins of Modern Media",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-05-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8385471",
+         "language": "en",
+         "original_title": "The Specter of the State: Archives and Political Practice in Early Modern Britain",
+         "project_num": "FEL-262384-19",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "The Specter of the State: Archives and Political Practice in Early Modern Britain",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-08-31",
+         "funders": [
+          {
+           "acronym": "NSHRF",
+           "country_name": "Canada",
+           "id": "grid.453119.b",
+           "name": "Nova Scotia Health Research Foundation"
+          }
+         ],
+         "funding_org_name": "Nova Scotia Health Research Foundation",
+         "id": "grant.7882625",
+         "language": "en",
+         "original_title": "Perinatal health outcomes of criminalized and incarcerated women in Canada",
+         "project_num": "1614",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Perinatal health outcomes of criminalized and incarcerated women in Canada",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-08-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.7925564",
+         "language": "en",
+         "original_title": "Development of Berlin as a Music Metropolis, 1880-1961",
+         "project_num": "FEL-262404-19",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Development of Berlin as a Music Metropolis, 1880-1961",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-08-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8385518",
+         "language": "en",
+         "original_title": "Drafting the King James Bible: The Earliest Known Draft of the Most Enduring English Translation",
+         "project_num": "FEL-263114-19",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Drafting the King James Bible: The Earliest Known Draft of the Most Enduring English Translation",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-08-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.7925576",
+         "language": "en",
+         "original_title": "English Verse Translation of Book Five of Medieval Sufi Poet Jalal al-Din Rumi's Masnavi (The Couplets)",
+         "project_num": "FEL-262742-19",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "English Verse Translation of Book Five of Medieval Sufi Poet Jalal al-Din Rumi's Masnavi (The Couplets)",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-08-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8385510",
+         "language": "en",
+         "original_title": "Transnationalism, Modernism, and the Orient in the Career of Japanese Dancer and Choreographer Ito Michio (1893-1961)",
+         "project_num": "FO-263438-19",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Transnationalism, Modernism, and the Orient in the Career of Japanese Dancer and Choreographer Ito Michio (1893-1961)",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-07-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.7925580",
+         "language": "en",
+         "original_title": "Preservation and Publication of Bernard Narokobi's \"History of Wautogik Village\" Manuscript",
+         "project_num": "FEL-262814-19",
+         "start_date": "2020-08-01",
+         "start_year": 2020,
+         "title": "Preservation and Publication of Bernard Narokobi's \"History of Wautogik Village\" Manuscript",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-07-31",
+         "funders": [
+          {
+           "acronym": "WT",
+           "country_name": "United Kingdom",
+           "id": "grid.52788.30",
+           "name": "Wellcome Trust"
+          }
+         ],
+         "funding_org_name": "Wellcome Trust",
+         "id": "grant.8103550",
+         "language": "en",
+         "original_title": "BCLM: Forging Ahead - NHS Infant Welfare Clinic",
+         "project_num": "213366/Z/18/Z",
+         "start_date": "2020-08-01",
+         "start_year": 2020,
+         "title": "BCLM: Forging Ahead - NHS Infant Welfare Clinic",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-06-30",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8385500",
+         "language": "en",
+         "original_title": "Sierra Leone’s History of Epidemics, 1787- 2015",
+         "project_num": "FEL-263155-19",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Sierra Leone’s History of Epidemics, 1787- 2015",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-06-30",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8385481",
+         "language": "en",
+         "original_title": "Italy Out of the Ghetto: A Catholic Nation in the Jewish Mirror, 1789-1910",
+         "project_num": "FEL-262681-19",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Italy Out of the Ghetto: A Catholic Nation in the Jewish Mirror, 1789-1910",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-06-30",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8385472",
+         "language": "en",
+         "original_title": "Reforming Muslim Family Laws in Non-Muslim Regimes: The Role of Civil Courts",
+         "project_num": "FEL-262385-19",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Reforming Muslim Family Laws in Non-Muslim Regimes: The Role of Civil Courts",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-06-30",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8385492",
+         "language": "en",
+         "original_title": "Tradition Transformed: Bardic Poetry and Colonialism in Early Modern Ireland, c.1560-1660",
+         "project_num": "FEL-262924-19",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Tradition Transformed: Bardic Poetry and Colonialism in Early Modern Ireland, c.1560-1660",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020
+         ],
+         "end_date": "2020-12-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8385485",
+         "language": "en",
+         "original_title": "Proximities: Cross-Cultural Collaboration in Latina/o Literature and Performance Since 1960",
+         "project_num": "FEL-262728-19",
+         "start_date": "2020-06-01",
+         "start_year": 2020,
+         "title": "Proximities: Cross-Cultural Collaboration in Latina/o Literature and Performance Since 1960",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+         ],
+         "end_date": "2025-04-30",
+         "funders": [
+          {
+           "acronym": "ERC",
+           "country_name": "Belgium",
+           "id": "grid.452896.4",
+           "name": "European Research Council"
+          }
+         ],
+         "funding_org_name": "European Research Council",
+         "id": "grant.7613141",
+         "language": "en",
+         "original_title": "The Formation of the First Galaxies and Reionization with the James Webb Space Telescope",
+         "project_num": "788113",
+         "start_date": "2020-05-01",
+         "start_year": 2020,
+         "title": "The Formation of the First Galaxies and Reionization with the James Webb Space Telescope",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-03-31",
+         "funders": [
+          {
+           "acronym": "CHRP",
+           "country_name": "United States",
+           "id": "funder.175052",
+           "name": "California HIV/AIDS Research Program"
+          }
+         ],
+         "funding_org_name": "California HIV/AIDS Research Program",
+         "id": "grant.7922824",
+         "language": "en",
+         "original_title": "Test and Be Treated: Faster and Easier Entry to HIV Care",
+         "project_num": "OS17-EBAC-007",
+         "start_date": "2020-04-01",
+         "start_year": 2020,
+         "title": "Test and Be Treated: Faster and Easier Entry to HIV Care",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+         ],
+         "end_date": "2025-03-31",
+         "funders": [
+          {
+           "acronym": "ERC",
+           "country_name": "Belgium",
+           "id": "grid.452896.4",
+           "name": "European Research Council"
+          }
+         ],
+         "funding_org_name": "European Research Council",
+         "id": "grant.7613188",
+         "language": "en",
+         "original_title": "Finding the most distant galaxies with NIRSpec guaranteed time on the James Webb Space Telescope",
+         "project_num": "789056",
+         "start_date": "2020-04-01",
+         "start_year": 2020,
+         "title": "Finding the most distant galaxies with NIRSpec guaranteed time on the James Webb Space Telescope",
+         "title_language": "en"
+        }
+       ]
+      },
+      "text/plain": [
+       "<dimcli.Result object #4824418704. Dict keys: '_stats', 'grants'>"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {
+      "application/json": {
+       "expanded": false,
+       "root": "root"
+      }
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"search grants where researchers is not empty return grants\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Grants: 20 (total = 850304)\n"
+     ]
+    },
+    {
+     "data": {
+      "application/json": {
+       "_stats": {
+        "total_count": 850304
+       },
+       "grants": [
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389152",
+         "language": "en",
+         "original_title": "Quantum Networks in Space-Time",
+         "project_num": "835677",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Quantum Networks in Space-Time",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389236",
+         "language": "en",
+         "original_title": "Targeting drug resistance in ovarian cancer through large-scale drug-response profiling in physiologically relevant cancer organoids",
+         "project_num": "845045",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Targeting drug resistance in ovarian cancer through large-scale drug-response profiling in physiologically relevant cancer organoids",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389274",
+         "language": "en",
+         "original_title": "Mechanisms that maintain centromere DNA repeats stability in human cells.",
+         "project_num": "838793",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Mechanisms that maintain centromere DNA repeats stability in human cells.",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389296",
+         "language": "en",
+         "original_title": "Unraveling the combinatorial logic of amygdala neuromodulation in decision-making and learning.",
+         "project_num": "843236",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Unraveling the combinatorial logic of amygdala neuromodulation in decision-making and learning.",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389321",
+         "language": "en",
+         "original_title": "Neural regulation of the immune system in the Gut",
+         "project_num": "838692",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Neural regulation of the immune system in the Gut",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022,
+          2023
+         ],
+         "end_date": "2023-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389356",
+         "language": "en",
+         "original_title": "Stringy geometry: quantum corrections and the fate of string compactifications from spacetime and the worldsheet",
+         "project_num": "838776",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Stringy geometry: quantum corrections and the fate of string compactifications from spacetime and the worldsheet",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022,
+          2023
+         ],
+         "end_date": "2023-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389449",
+         "language": "en",
+         "original_title": "High-performance aerodynamics and aeroacoustics simulations of the new generation of high-speed gas turbines via high-order Galerkin methods",
+         "project_num": "842536",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "High-performance aerodynamics and aeroacoustics simulations of the new generation of high-speed gas turbines via high-order Galerkin methods",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389469",
+         "language": "en",
+         "original_title": "Self-Healing Hydrogels for Material-Assisted Cell therapy in Osteoarthritis",
+         "project_num": "846477",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Self-Healing Hydrogels for Material-Assisted Cell therapy in Osteoarthritis",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-08-31",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8411202",
+         "language": "en",
+         "original_title": "The Archaeology of Urbanism in Ancient Egypt: The Settlements from the Second Intermediate Period to the End of the Late Period (ca. 1650-332 BCE)",
+         "project_num": "FEL-262464-19",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "The Archaeology of Urbanism in Ancient Egypt: The Settlements from the Second Intermediate Period to the End of the Late Period (ca. 1650-332 BCE)",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022,
+          2023
+         ],
+         "end_date": "2023-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389184",
+         "language": "en",
+         "original_title": "Personalised Image-based Computational Modelling Framework to Forecast Prostate Cancer",
+         "project_num": "838786",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Personalised Image-based Computational Modelling Framework to Forecast Prostate Cancer",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389475",
+         "language": "en",
+         "original_title": "The Political Economy of E-Residency",
+         "project_num": "867454",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "The Political Economy of E-Residency",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022,
+          2023
+         ],
+         "end_date": "2023-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389400",
+         "language": "en",
+         "original_title": "Maintenance of variation in aposematic colouration",
+         "project_num": "840944",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Maintenance of variation in aposematic colouration",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389474",
+         "language": "en",
+         "original_title": "OPTical Imaging of Molecular and signalling Activity in Real-time: application to flatfish metamorphosis",
+         "project_num": "867450",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "OPTical Imaging of Molecular and signalling Activity in Real-time: application to flatfish metamorphosis",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022,
+          2023
+         ],
+         "end_date": "2023-08-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389415",
+         "language": "en",
+         "original_title": "Translational Traditions and Imaginaries: A Comparative History of Petrarch’s Canzoniere in French and English",
+         "project_num": "841844",
+         "start_date": "2020-09-01",
+         "start_year": 2020,
+         "title": "Translational Traditions and Imaginaries: A Comparative History of Petrarch’s Canzoniere in French and English",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-07-31",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389173",
+         "language": "en",
+         "original_title": "Imaging tumor vessels as a marker for p53 mutation status in cancer",
+         "project_num": "839585",
+         "start_date": "2020-08-01",
+         "start_year": 2020,
+         "title": "Imaging tumor vessels as a marker for p53 mutation status in cancer",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-06-30",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8411195",
+         "language": "en",
+         "original_title": "Catherine of Siena and Her Circle of Female Penitents",
+         "project_num": "FEL-262342-19",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Catherine of Siena and Her Circle of Female Penitents",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-06-30",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389220",
+         "language": "en",
+         "original_title": "Synthetic Natural Killer Cells for Immunotherapy",
+         "project_num": "838909",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Synthetic Natural Killer Cells for Immunotherapy",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021
+         ],
+         "end_date": "2021-06-30",
+         "funders": [
+          {
+           "acronym": "NEH",
+           "country_name": "United States",
+           "id": "grid.422239.c",
+           "name": "National Endowment for the Humanities"
+          }
+         ],
+         "funding_org_name": "National Endowment for the Humanities",
+         "id": "grant.8463086",
+         "language": "en",
+         "original_title": "Creating a reference grammar with texts for Tupari [tpr], an endangered Tupian Language of the Brazilian Amazon",
+         "project_num": "FN-266288-19",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Creating a reference grammar with texts for Tupari [tpr], an endangered Tupian Language of the Brazilian Amazon",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-06-30",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389402",
+         "language": "en",
+         "original_title": "Synapses between Leukaemia and its Neighbouring Cells",
+         "project_num": "837491",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Synapses between Leukaemia and its Neighbouring Cells",
+         "title_language": "en"
+        },
+        {
+         "active_year": [
+          2020,
+          2021,
+          2022
+         ],
+         "end_date": "2022-06-30",
+         "funders": [
+          {
+           "acronym": "EC",
+           "country_name": "Belgium",
+           "id": "grid.270680.b",
+           "name": "European Commission"
+          }
+         ],
+         "funding_org_name": "European Commission",
+         "id": "grant.8389430",
+         "language": "en",
+         "original_title": "Metabolic Regulation of Conventional Dendritic Cell Development and Function",
+         "project_num": "837951",
+         "start_date": "2020-07-01",
+         "start_year": 2020,
+         "title": "Metabolic Regulation of Conventional Dendritic Cell Development and Function",
+         "title_language": "en"
+        }
+       ]
+      },
+      "text/plain": [
+       "<dimcli.Result object #4824449104. Dict keys: '_stats', 'grants'>"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {
+      "application/json": {
+       "expanded": false,
+       "root": "root"
+      }
+     },
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"search grants where researchers is empty return grants\")\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-98 Inconsistent pub_date format in publications\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-98\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "res = dslqueryall(\"\"\"search publications where category_for=\"2330\" and date >= \"1990-01\" and date <= \"1990-03\" return publications[date] sort by date desc\"\"\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "df = res.as_dataframe()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['1990-03-01', '1990-02-28', '1990-02-21', '1990-02-16',\n",
+       "       '1990-02-08', '1990-02-07', '1990-02-01', '1990-01-21',\n",
+       "       '1990-01-08', '1990-01-07', '1990-01-05', '1990-01-03',\n",
+       "       '1990-01-01'], dtype=object)"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.date.unique()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": [
+    "res = dslqueryall(\"\"\"search publications where category_for=\"2330\" and date >= \"1990-01\" and date <= \"1990-03-30\" return publications[date] sort by date desc\"\"\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 35,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array(['1990-03-21', '1990-03-15', '1990-03-08', '1990-03-07',\n",
+       "       '1990-03-01', '1990-02-28', '1990-02-21', '1990-02-16',\n",
+       "       '1990-02-08', '1990-02-07', '1990-02-01', '1990-01-21',\n",
+       "       '1990-01-08', '1990-01-07', '1990-01-05', '1990-01-03',\n",
+       "       '1990-01-01'], dtype=object)"
+      ]
+     },
+     "execution_count": 35,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = res.as_dataframe()\n",
+    "df.date.unique()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-211 addition of granted_date to patents\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-211"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Patents: 20 (total = 15089431)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>assignee_names</th>\n",
+       "      <th>assignees</th>\n",
+       "      <th>filing_status</th>\n",
+       "      <th>granted_date</th>\n",
+       "      <th>granted_year</th>\n",
+       "      <th>id</th>\n",
+       "      <th>inventor_names</th>\n",
+       "      <th>publication_date</th>\n",
+       "      <th>title</th>\n",
+       "      <th>year</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[YK Equipment Pte Ltd, YIP HOI, WONG YEW]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006-07-20</td>\n",
+       "      <td>2006</td>\n",
+       "      <td>AU-2003256225-B2</td>\n",
+       "      <td>[WONG, YEW KEE]</td>\n",
+       "      <td>2006-07-20</td>\n",
+       "      <td>A piling device</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[GOULBURN WOOL SCOUR Ltd, GOULBURN WOOL SCOUR ...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006-04-27</td>\n",
+       "      <td>2006</td>\n",
+       "      <td>AU-2003254419-B2</td>\n",
+       "      <td>[KNEEBONE, HOWARD]</td>\n",
+       "      <td>2006-04-27</td>\n",
+       "      <td>An evaporation apparatus</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[Nergeco, NERGECO SA]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006-08-17</td>\n",
+       "      <td>2006</td>\n",
+       "      <td>AU-2003252916-B2</td>\n",
+       "      <td>[KRAEUTLER, BERNARD]</td>\n",
+       "      <td>2006-08-17</td>\n",
+       "      <td>Material handling gate</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>[Samsung Electronics Co Ltd, SAMSUNG ELECTRONI...</td>\n",
+       "      <td>[{'id': 'grid.419666.a', 'name': 'Samsung (Sou...</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006-08-03</td>\n",
+       "      <td>2006</td>\n",
+       "      <td>AU-2003251169-B2</td>\n",
+       "      <td>[JIN, BYOUNG-IL, JUNG, KI-HO, KIM, IN-BAE, RYU...</td>\n",
+       "      <td>2006-08-03</td>\n",
+       "      <td>Transmitting/receiving apparatus and method fo...</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>[DOLL RAINER, RAINER DOLL, DOLL RAINER]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006-08-17</td>\n",
+       "      <td>2006</td>\n",
+       "      <td>AU-2003250937-B2</td>\n",
+       "      <td>[DOLL, RAINER FRITZ ROBERT]</td>\n",
+       "      <td>2006-08-17</td>\n",
+       "      <td>Signalling device to make the administering of...</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                      assignee_names  \\\n",
+       "0          [YK Equipment Pte Ltd, YIP HOI, WONG YEW]   \n",
+       "1  [GOULBURN WOOL SCOUR Ltd, GOULBURN WOOL SCOUR ...   \n",
+       "2                              [Nergeco, NERGECO SA]   \n",
+       "3  [Samsung Electronics Co Ltd, SAMSUNG ELECTRONI...   \n",
+       "4            [DOLL RAINER, RAINER DOLL, DOLL RAINER]   \n",
+       "\n",
+       "                                           assignees filing_status  \\\n",
+       "0                                                NaN         Grant   \n",
+       "1                                                NaN         Grant   \n",
+       "2                                                NaN         Grant   \n",
+       "3  [{'id': 'grid.419666.a', 'name': 'Samsung (Sou...         Grant   \n",
+       "4                                                NaN         Grant   \n",
+       "\n",
+       "  granted_date  granted_year                id  \\\n",
+       "0   2006-07-20          2006  AU-2003256225-B2   \n",
+       "1   2006-04-27          2006  AU-2003254419-B2   \n",
+       "2   2006-08-17          2006  AU-2003252916-B2   \n",
+       "3   2006-08-03          2006  AU-2003251169-B2   \n",
+       "4   2006-08-17          2006  AU-2003250937-B2   \n",
+       "\n",
+       "                                      inventor_names publication_date  \\\n",
+       "0                                    [WONG, YEW KEE]       2006-07-20   \n",
+       "1                                 [KNEEBONE, HOWARD]       2006-04-27   \n",
+       "2                               [KRAEUTLER, BERNARD]       2006-08-17   \n",
+       "3  [JIN, BYOUNG-IL, JUNG, KI-HO, KIM, IN-BAE, RYU...       2006-08-03   \n",
+       "4                        [DOLL, RAINER FRITZ ROBERT]       2006-08-17   \n",
+       "\n",
+       "                                               title  year  \n",
+       "0                                    A piling device  2003  \n",
+       "1                           An evaporation apparatus  2003  \n",
+       "2                             Material handling gate  2003  \n",
+       "3  Transmitting/receiving apparatus and method fo...  2003  \n",
+       "4  Signalling device to make the administering of...  2003  "
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"\"\"search patents where granted_date is not empty return patents[basics+granted_date]\"\"\").as_dataframe().head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Patents: 20 (total = 23310180)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>assignee_names</th>\n",
+       "      <th>assignees</th>\n",
+       "      <th>filing_status</th>\n",
+       "      <th>id</th>\n",
+       "      <th>inventor_names</th>\n",
+       "      <th>publication_date</th>\n",
+       "      <th>times_cited</th>\n",
+       "      <th>title</th>\n",
+       "      <th>year</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[Allegheny-Singer Research Institute, ALLEGHEN...</td>\n",
+       "      <td>[{'id': 'grid.280673.8', 'acronym': 'ASRI', 'n...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>CA-2606285-A1</td>\n",
+       "      <td>[SAHUD, ANDREW GRAHAM]</td>\n",
+       "      <td>2008-04-13</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>METHOD AND SYSTEM TO MONITOR HAND HYGIENE COMP...</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[Mitsubishi Electric Corp, MITSUBISHI ELECTRIC...</td>\n",
+       "      <td>[{'id': 'grid.462605.3', 'name': 'Mitsubishi E...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>DE-112005003141-T5</td>\n",
+       "      <td>[NUKISATO, YASUHIRO, OHSAWA, TAKASHI]</td>\n",
+       "      <td>2008-04-10</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Discharge lamps - load device</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[APPLIED MATERIALS INC, SMICK THEODORE, HORNER...</td>\n",
+       "      <td>[{'id': 'grid.455223.7', 'name': 'Applied Mate...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>WO-2008053137-A1</td>\n",
+       "      <td>[SMICK, THEODORE, HORNER, RONALD]</td>\n",
+       "      <td>2008-05-08</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>SUBSTRATE SCANNER APPARATUS</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>[DLP LTD, STIMPSON ROBERT WILLIAM, SELF JAMES ...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>WO-2008053133-A1</td>\n",
+       "      <td>[STIMPSON, ROBERT, WILLIAM, SELF, JAMES, EDWAR...</td>\n",
+       "      <td>2008-05-08</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>PUMPED SHOWER DRAIN SYSTEM</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>[Hon Hai Precision Industry Co Ltd, HON HAI PR...</td>\n",
+       "      <td>[{'id': 'grid.471047.1', 'name': 'Foxconn (Tai...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>US-20080108287-A1</td>\n",
+       "      <td>[Shih-Chieh Yen]</td>\n",
+       "      <td>2008-05-08</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Fixture for grinding machines</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                      assignee_names  \\\n",
+       "0  [Allegheny-Singer Research Institute, ALLEGHEN...   \n",
+       "1  [Mitsubishi Electric Corp, MITSUBISHI ELECTRIC...   \n",
+       "2  [APPLIED MATERIALS INC, SMICK THEODORE, HORNER...   \n",
+       "3  [DLP LTD, STIMPSON ROBERT WILLIAM, SELF JAMES ...   \n",
+       "4  [Hon Hai Precision Industry Co Ltd, HON HAI PR...   \n",
+       "\n",
+       "                                           assignees filing_status  \\\n",
+       "0  [{'id': 'grid.280673.8', 'acronym': 'ASRI', 'n...   Application   \n",
+       "1  [{'id': 'grid.462605.3', 'name': 'Mitsubishi E...   Application   \n",
+       "2  [{'id': 'grid.455223.7', 'name': 'Applied Mate...   Application   \n",
+       "3                                                NaN   Application   \n",
+       "4  [{'id': 'grid.471047.1', 'name': 'Foxconn (Tai...   Application   \n",
+       "\n",
+       "                   id                                     inventor_names  \\\n",
+       "0       CA-2606285-A1                             [SAHUD, ANDREW GRAHAM]   \n",
+       "1  DE-112005003141-T5              [NUKISATO, YASUHIRO, OHSAWA, TAKASHI]   \n",
+       "2    WO-2008053137-A1                  [SMICK, THEODORE, HORNER, RONALD]   \n",
+       "3    WO-2008053133-A1  [STIMPSON, ROBERT, WILLIAM, SELF, JAMES, EDWAR...   \n",
+       "4   US-20080108287-A1                                   [Shih-Chieh Yen]   \n",
+       "\n",
+       "  publication_date  times_cited  \\\n",
+       "0       2008-04-13          NaN   \n",
+       "1       2008-04-10          NaN   \n",
+       "2       2008-05-08          NaN   \n",
+       "3       2008-05-08          NaN   \n",
+       "4       2008-05-08          NaN   \n",
+       "\n",
+       "                                               title  year  \n",
+       "0  METHOD AND SYSTEM TO MONITOR HAND HYGIENE COMP...  2007  \n",
+       "1                      Discharge lamps - load device  2005  \n",
+       "2                        SUBSTRATE SCANNER APPARATUS  2007  \n",
+       "3                         PUMPED SHOWER DRAIN SYSTEM  2007  \n",
+       "4                      Fixture for grinding machines  2007  "
+      ]
+     },
+     "execution_count": 42,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"\"\"search patents where granted_date is empty return patents[basics+granted_date]\"\"\").as_dataframe().head(5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-224 Align patents fields with latest webapp release\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-224"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Patents: 20 (total = 37031568)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>assignee_names</th>\n",
+       "      <th>assignees</th>\n",
+       "      <th>filing_status</th>\n",
+       "      <th>granted_year</th>\n",
+       "      <th>id</th>\n",
+       "      <th>inventor_names</th>\n",
+       "      <th>priority_date</th>\n",
+       "      <th>priority_year</th>\n",
+       "      <th>publication_date</th>\n",
+       "      <th>times_cited</th>\n",
+       "      <th>title</th>\n",
+       "      <th>year</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[YK Equipment Pte Ltd, YIP HOI, WONG YEW]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006.0</td>\n",
+       "      <td>AU-2003256225-B2</td>\n",
+       "      <td>[WONG, YEW KEE]</td>\n",
+       "      <td>2003-07-24</td>\n",
+       "      <td>2003</td>\n",
+       "      <td>2006-07-20</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>A piling device</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[GOULBURN WOOL SCOUR Ltd, GOULBURN WOOL SCOUR ...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006.0</td>\n",
+       "      <td>AU-2003254419-B2</td>\n",
+       "      <td>[KNEEBONE, HOWARD]</td>\n",
+       "      <td>2002-08-30</td>\n",
+       "      <td>2002</td>\n",
+       "      <td>2006-04-27</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>An evaporation apparatus</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[Nergeco, NERGECO SA]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006.0</td>\n",
+       "      <td>AU-2003252916-B2</td>\n",
+       "      <td>[KRAEUTLER, BERNARD]</td>\n",
+       "      <td>1999-06-17</td>\n",
+       "      <td>1999</td>\n",
+       "      <td>2006-08-17</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Material handling gate</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>[Samsung Electronics Co Ltd, SAMSUNG ELECTRONI...</td>\n",
+       "      <td>[{'id': 'grid.419666.a', 'name': 'Samsung (Sou...</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006.0</td>\n",
+       "      <td>AU-2003251169-B2</td>\n",
+       "      <td>[JIN, BYOUNG-IL, JUNG, KI-HO, KIM, IN-BAE, RYU...</td>\n",
+       "      <td>2002-07-30</td>\n",
+       "      <td>2002</td>\n",
+       "      <td>2006-08-03</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Transmitting/receiving apparatus and method fo...</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>[DOLL RAINER, RAINER DOLL, DOLL RAINER]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2006.0</td>\n",
+       "      <td>AU-2003250937-B2</td>\n",
+       "      <td>[DOLL, RAINER FRITZ ROBERT]</td>\n",
+       "      <td>2002-07-15</td>\n",
+       "      <td>2002</td>\n",
+       "      <td>2006-08-17</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Signalling device to make the administering of...</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                      assignee_names  \\\n",
+       "0          [YK Equipment Pte Ltd, YIP HOI, WONG YEW]   \n",
+       "1  [GOULBURN WOOL SCOUR Ltd, GOULBURN WOOL SCOUR ...   \n",
+       "2                              [Nergeco, NERGECO SA]   \n",
+       "3  [Samsung Electronics Co Ltd, SAMSUNG ELECTRONI...   \n",
+       "4            [DOLL RAINER, RAINER DOLL, DOLL RAINER]   \n",
+       "\n",
+       "                                           assignees filing_status  \\\n",
+       "0                                                NaN         Grant   \n",
+       "1                                                NaN         Grant   \n",
+       "2                                                NaN         Grant   \n",
+       "3  [{'id': 'grid.419666.a', 'name': 'Samsung (Sou...         Grant   \n",
+       "4                                                NaN         Grant   \n",
+       "\n",
+       "   granted_year                id  \\\n",
+       "0        2006.0  AU-2003256225-B2   \n",
+       "1        2006.0  AU-2003254419-B2   \n",
+       "2        2006.0  AU-2003252916-B2   \n",
+       "3        2006.0  AU-2003251169-B2   \n",
+       "4        2006.0  AU-2003250937-B2   \n",
+       "\n",
+       "                                      inventor_names priority_date  \\\n",
+       "0                                    [WONG, YEW KEE]    2003-07-24   \n",
+       "1                                 [KNEEBONE, HOWARD]    2002-08-30   \n",
+       "2                               [KRAEUTLER, BERNARD]    1999-06-17   \n",
+       "3  [JIN, BYOUNG-IL, JUNG, KI-HO, KIM, IN-BAE, RYU...    2002-07-30   \n",
+       "4                        [DOLL, RAINER FRITZ ROBERT]    2002-07-15   \n",
+       "\n",
+       "   priority_year publication_date  times_cited  \\\n",
+       "0           2003       2006-07-20          NaN   \n",
+       "1           2002       2006-04-27          NaN   \n",
+       "2           1999       2006-08-17          NaN   \n",
+       "3           2002       2006-08-03          NaN   \n",
+       "4           2002       2006-08-17          NaN   \n",
+       "\n",
+       "                                               title  year  \n",
+       "0                                    A piling device  2003  \n",
+       "1                           An evaporation apparatus  2003  \n",
+       "2                             Material handling gate  2003  \n",
+       "3  Transmitting/receiving apparatus and method fo...  2003  \n",
+       "4  Signalling device to make the administering of...  2003  "
+      ]
+     },
+     "execution_count": 44,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"\"\"search patents where priority_year is not empty return \n",
+    "patents[basics+priority_year+priority_date]\"\"\").as_dataframe().head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 45,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Priority_year: 20\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>count</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1454119</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1453024</td>\n",
+       "      <td>2013</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1424813</td>\n",
+       "      <td>2011</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1414298</td>\n",
+       "      <td>2006</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1405553</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     count    id\n",
+       "0  1454119  2012\n",
+       "1  1453024  2013\n",
+       "2  1424813  2011\n",
+       "3  1414298  2006\n",
+       "4  1405553  2005"
+      ]
+     },
+     "execution_count": 45,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"\"\"search patents where priority_year is not empty return \n",
+    "priority_year\"\"\").as_dataframe().head(5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-218 Enable faceting on patents.CPC and patents.IPCR \n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-218"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Cpc: 20\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>count</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>248759</td>\n",
+       "      <td>A61K38/00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>214415</td>\n",
+       "      <td>A61K45/06</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>183020</td>\n",
+       "      <td>H01L2924/0002</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>109022</td>\n",
+       "      <td>G06Q30/02</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>101162</td>\n",
+       "      <td>H01L2224/48091</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    count              id\n",
+       "0  248759       A61K38/00\n",
+       "1  214415       A61K45/06\n",
+       "2  183020   H01L2924/0002\n",
+       "3  109022       G06Q30/02\n",
+       "4  101162  H01L2224/48091"
+      ]
+     },
+     "execution_count": 46,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"\"\"search patents where cpc is not empty return \n",
+    "cpc\"\"\").as_dataframe().head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Ipcr: 20\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>count</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>384037</td>\n",
+       "      <td>G06F17/30</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>361284</td>\n",
+       "      <td>H04L29/06</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>330732</td>\n",
+       "      <td>A61P35/00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>329617</td>\n",
+       "      <td>C12Q1/68</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>320040</td>\n",
+       "      <td>A61K38/00</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    count         id\n",
+       "0  384037  G06F17/30\n",
+       "1  361284  H04L29/06\n",
+       "2  330732  A61P35/00\n",
+       "3  329617   C12Q1/68\n",
+       "4  320040  A61K38/00"
+      ]
+     },
+     "execution_count": 47,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dslquery(\"\"\"search patents where ipcr is not empty return \n",
+    "ipcr\"\"\").as_dataframe().head(5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-160 [new indicator] publications.altmetric_mean\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-160"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Year: 20\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>altmetric_median</th>\n",
+       "      <th>count</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>29435</td>\n",
+       "      <td>2018</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2.0</td>\n",
+       "      <td>27838</td>\n",
+       "      <td>2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>26607</td>\n",
+       "      <td>2017</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>26385</td>\n",
+       "      <td>2008</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>2.0</td>\n",
+       "      <td>24369</td>\n",
+       "      <td>2014</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>2.0</td>\n",
+       "      <td>23810</td>\n",
+       "      <td>2015</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>23604</td>\n",
+       "      <td>2013</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>22344</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>21154</td>\n",
+       "      <td>2011</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>20719</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>19415</td>\n",
+       "      <td>2019</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>16889</td>\n",
+       "      <td>2009</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>16201</td>\n",
+       "      <td>2010</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>11500</td>\n",
+       "      <td>2006</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>10286</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>9956</td>\n",
+       "      <td>2004</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>8058</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>7891</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>7342</td>\n",
+       "      <td>2002</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>3.0</td>\n",
+       "      <td>6282</td>\n",
+       "      <td>2000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    altmetric_median  count    id\n",
+       "0                3.0  29435  2018\n",
+       "1                2.0  27838  2016\n",
+       "2                3.0  26607  2017\n",
+       "3                3.0  26385  2008\n",
+       "4                2.0  24369  2014\n",
+       "5                2.0  23810  2015\n",
+       "6                3.0  23604  2013\n",
+       "7                3.0  22344  2007\n",
+       "8                3.0  21154  2011\n",
+       "9                3.0  20719  2012\n",
+       "10               3.0  19415  2019\n",
+       "11               3.0  16889  2009\n",
+       "12               3.0  16201  2010\n",
+       "13               3.0  11500  2006\n",
+       "14               3.0  10286  2005\n",
+       "15               3.0   9956  2004\n",
+       "16               3.0   8058  2003\n",
+       "17               3.0   7891  2001\n",
+       "18               3.0   7342  2002\n",
+       "19               3.0   6282  2000"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%dsl_query_as_df\n",
+    "search publications for \"malaria\" return year aggregate altmetric_median"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Year: 20\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>altmetric_avg</th>\n",
+       "      <th>count</th>\n",
+       "      <th>id</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>15.555112</td>\n",
+       "      <td>29435</td>\n",
+       "      <td>2018</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>14.560082</td>\n",
+       "      <td>27838</td>\n",
+       "      <td>2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>15.971236</td>\n",
+       "      <td>26607</td>\n",
+       "      <td>2017</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>7.804277</td>\n",
+       "      <td>26385</td>\n",
+       "      <td>2008</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>12.108135</td>\n",
+       "      <td>24369</td>\n",
+       "      <td>2014</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>11.929621</td>\n",
+       "      <td>23810</td>\n",
+       "      <td>2015</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>10.299977</td>\n",
+       "      <td>23604</td>\n",
+       "      <td>2013</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>5.642256</td>\n",
+       "      <td>22344</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>9.294258</td>\n",
+       "      <td>21154</td>\n",
+       "      <td>2011</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>8.194181</td>\n",
+       "      <td>20719</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>16.317282</td>\n",
+       "      <td>19415</td>\n",
+       "      <td>2019</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>7.464683</td>\n",
+       "      <td>16889</td>\n",
+       "      <td>2009</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>8.254060</td>\n",
+       "      <td>16201</td>\n",
+       "      <td>2010</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>7.477851</td>\n",
+       "      <td>11500</td>\n",
+       "      <td>2006</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>7.616316</td>\n",
+       "      <td>10286</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>7.187247</td>\n",
+       "      <td>9956</td>\n",
+       "      <td>2004</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>6.204355</td>\n",
+       "      <td>8058</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>5.956839</td>\n",
+       "      <td>7891</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>6.742397</td>\n",
+       "      <td>7342</td>\n",
+       "      <td>2002</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>6.416546</td>\n",
+       "      <td>6282</td>\n",
+       "      <td>2000</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    altmetric_avg  count    id\n",
+       "0       15.555112  29435  2018\n",
+       "1       14.560082  27838  2016\n",
+       "2       15.971236  26607  2017\n",
+       "3        7.804277  26385  2008\n",
+       "4       12.108135  24369  2014\n",
+       "5       11.929621  23810  2015\n",
+       "6       10.299977  23604  2013\n",
+       "7        5.642256  22344  2007\n",
+       "8        9.294258  21154  2011\n",
+       "9        8.194181  20719  2012\n",
+       "10      16.317282  19415  2019\n",
+       "11       7.464683  16889  2009\n",
+       "12       8.254060  16201  2010\n",
+       "13       7.477851  11500  2006\n",
+       "14       7.616316  10286  2005\n",
+       "15       7.187247   9956  2004\n",
+       "16       6.204355   8058  2003\n",
+       "17       5.956839   7891  2001\n",
+       "18       6.742397   7342  2002\n",
+       "19       6.416546   6282  2000"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%dsl_query_as_df\n",
+    "search publications for \"malaria\" return year aggregate altmetric_avg"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-2 author search for patents\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Patents: 20 (total = 1905)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>assignee_names</th>\n",
+       "      <th>assignees</th>\n",
+       "      <th>filing_status</th>\n",
+       "      <th>granted_year</th>\n",
+       "      <th>id</th>\n",
+       "      <th>inventor_names</th>\n",
+       "      <th>publication_date</th>\n",
+       "      <th>times_cited</th>\n",
+       "      <th>title</th>\n",
+       "      <th>year</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[SMITH LESLIE JOHN, SMITH GEORGE LESLIE, SMITH...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>DE-2603782-A1</td>\n",
+       "      <td>[SMITH GEORGE LESLIE, JOHN SMITH,LESLIE]</td>\n",
+       "      <td>1977-08-04</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>Machine for moulding mudguards - with thermopl...</td>\n",
+       "      <td>1976</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[SMITH, JR.; JOHN]</td>\n",
+       "      <td>[{'id': 'grid.8348.7', 'acronym': 'JR', 'name'...</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>1996.0</td>\n",
+       "      <td>US-5589814-A</td>\n",
+       "      <td>[John Smith, Jr.]</td>\n",
+       "      <td>1996-12-31</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Anti-theft vehicle security system</td>\n",
+       "      <td>1994</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[BOC Group Ltd, SMITH JOHN CAMBRIDGE]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20020074418-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2002-06-20</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>Valves</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>[SMITH JOHN BRUCE]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20030051649-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2003-03-20</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>Mobile furnace and method of facilitating remo...</td>\n",
+       "      <td>2002</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>[Precision Fabrics Group Inc, SMITH JOHN, PREC...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2012.0</td>\n",
+       "      <td>US-8088441-B2</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2012-01-03</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>Direct digital printing methods for textiles</td>\n",
+       "      <td>2006</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>[SMITH JOHN A.]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20050005413-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2005-01-13</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>Extractor</td>\n",
+       "      <td>2004</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>[Hannspree Inc, HANNSPREE INC]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2007.0</td>\n",
+       "      <td>US-D541238-S1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2007-04-24</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>Television set</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>[Smith's Cooking Systems Pty Ltd, SMITH'S COOK...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20170042379-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2017-02-16</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Searing Plates</td>\n",
+       "      <td>2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>[PRECISION AUTOMATION CO Inc, PRECISION AUTOMA...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>1989.0</td>\n",
+       "      <td>US-4841826-A</td>\n",
+       "      <td>[John Smith, III]</td>\n",
+       "      <td>1989-06-27</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>Shaping apparatus and method</td>\n",
+       "      <td>1988</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>[SMITH JOHN BRUCE]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20040107884-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2004-06-10</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>Mobile furnace and method of facilitating remo...</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>[Tessera Inc, TESSERA INC]</td>\n",
+       "      <td>[{'id': 'grid.455499.0', 'name': 'Tessera Tech...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20030150635-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2003-08-14</td>\n",
+       "      <td>8.0</td>\n",
+       "      <td>Microelectronic connections with liquid conduc...</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>[BWX Technologies Inc, SMITH JOHN W]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20060234173-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2006-10-19</td>\n",
+       "      <td>4.0</td>\n",
+       "      <td>Carrier air heating system for SCR</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>[Pepsyn Ltd, SMITH JOHN A]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20040014653-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2004-01-22</td>\n",
+       "      <td>9.0</td>\n",
+       "      <td>Peptide composition</td>\n",
+       "      <td>2003</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>[SMITH JOHN ANTONY]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20020144390-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2002-10-10</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Extractor</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>[SMITH JOHN]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>GB-2352218-A</td>\n",
+       "      <td>[SMITH JOHN]</td>\n",
+       "      <td>2001-01-24</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Vehicle security apparatus</td>\n",
+       "      <td>1999</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>[SMITH JOHN]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2017.0</td>\n",
+       "      <td>US-9610814-B1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2017-04-04</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Combination tow strap and jumper cables for ve...</td>\n",
+       "      <td>2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>[DE-STA-CO EUROPE GmbH, CAPITAL FORMATION INC]</td>\n",
+       "      <td>[{'id': 'grid.472738.d', 'name': 'Dover (Germa...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20150003947-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2015-01-01</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Boom Utilized In A Geometric End Effector System</td>\n",
+       "      <td>2014</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>[Eley Ltd, ELEY LTD]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2016.0</td>\n",
+       "      <td>GB-2513101-B</td>\n",
+       "      <td>[SMITH JOHN]</td>\n",
+       "      <td>2016-01-13</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Ammunition cartridge</td>\n",
+       "      <td>2013</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>[CRUICKSHANK JOHN S]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>WO-2010082011-A8</td>\n",
+       "      <td>[CRUICKSHANK, JOHN, SMITH]</td>\n",
+       "      <td>2011-04-07</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>RIVER / TIDAL ENERGY CONVERTER</td>\n",
+       "      <td>2009</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>[Lifeshield Sciences LLC, SCIMED LIFE SYSTEMS ...</td>\n",
+       "      <td>[{'id': 'grid.418905.1', 'acronym': 'BSC', 'na...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20060085014-A1</td>\n",
+       "      <td>[John Smith]</td>\n",
+       "      <td>2006-04-20</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>Endovascular prosthetic devices having hook an...</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                       assignee_names  \\\n",
+       "0   [SMITH LESLIE JOHN, SMITH GEORGE LESLIE, SMITH...   \n",
+       "1                                  [SMITH, JR.; JOHN]   \n",
+       "2               [BOC Group Ltd, SMITH JOHN CAMBRIDGE]   \n",
+       "3                                  [SMITH JOHN BRUCE]   \n",
+       "4   [Precision Fabrics Group Inc, SMITH JOHN, PREC...   \n",
+       "5                                     [SMITH JOHN A.]   \n",
+       "6                      [Hannspree Inc, HANNSPREE INC]   \n",
+       "7   [Smith's Cooking Systems Pty Ltd, SMITH'S COOK...   \n",
+       "8   [PRECISION AUTOMATION CO Inc, PRECISION AUTOMA...   \n",
+       "9                                  [SMITH JOHN BRUCE]   \n",
+       "10                         [Tessera Inc, TESSERA INC]   \n",
+       "11               [BWX Technologies Inc, SMITH JOHN W]   \n",
+       "12                         [Pepsyn Ltd, SMITH JOHN A]   \n",
+       "13                                [SMITH JOHN ANTONY]   \n",
+       "14                                       [SMITH JOHN]   \n",
+       "15                                       [SMITH JOHN]   \n",
+       "16     [DE-STA-CO EUROPE GmbH, CAPITAL FORMATION INC]   \n",
+       "17                               [Eley Ltd, ELEY LTD]   \n",
+       "18                               [CRUICKSHANK JOHN S]   \n",
+       "19  [Lifeshield Sciences LLC, SCIMED LIFE SYSTEMS ...   \n",
+       "\n",
+       "                                            assignees filing_status  \\\n",
+       "0                                                 NaN   Application   \n",
+       "1   [{'id': 'grid.8348.7', 'acronym': 'JR', 'name'...         Grant   \n",
+       "2                                                 NaN   Application   \n",
+       "3                                                 NaN   Application   \n",
+       "4                                                 NaN         Grant   \n",
+       "5                                                 NaN   Application   \n",
+       "6                                                 NaN         Grant   \n",
+       "7                                                 NaN   Application   \n",
+       "8                                                 NaN         Grant   \n",
+       "9                                                 NaN   Application   \n",
+       "10  [{'id': 'grid.455499.0', 'name': 'Tessera Tech...   Application   \n",
+       "11                                                NaN   Application   \n",
+       "12                                                NaN   Application   \n",
+       "13                                                NaN   Application   \n",
+       "14                                                NaN   Application   \n",
+       "15                                                NaN         Grant   \n",
+       "16  [{'id': 'grid.472738.d', 'name': 'Dover (Germa...   Application   \n",
+       "17                                                NaN         Grant   \n",
+       "18                                                NaN   Application   \n",
+       "19  [{'id': 'grid.418905.1', 'acronym': 'BSC', 'na...   Application   \n",
+       "\n",
+       "    granted_year                 id                            inventor_names  \\\n",
+       "0            NaN      DE-2603782-A1  [SMITH GEORGE LESLIE, JOHN SMITH,LESLIE]   \n",
+       "1         1996.0       US-5589814-A                         [John Smith, Jr.]   \n",
+       "2            NaN  US-20020074418-A1                              [John Smith]   \n",
+       "3            NaN  US-20030051649-A1                              [John Smith]   \n",
+       "4         2012.0      US-8088441-B2                              [John Smith]   \n",
+       "5            NaN  US-20050005413-A1                              [John Smith]   \n",
+       "6         2007.0      US-D541238-S1                              [John Smith]   \n",
+       "7            NaN  US-20170042379-A1                              [John Smith]   \n",
+       "8         1989.0       US-4841826-A                         [John Smith, III]   \n",
+       "9            NaN  US-20040107884-A1                              [John Smith]   \n",
+       "10           NaN  US-20030150635-A1                              [John Smith]   \n",
+       "11           NaN  US-20060234173-A1                              [John Smith]   \n",
+       "12           NaN  US-20040014653-A1                              [John Smith]   \n",
+       "13           NaN  US-20020144390-A1                              [John Smith]   \n",
+       "14           NaN       GB-2352218-A                              [SMITH JOHN]   \n",
+       "15        2017.0      US-9610814-B1                              [John Smith]   \n",
+       "16           NaN  US-20150003947-A1                              [John Smith]   \n",
+       "17        2016.0       GB-2513101-B                              [SMITH JOHN]   \n",
+       "18           NaN   WO-2010082011-A8                [CRUICKSHANK, JOHN, SMITH]   \n",
+       "19           NaN  US-20060085014-A1                              [John Smith]   \n",
+       "\n",
+       "   publication_date  times_cited  \\\n",
+       "0        1977-08-04          2.0   \n",
+       "1        1996-12-31          NaN   \n",
+       "2        2002-06-20          4.0   \n",
+       "3        2003-03-20          2.0   \n",
+       "4        2012-01-03          1.0   \n",
+       "5        2005-01-13          3.0   \n",
+       "6        2007-04-24          3.0   \n",
+       "7        2017-02-16          NaN   \n",
+       "8        1989-06-27          6.0   \n",
+       "9        2004-06-10          2.0   \n",
+       "10       2003-08-14          8.0   \n",
+       "11       2006-10-19          4.0   \n",
+       "12       2004-01-22          9.0   \n",
+       "13       2002-10-10          NaN   \n",
+       "14       2001-01-24          NaN   \n",
+       "15       2017-04-04          NaN   \n",
+       "16       2015-01-01          NaN   \n",
+       "17       2016-01-13          NaN   \n",
+       "18       2011-04-07          NaN   \n",
+       "19       2006-04-20          3.0   \n",
+       "\n",
+       "                                                title  year  \n",
+       "0   Machine for moulding mudguards - with thermopl...  1976  \n",
+       "1                  Anti-theft vehicle security system  1994  \n",
+       "2                                              Valves  2001  \n",
+       "3   Mobile furnace and method of facilitating remo...  2002  \n",
+       "4        Direct digital printing methods for textiles  2006  \n",
+       "5                                           Extractor  2004  \n",
+       "6                                      Television set  2005  \n",
+       "7                                      Searing Plates  2016  \n",
+       "8                        Shaping apparatus and method  1988  \n",
+       "9   Mobile furnace and method of facilitating remo...  2003  \n",
+       "10  Microelectronic connections with liquid conduc...  2003  \n",
+       "11                 Carrier air heating system for SCR  2005  \n",
+       "12                                Peptide composition  2003  \n",
+       "13                                          Extractor  2001  \n",
+       "14                         Vehicle security apparatus  1999  \n",
+       "15  Combination tow strap and jumper cables for ve...  2016  \n",
+       "16   Boom Utilized In A Geometric End Effector System  2014  \n",
+       "17                               Ammunition cartridge  2013  \n",
+       "18                     RIVER / TIDAL ENERGY CONVERTER  2009  \n",
+       "19  Endovascular prosthetic devices having hook an...  2005  "
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%dsl_query_as_df\n",
+    "search patents in inventors for \"\\\"John Smith\\\"\" return patents[basics+inventor_names]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Patents: 20 (total = 231110)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>assignee_names</th>\n",
+       "      <th>assignees</th>\n",
+       "      <th>filing_status</th>\n",
+       "      <th>granted_year</th>\n",
+       "      <th>id</th>\n",
+       "      <th>inventor_names</th>\n",
+       "      <th>publication_date</th>\n",
+       "      <th>times_cited</th>\n",
+       "      <th>title</th>\n",
+       "      <th>year</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[DTEMPLETONS AND ASSOCIATES LLC, SMITH SMITH]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20140238004-A1</td>\n",
+       "      <td>[Smith Smith]</td>\n",
+       "      <td>2014-08-28</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>COMBUSTION ENGINE PERFORMANCE-ENHANCING PROCEDURE</td>\n",
+       "      <td>2014</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[SMITH BRADLEY RUSSELL, SMITH CATHERINE ELIZAB...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20030051677-A1</td>\n",
+       "      <td>[Bradley Smith, Catherine Smith]</td>\n",
+       "      <td>2003-03-20</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Animal Hydrotherapy pool</td>\n",
+       "      <td>2002</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[Smith David G, SMITH GREGORY F, SMITH DAVID G]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20070261757-A1</td>\n",
+       "      <td>[Gregory Smith, David Smith]</td>\n",
+       "      <td>2007-11-15</td>\n",
+       "      <td>3.0</td>\n",
+       "      <td>FILLER TUBE ASSEMBLY</td>\n",
+       "      <td>2006</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>[SUREFIRE, SureFire LLC, SMITH RICHARD C, SMIT...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20060067524-A1</td>\n",
+       "      <td>[Richard Smith, Diann Smith]</td>\n",
+       "      <td>2006-03-30</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>Ergonomic earpiece</td>\n",
+       "      <td>2005</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>[Smith Charles Marshall, Smith John Charles, S...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20030057751-A1</td>\n",
+       "      <td>[Charles Smith, John Smith]</td>\n",
+       "      <td>2003-03-27</td>\n",
+       "      <td>2.0</td>\n",
+       "      <td>Dude tandem</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>[MODERN TIE LLC, SMITH RYAN, SMITH DANIEL]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2018.0</td>\n",
+       "      <td>US-10117474-B1</td>\n",
+       "      <td>[Ryan Smith, Daniel Smith]</td>\n",
+       "      <td>2018-11-06</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Modular interchangeable necktie</td>\n",
+       "      <td>2017</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>[Albright &amp; Wilson Australia)ltd, ALBRIGHT &amp; W...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>AU-2656377-A</td>\n",
+       "      <td>[SMITH, T]</td>\n",
+       "      <td>1979-01-04</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>DETERGENT COMPOSITIONS</td>\n",
+       "      <td>1977</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>[SureFire LLC, SMITH RICHARD C., SMITH DIANN Y.]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20050008180-A1</td>\n",
+       "      <td>[Richard Smith, Diann Smith]</td>\n",
+       "      <td>2005-01-13</td>\n",
+       "      <td>36.0</td>\n",
+       "      <td>Ambidextrous earpiece</td>\n",
+       "      <td>2004</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>[Smith David, SMITH JERRY, SMITH DAVID]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2014.0</td>\n",
+       "      <td>US-D700942-S1</td>\n",
+       "      <td>[Jerry Smith, David Smith]</td>\n",
+       "      <td>2014-03-11</td>\n",
+       "      <td>6.0</td>\n",
+       "      <td>Archery bow holder</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>[Arena Pharmaceuticals Inc, SMITH BRIAN, SMITH...</td>\n",
+       "      <td>[{'id': 'grid.433329.c', 'name': 'Arena Pharma...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20130217676-A1</td>\n",
+       "      <td>[Brian Smith, Jeffrey Smith]</td>\n",
+       "      <td>2013-08-22</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>5HT2C RECEPTOR MODULATORS</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>[Software AG USA Inc, SOFTWARE AG USA INC]</td>\n",
+       "      <td>[{'id': 'grid.417986.5', 'acronym': 'AG', 'nam...</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20170046566-A1</td>\n",
+       "      <td>[Leighton SMITH, Gareth Smith]</td>\n",
+       "      <td>2017-02-16</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>LARGE VENUE SURVEILLANCE AND REACTION SYSTEMS ...</td>\n",
+       "      <td>2016</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>[SMITH BEN C, SMITH ADAM]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20080019124-A1</td>\n",
+       "      <td>[Ben Smith, Adam Smith]</td>\n",
+       "      <td>2008-01-24</td>\n",
+       "      <td>12.0</td>\n",
+       "      <td>PORTABLE LAMP WITH DETACHABLE STAND</td>\n",
+       "      <td>2007</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>[SMITH CAROLYN JANE, SMITH VIRGIL]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20020165506-A1</td>\n",
+       "      <td>[Carolyn Smith, Virgil Smith]</td>\n",
+       "      <td>2002-11-07</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Individual breast wipes (disposable)</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>[SMITH VINCENT A., SMITH SUSAN V.]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20020022769-A1</td>\n",
+       "      <td>[Vincent Smith, Susan Smith]</td>\n",
+       "      <td>2002-02-21</td>\n",
+       "      <td>127.0</td>\n",
+       "      <td>Portable video laryngoscope</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>[SMITH RICHARD C., SMITH DIANN Y.]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20020096391-A1</td>\n",
+       "      <td>[Richard Smith, Diann Smith]</td>\n",
+       "      <td>2002-07-25</td>\n",
+       "      <td>58.0</td>\n",
+       "      <td>Flexible ear insert and audio communication link</td>\n",
+       "      <td>2001</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>[Led By Lite LLC, SMITH BRANDON, SMITH RICHARD...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2014.0</td>\n",
+       "      <td>US-8783919-B2</td>\n",
+       "      <td>[Brandon Smith, Richard Smith]</td>\n",
+       "      <td>2014-07-22</td>\n",
+       "      <td>1.0</td>\n",
+       "      <td>Bicycle lighting apparatus and method of use</td>\n",
+       "      <td>2011</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>[SMITH XAIVER, SMITH TAINA]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>US-20180303182-A1</td>\n",
+       "      <td>[Xaiver Smith, Taina Smith]</td>\n",
+       "      <td>2018-10-25</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Temperature Control Head Covering and System</td>\n",
+       "      <td>2018</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>[RODNEY SMITH, JONATHAN SMITH]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Application</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>GB-2544347-A</td>\n",
+       "      <td>[RODNEY SMITH, JONATHAN SMITH]</td>\n",
+       "      <td>2017-05-17</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Low cost underwater turbine</td>\n",
+       "      <td>2015</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>[SMITH HERCHEL, SMITH HERCHEL]</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>1975.0</td>\n",
+       "      <td>IN-138181-B</td>\n",
+       "      <td>[H SMITH]</td>\n",
+       "      <td>1975-12-27</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>PROCESS FOR PREPARING STEROID COMPOUND</td>\n",
+       "      <td>1974</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>[JEPP INDUSTRIES Inc, SMITH JEFFERSON, SMITH M...</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>Grant</td>\n",
+       "      <td>2014.0</td>\n",
+       "      <td>US-8823506-B2</td>\n",
+       "      <td>[Jefferson Smith, Marcus Smith]</td>\n",
+       "      <td>2014-09-02</td>\n",
+       "      <td>NaN</td>\n",
+       "      <td>System for enhancing perception of a motor veh...</td>\n",
+       "      <td>2012</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                       assignee_names  \\\n",
+       "0       [DTEMPLETONS AND ASSOCIATES LLC, SMITH SMITH]   \n",
+       "1   [SMITH BRADLEY RUSSELL, SMITH CATHERINE ELIZAB...   \n",
+       "2     [Smith David G, SMITH GREGORY F, SMITH DAVID G]   \n",
+       "3   [SUREFIRE, SureFire LLC, SMITH RICHARD C, SMIT...   \n",
+       "4   [Smith Charles Marshall, Smith John Charles, S...   \n",
+       "5          [MODERN TIE LLC, SMITH RYAN, SMITH DANIEL]   \n",
+       "6   [Albright & Wilson Australia)ltd, ALBRIGHT & W...   \n",
+       "7    [SureFire LLC, SMITH RICHARD C., SMITH DIANN Y.]   \n",
+       "8             [Smith David, SMITH JERRY, SMITH DAVID]   \n",
+       "9   [Arena Pharmaceuticals Inc, SMITH BRIAN, SMITH...   \n",
+       "10         [Software AG USA Inc, SOFTWARE AG USA INC]   \n",
+       "11                          [SMITH BEN C, SMITH ADAM]   \n",
+       "12                 [SMITH CAROLYN JANE, SMITH VIRGIL]   \n",
+       "13                 [SMITH VINCENT A., SMITH SUSAN V.]   \n",
+       "14                 [SMITH RICHARD C., SMITH DIANN Y.]   \n",
+       "15  [Led By Lite LLC, SMITH BRANDON, SMITH RICHARD...   \n",
+       "16                        [SMITH XAIVER, SMITH TAINA]   \n",
+       "17                     [RODNEY SMITH, JONATHAN SMITH]   \n",
+       "18                     [SMITH HERCHEL, SMITH HERCHEL]   \n",
+       "19  [JEPP INDUSTRIES Inc, SMITH JEFFERSON, SMITH M...   \n",
+       "\n",
+       "                                            assignees filing_status  \\\n",
+       "0                                                 NaN   Application   \n",
+       "1                                                 NaN   Application   \n",
+       "2                                                 NaN   Application   \n",
+       "3                                                 NaN   Application   \n",
+       "4                                                 NaN   Application   \n",
+       "5                                                 NaN         Grant   \n",
+       "6                                                 NaN   Application   \n",
+       "7                                                 NaN   Application   \n",
+       "8                                                 NaN         Grant   \n",
+       "9   [{'id': 'grid.433329.c', 'name': 'Arena Pharma...   Application   \n",
+       "10  [{'id': 'grid.417986.5', 'acronym': 'AG', 'nam...   Application   \n",
+       "11                                                NaN   Application   \n",
+       "12                                                NaN   Application   \n",
+       "13                                                NaN   Application   \n",
+       "14                                                NaN   Application   \n",
+       "15                                                NaN         Grant   \n",
+       "16                                                NaN   Application   \n",
+       "17                                                NaN   Application   \n",
+       "18                                                NaN         Grant   \n",
+       "19                                                NaN         Grant   \n",
+       "\n",
+       "    granted_year                 id                    inventor_names  \\\n",
+       "0            NaN  US-20140238004-A1                     [Smith Smith]   \n",
+       "1            NaN  US-20030051677-A1  [Bradley Smith, Catherine Smith]   \n",
+       "2            NaN  US-20070261757-A1      [Gregory Smith, David Smith]   \n",
+       "3            NaN  US-20060067524-A1      [Richard Smith, Diann Smith]   \n",
+       "4            NaN  US-20030057751-A1       [Charles Smith, John Smith]   \n",
+       "5         2018.0     US-10117474-B1        [Ryan Smith, Daniel Smith]   \n",
+       "6            NaN       AU-2656377-A                        [SMITH, T]   \n",
+       "7            NaN  US-20050008180-A1      [Richard Smith, Diann Smith]   \n",
+       "8         2014.0      US-D700942-S1        [Jerry Smith, David Smith]   \n",
+       "9            NaN  US-20130217676-A1      [Brian Smith, Jeffrey Smith]   \n",
+       "10           NaN  US-20170046566-A1    [Leighton SMITH, Gareth Smith]   \n",
+       "11           NaN  US-20080019124-A1           [Ben Smith, Adam Smith]   \n",
+       "12           NaN  US-20020165506-A1     [Carolyn Smith, Virgil Smith]   \n",
+       "13           NaN  US-20020022769-A1      [Vincent Smith, Susan Smith]   \n",
+       "14           NaN  US-20020096391-A1      [Richard Smith, Diann Smith]   \n",
+       "15        2014.0      US-8783919-B2    [Brandon Smith, Richard Smith]   \n",
+       "16           NaN  US-20180303182-A1       [Xaiver Smith, Taina Smith]   \n",
+       "17           NaN       GB-2544347-A    [RODNEY SMITH, JONATHAN SMITH]   \n",
+       "18        1975.0        IN-138181-B                         [H SMITH]   \n",
+       "19        2014.0      US-8823506-B2   [Jefferson Smith, Marcus Smith]   \n",
+       "\n",
+       "   publication_date  times_cited  \\\n",
+       "0        2014-08-28          NaN   \n",
+       "1        2003-03-20          NaN   \n",
+       "2        2007-11-15          3.0   \n",
+       "3        2006-03-30          6.0   \n",
+       "4        2003-03-27          2.0   \n",
+       "5        2018-11-06          NaN   \n",
+       "6        1979-01-04          NaN   \n",
+       "7        2005-01-13         36.0   \n",
+       "8        2014-03-11          6.0   \n",
+       "9        2013-08-22          NaN   \n",
+       "10       2017-02-16          1.0   \n",
+       "11       2008-01-24         12.0   \n",
+       "12       2002-11-07          NaN   \n",
+       "13       2002-02-21        127.0   \n",
+       "14       2002-07-25         58.0   \n",
+       "15       2014-07-22          1.0   \n",
+       "16       2018-10-25          NaN   \n",
+       "17       2017-05-17          NaN   \n",
+       "18       1975-12-27          NaN   \n",
+       "19       2014-09-02          NaN   \n",
+       "\n",
+       "                                                title  year  \n",
+       "0   COMBUSTION ENGINE PERFORMANCE-ENHANCING PROCEDURE  2014  \n",
+       "1                            Animal Hydrotherapy pool  2002  \n",
+       "2                                FILLER TUBE ASSEMBLY  2006  \n",
+       "3                                  Ergonomic earpiece  2005  \n",
+       "4                                         Dude tandem  2001  \n",
+       "5                     Modular interchangeable necktie  2017  \n",
+       "6                              DETERGENT COMPOSITIONS  1977  \n",
+       "7                               Ambidextrous earpiece  2004  \n",
+       "8                                  Archery bow holder  2012  \n",
+       "9                           5HT2C RECEPTOR MODULATORS  2012  \n",
+       "10  LARGE VENUE SURVEILLANCE AND REACTION SYSTEMS ...  2016  \n",
+       "11                PORTABLE LAMP WITH DETACHABLE STAND  2007  \n",
+       "12               Individual breast wipes (disposable)  2001  \n",
+       "13                        Portable video laryngoscope  2001  \n",
+       "14   Flexible ear insert and audio communication link  2001  \n",
+       "15       Bicycle lighting apparatus and method of use  2011  \n",
+       "16       Temperature Control Head Covering and System  2018  \n",
+       "17                        Low cost underwater turbine  2015  \n",
+       "18             PROCESS FOR PREPARING STEROID COMPOUND  1974  \n",
+       "19  System for enhancing perception of a motor veh...  2012  "
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%dsl_query_as_df\n",
+    "search patents in inventors for \"Smith\" return patents[basics+inventor_names]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "source": [
+    "---\n",
+    "## DSL-228 Unwrap author fields in publications\n",
+    "\n",
+    "https://uberresearch.atlassian.net/browse/DSL-228\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Returned Publications: 20 (total = 9454845)\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>authors</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>[{'first_name': 'Julia A.', 'last_name': 'Clan...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>[{'first_name': 'Joo Won', 'last_name': 'Han',...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>[{'first_name': 'Matthias', 'last_name': 'Müll...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>[{'first_name': 'Karl', 'last_name': 'Hecker',...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>5</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>6</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>7</th>\n",
+       "      <td>[{'first_name': 'Manfried', 'last_name': 'Diet...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>8</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>9</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>10</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>11</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>12</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>13</th>\n",
+       "      <td>[{'first_name': 'Daniel A.', 'last_name': 'Seg...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>14</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>15</th>\n",
+       "      <td>NaN</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>16</th>\n",
+       "      <td>[{'first_name': 'S. A.', 'last_name': 'Smith',...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>17</th>\n",
+       "      <td>[{'first_name': 'Agnes R.', 'last_name': 'Quis...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>18</th>\n",
+       "      <td>[{'first_name': 'Kenneth', 'last_name': 'Reinh...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>19</th>\n",
+       "      <td>[{'first_name': 'Anna', 'last_name': 'Everett'...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                              authors\n",
+       "0   [{'first_name': 'Julia A.', 'last_name': 'Clan...\n",
+       "1   [{'first_name': 'Joo Won', 'last_name': 'Han',...\n",
+       "2   [{'first_name': 'Matthias', 'last_name': 'Müll...\n",
+       "3                                                 NaN\n",
+       "4   [{'first_name': 'Karl', 'last_name': 'Hecker',...\n",
+       "5                                                 NaN\n",
+       "6                                                 NaN\n",
+       "7   [{'first_name': 'Manfried', 'last_name': 'Diet...\n",
+       "8                                                 NaN\n",
+       "9                                                 NaN\n",
+       "10                                                NaN\n",
+       "11                                                NaN\n",
+       "12                                                NaN\n",
+       "13  [{'first_name': 'Daniel A.', 'last_name': 'Seg...\n",
+       "14                                                NaN\n",
+       "15                                                NaN\n",
+       "16  [{'first_name': 'S. A.', 'last_name': 'Smith',...\n",
+       "17  [{'first_name': 'Agnes R.', 'last_name': 'Quis...\n",
+       "18  [{'first_name': 'Kenneth', 'last_name': 'Reinh...\n",
+       "19  [{'first_name': 'Anna', 'last_name': 'Everett'..."
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "%%dsl_query_as_df\n",
+    "search publications for \"Smith\" return publications[authors]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "Collapsed": "false"
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
